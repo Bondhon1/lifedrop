@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #170107;
+  --foreground: #fff5f5;
+  --muted: rgba(255, 228, 230, 0.7);
+  --font-sans: var(--font-geist-sans, 'Inter', sans-serif);
+  --font-mono: var(--font-geist-mono, 'JetBrains Mono', monospace);
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 5% 15%, rgba(239, 68, 68, 0.45), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(190, 18, 60, 0.35), transparent 35%),
+    radial-gradient(circle at 55% 85%, rgba(244, 63, 94, 0.35), transparent 40%),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+main,
+section,
+header,
+article,
+nav,
+aside,
+footer {
+  width: 100%;
+  min-width: 0;
+}
+
+* {
+  border-color: rgba(248, 113, 113, 0.15);
+}
+
+::selection {
+  background: rgba(248, 113, 113, 0.4);
+  color: var(--foreground);
 }

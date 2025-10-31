@@ -1,0 +1,124 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition, useState } from "react";
+import { removeFriend } from "@/server/actions/friend";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+
+export type FriendListItem = {
+  id: number;
+  username: string;
+  name: string | null;
+  email: string;
+  bloodGroup: string | null;
+  district?: string | null;
+  division?: string | null;
+  profilePicture: string | null;
+};
+
+type FriendListProps = {
+  friends: FriendListItem[];
+};
+
+const resolveAvatar = (path: string | null) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/")) return path;
+  return `/uploads/${path}`;
+};
+
+export function FriendList({ friends }: FriendListProps) {
+  const router = useRouter();
+  const [pendingId, setPendingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const handleRemove = (friendId: number) => {
+    setError(null);
+    setPendingId(friendId);
+
+    startTransition(async () => {
+      const result = await removeFriend(friendId);
+      if (!result.ok) {
+        setError(result.message);
+        setPendingId(null);
+        return;
+      }
+
+      setPendingId(null);
+      router.refresh();
+    });
+  };
+
+  if (friends.length === 0) {
+    return (
+      <div className="rounded-3xl border border-dashed border-rose-500/25 bg-rose-500/10 p-10 text-center">
+        <h3 className="text-lg font-semibold text-white">No connections yet</h3>
+        <p className="mt-2 text-sm text-rose-100/80">
+          As you accept requests your confirmed connections will appear here.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4">
+      {error && <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-3 text-sm text-rose-100">{error}</p>}
+      {friends.map((friend) => {
+        const displayName = friend.name?.trim() && friend.name.length > 0 ? friend.name : friend.username;
+        const avatar = resolveAvatar(friend.profilePicture);
+        const initials =
+          displayName
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((segment) => segment[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase() || displayName.slice(0, 2).toUpperCase();
+
+        return (
+          <article
+            key={friend.id}
+            className="flex flex-col gap-4 rounded-3xl border border-rose-500/20 bg-rose-950/20 p-4 md:flex-row md:items-center md:justify-between"
+          >
+            <div className="flex flex-1 items-center gap-4">
+              <Avatar
+                src={avatar ?? undefined}
+                alt={displayName}
+                size="lg"
+                className="border border-rose-500/40 bg-rose-900/60"
+                fallbackIcon={<span className="text-sm font-semibold text-rose-100">{initials}</span>}
+              />
+              <div className="min-w-0">
+                <h4 className="truncate text-lg font-semibold text-white">{displayName}</h4>
+                <p className="truncate text-sm text-rose-100/80">{friend.email}</p>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-rose-100/70">
+                  {friend.bloodGroup ? <span>Blood group {friend.bloodGroup}</span> : null}
+                  {(friend.district || friend.division) && (
+                    <span>{[friend.district, friend.division].filter(Boolean).join(", ")}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Button variant="secondary" size="sm" asChild className="w-full sm:w-auto">
+                <Link href={`/members/${friend.username}`}>View profile</Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isPending && pendingId === friend.id}
+                onClick={() => handleRemove(friend.id)}
+                className="w-full sm:w-auto"
+              >
+                Remove
+              </Button>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}

@@ -59,7 +59,7 @@ async function generateUniqueUsername(email?: string | null, name?: string | nul
 
 const enhancedAdapter: Adapter = {
   ...prismaAdapter,
-  async createUser(data) {
+  async createUser(data: AdapterUser) {
     const email = data.email?.toLowerCase();
     if (!email) {
       throw new Error("OAuth account is missing an email address");

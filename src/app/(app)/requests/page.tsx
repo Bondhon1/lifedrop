@@ -75,8 +75,8 @@ export default async function RequestsPage() {
     <div className="grid gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-white">Your blood requests</h1>
-          <p className="text-sm text-rose-100/80">
+          <h1 className="text-3xl font-semibold text-[#2E2E2E]">Your blood requests</h1>
+          <p className="text-sm text-[#5F5F5F]">
             Track the status of every request you&apos;ve created and keep donors informed.
           </p>
         </div>
@@ -93,21 +93,21 @@ export default async function RequestsPage() {
       <section className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Open requests</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Open requests</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{openRequests}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{openRequests}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Fulfilled</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Fulfilled</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{fulfilledRequests}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{fulfilledRequests}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Total supports received</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Total supports received</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{totalSupports}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{totalSupports}</CardContent>
         </Card>
       </section>
 
@@ -127,7 +127,7 @@ export default async function RequestsPage() {
         ) : (
           feedItems.map((item) => (
             <div key={item.id} className="grid w-full gap-3">
-              <div className="flex flex-wrap items-center gap-2 text-xs text-rose-100/70">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-[#5F5F5F]">
                 <Badge variant="secondary">#{item.id}</Badge>
                 <span>Created {new Date(item.createdAt).toLocaleString()}</span>
                 <span>Updated {new Date(item.updatedAt ?? item.createdAt).toLocaleString()}</span>

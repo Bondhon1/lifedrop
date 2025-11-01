@@ -131,43 +131,43 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
   };
 
   return (
-    <section className="grid gap-6 rounded-3xl border border-rose-500/25 bg-rose-950/70 p-6 shadow-xl shadow-rose-900/40">
+    <section className="grid gap-6 rounded-3xl border border-soft bg-surface-card p-6 shadow-soft">
       <header className="grid gap-1">
-        <p className="text-xs uppercase tracking-[0.35em] text-rose-200/80">Images</p>
-        <h2 className="text-2xl font-semibold text-white">Refresh your visuals</h2>
-        <p className="text-sm text-rose-100/80">
+        <p className="text-xs uppercase tracking-[0.35em] text-muted">Images</p>
+        <h2 className="text-2xl font-semibold text-primary">Refresh your visuals</h2>
+        <p className="text-sm text-secondary">
           Add a friendly profile photo and cover image to help friends recognize you instantly.
         </p>
       </header>
       <form onSubmit={handleSubmit} encType="multipart/form-data" className="grid gap-5">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-3">
-            <div className="relative h-40 overflow-hidden rounded-2xl border border-rose-500/20 bg-rose-900/40">
+            <div className="relative h-40 overflow-hidden rounded-2xl border border-soft bg-surface-card-muted">
               {profilePreview ? (
                 <img src={profilePreview} alt="Profile preview" className="h-full w-full object-cover" />
               ) : (
-                <div className="flex h-full items-center justify-center text-sm text-rose-100/60">No profile photo yet</div>
+                <div className="flex h-full items-center justify-center text-sm text-muted">No profile photo yet</div>
               )}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="profilePicture">Profile photo</Label>
               <Input id="profilePicture" name="profilePicture" type="file" accept="image/*" onChange={handleProfileChange} />
-              <p className="text-xs text-rose-100/60">JPG, PNG, WebP or GIF up to 5MB.</p>
+              <p className="text-xs text-muted">JPG, PNG, WebP or GIF up to 5MB.</p>
             </div>
           </div>
 
           <div className="grid gap-3">
-            <div className="relative h-40 overflow-hidden rounded-2xl border border-rose-500/20 bg-rose-900/40">
+            <div className="relative h-40 overflow-hidden rounded-2xl border border-soft bg-surface-card-muted">
               {coverPreview ? (
                 <img src={coverPreview} alt="Cover preview" className="h-full w-full object-cover" />
               ) : (
-                <div className="flex h-full items-center justify-center text-sm text-rose-100/60">No cover image yet</div>
+                <div className="flex h-full items-center justify-center text-sm text-muted">No cover image yet</div>
               )}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="coverPhoto">Cover image</Label>
               <Input id="coverPhoto" name="coverPhoto" type="file" accept="image/*" onChange={handleCoverChange} />
-              <p className="text-xs text-rose-100/60">Wide image works best. JPG, PNG, WebP or GIF up to 5MB.</p>
+              <p className="text-xs text-muted">Wide image works best. JPG, PNG, WebP or GIF up to 5MB.</p>
             </div>
           </div>
         </div>

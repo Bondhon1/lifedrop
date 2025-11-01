@@ -3,10 +3,10 @@ import { HTMLAttributes } from "react";
 
 export function Badge({ className, variant = "default", ...props }: BadgeProps) {
   const variants = {
-  default: "bg-rose-500/20 text-rose-100 border border-rose-500/40",
-  secondary: "bg-rose-500/10 text-rose-50 border border-rose-500/25",
-    success: "bg-emerald-500/20 text-emerald-100 border border-emerald-500/40",
-    warning: "bg-amber-500/20 text-amber-100 border border-amber-500/40",
+    default: "bg-surface-primary-soft text-[var(--color-text-danger)] border border-primary",
+    secondary: "bg-surface-secondary-soft text-[var(--color-text-accent-strong)] border border-secondary",
+    success: "bg-success-soft text-success border border-success",
+    warning: "bg-warning-soft text-warning border border-warning",
   } as const;
 
   return (

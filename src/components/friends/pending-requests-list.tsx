@@ -70,9 +70,9 @@ export function PendingRequestsList({ requests }: PendingRequestsListProps) {
 
   if (requests.length === 0) {
     return (
-      <div className="rounded-3xl border border-dashed border-rose-500/25 bg-rose-500/10 p-8 text-center">
-        <h3 className="text-lg font-semibold text-white">No pending friend requests</h3>
-        <p className="mt-2 text-sm text-rose-100/80">
+      <div className="rounded-3xl border border-dashed border-[var(--color-border-primary)] bg-surface-primary-soft p-8 text-center">
+        <h3 className="text-lg font-semibold text-primary">No pending friend requests</h3>
+        <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
           When someone sends you a request to connect it will show up right here.
         </p>
       </div>
@@ -81,41 +81,31 @@ export function PendingRequestsList({ requests }: PendingRequestsListProps) {
 
   return (
     <div className="grid gap-4">
-      {error && <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-3 text-sm text-rose-100">{error}</p>}
+      {error && (
+        <p className="rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-3 text-sm text-[var(--color-text-secondary)]">
+          {error}
+        </p>
+      )}
       {requests.map((request) => {
         const { sender } = request;
         const avatar = resolveAvatar(sender.profilePicture);
         const displayName = sender.name?.trim() && sender.name.length > 0 ? sender.name : sender.username;
-        const initials =
-          displayName
-            .split(/\s+/)
-            .filter(Boolean)
-            .map((segment) => segment[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase() || displayName.slice(0, 2).toUpperCase();
 
         return (
           <article
             key={request.id}
-            className="flex flex-col gap-4 rounded-3xl border border-rose-500/20 bg-rose-950/30 p-4 shadow-lg shadow-rose-950/30 md:flex-row md:items-center md:justify-between"
+            className="flex flex-col gap-4 rounded-3xl border border-soft bg-surface-card p-4 shadow-soft md:flex-row md:items-center md:justify-between"
           >
             <div className="flex flex-1 items-center gap-4">
-              <Avatar
-                src={avatar ?? undefined}
-                alt={sender.name ?? sender.username}
-                size="lg"
-                className="border border-rose-500/40 bg-rose-900/60"
-                fallbackIcon={<span className="text-sm font-semibold text-rose-100">{initials}</span>}
-              />
+              <Avatar src={avatar ?? undefined} alt={sender.name ?? sender.username} size="lg" />
               <div className="min-w-0">
-                <h4 className="truncate text-lg font-semibold text-white">{sender.name ?? sender.username}</h4>
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-rose-100/80">
-                  {sender.bloodGroup ? <span className="font-medium">Blood group {sender.bloodGroup}</span> : null}
-                  <span className="text-rose-100/60">Requested {friendlyDate(request.createdAt)}</span>
+                <h4 className="truncate text-lg font-semibold text-primary">{sender.name ?? sender.username}</h4>
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-secondary">
+                  {sender.bloodGroup ? <span className="font-medium text-primary">Blood group {sender.bloodGroup}</span> : null}
+                  <span className="text-muted">Requested {friendlyDate(request.createdAt)}</span>
                 </div>
                 {(sender.district || sender.division) && (
-                  <p className="mt-1 truncate text-sm text-rose-100/70">
+                  <p className="mt-1 truncate text-sm text-muted">
                     {[sender.district, sender.division].filter(Boolean).join(", ")}
                   </p>
                 )}

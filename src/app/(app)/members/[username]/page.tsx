@@ -138,8 +138,8 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
   ]);
 
   const displayName = member.name?.trim() && member.name.length > 0 ? member.name : member.username;
-  const profileImage = buildImageUrl(member.profilePicture);
-  const coverImage = buildImageUrl(member.coverPhoto);
+  const profileImage = buildImageUrl(member.profilePicture) ?? "/images/default-avatar.svg";
+  const coverImage = buildImageUrl(member.coverPhoto) ?? "/images/default-cover.svg";
   const location = [member.upazila?.name, member.district?.name, member.division?.name]
     .filter(Boolean)
     .join(", ");
@@ -148,34 +148,20 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
     <div className="grid gap-8">
       <section className="overflow-hidden rounded-3xl border border-rose-500/20 bg-rose-950/70 shadow-2xl shadow-rose-900/40">
         <div className="relative h-48 w-full bg-gradient-to-r from-rose-500/40 via-rose-600/30 to-rose-700/30">
-          {coverImage ? (
-            <Image
-              src={coverImage}
-              alt={`${displayName} cover`}
-              fill
-              className="object-cover"
-              sizes="(min-width: 1024px) 1024px, 100vw"
-              priority
-            />
-          ) : null}
+          <Image
+            src={coverImage}
+            alt={`${displayName} cover`}
+            fill
+            className="object-cover"
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            priority
+          />
         </div>
         <div className="grid gap-6 px-6 pb-8 md:grid-cols-[auto_1fr] md:items-end">
           <div className="-mt-14 flex items-end">
             <div className="rounded-full border-4 border-rose-950/80 bg-rose-900/60 p-1 shadow-2xl shadow-rose-900/40">
               <div className="relative h-28 w-28 overflow-hidden rounded-full bg-rose-500/20">
-                {profileImage ? (
-                  <Image src={profileImage} alt={`${displayName} avatar`} fill className="object-cover" sizes="112px" priority />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-rose-100">
-                    {displayName
-                      .split(" ")
-                      .filter(Boolean)
-                      .map((segment: string) => segment[0] ?? "")
-                      .join("")
-                      .slice(0, 2)
-                      .toUpperCase() || displayName.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
+                <Image src={profileImage} alt={`${displayName} avatar`} fill className="object-cover" sizes="112px" priority />
               </div>
             </div>
           </div>

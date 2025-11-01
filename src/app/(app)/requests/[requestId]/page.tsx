@@ -203,15 +203,15 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
       <BloodRequestCard request={feedItem} showFullReason />
 
       <section className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <Card className="border border-rose-500/20 bg-rose-950/70">
+        <Card className="border border-soft bg-surface-card shadow-soft">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white">Hospital location</CardTitle>
+            <CardTitle className="text-lg font-semibold text-primary">Hospital location</CardTitle>
           </CardHeader>
           <CardContent>
             {mapPoints.length > 0 ? (
               <BloodRequestMap requests={mapPoints} className="h-[22rem] w-full rounded-3xl" />
             ) : (
-              <div className="flex h-[22rem] w-full items-center justify-center rounded-3xl border border-dashed border-rose-500/25 bg-rose-500/10 text-sm text-rose-100/80">
+              <div className="flex h-[22rem] w-full items-center justify-center rounded-3xl border border-dashed border-[var(--color-border-primary)] bg-surface-primary-soft text-sm text-secondary">
                 Exact GPS coordinates have not been provided for this request yet.
               </div>
             )}
@@ -219,26 +219,26 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
         </Card>
 
         <div className="grid gap-4">
-          <Card className="border border-rose-500/20 bg-rose-950/70">
+          <Card className="border border-soft bg-surface-card shadow-soft">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-white">Location details</CardTitle>
+              <CardTitle className="text-lg font-semibold text-primary">Location details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-rose-100/80">
+            <CardContent className="space-y-4 text-sm text-secondary">
               <dl className="space-y-3">
                 <div>
-                  <dt className="text-xs uppercase tracking-wide text-rose-100/60">Hospital</dt>
-                  <dd className="text-base text-white">{bloodRequest.hospitalName}</dd>
+                  <dt className="text-xs uppercase tracking-wide text-muted">Hospital</dt>
+                  <dd className="text-base text-primary">{bloodRequest.hospitalName}</dd>
                 </div>
                 <div>
-                  <dt className="text-xs uppercase tracking-wide text-rose-100/60">Location</dt>
-                  <dd className="text-base text-white">
+                  <dt className="text-xs uppercase tracking-wide text-muted">Location</dt>
+                  <dd className="text-base text-primary">
                     {locationLabel}
                     {mapLink ? (
                       <a
                         href={mapLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="ml-2 inline-flex items-center gap-1 text-xs text-rose-200 underline-offset-2 hover:text-white hover:underline"
+                        className="ml-2 inline-flex items-center gap-1 text-xs text-[var(--color-text-accent)] underline-offset-4 hover:text-[var(--color-text-accent-hover)] hover:underline"
                       >
                         <MapPin className="h-3 w-3" /> View map
                       </a>
@@ -247,8 +247,8 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
                 </div>
                 {coordinateLabel && (
                   <div>
-                    <dt className="text-xs uppercase tracking-wide text-rose-100/60">Coordinates</dt>
-                    <dd className="text-base text-white">{coordinateLabel}</dd>
+                    <dt className="text-xs uppercase tracking-wide text-muted">Coordinates</dt>
+                    <dd className="text-base text-primary">{coordinateLabel}</dd>
                   </div>
                 )}
               </dl>
@@ -256,14 +256,14 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
           </Card>
 
           {bloodRequest.images.length > 0 && (
-            <Card className="border border-rose-500/20 bg-rose-950/70">
+            <Card className="border border-soft bg-surface-card shadow-soft">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-white">Attachments</CardTitle>
+                <CardTitle className="text-lg font-semibold text-primary">Attachments</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {bloodRequest.images.map((image) => (
-                    <div key={image} className="overflow-hidden rounded-2xl border border-rose-500/15 bg-rose-500/10">
+                    <div key={image} className="overflow-hidden rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft">
                       <Image
                         src={image}
                         alt={`Attachment for ${bloodRequest.patientName}`}
@@ -282,28 +282,29 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
       </section>
 
       <section className="grid gap-4">
-        <Card className="border border-rose-500/20 bg-rose-950/70">
+        <Card className="border border-soft bg-surface-card shadow-soft">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white">Donor responses</CardTitle>
+            <CardTitle className="text-lg font-semibold text-primary">Donor responses</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-3">
+          <CardContent className="grid gap-3 text-secondary">
             {donorResponses.length === 0 ? (
-              <p className="text-sm text-rose-100/80">No donors have responded yet. Share this request to reach more people.</p>
+              <p className="text-sm text-secondary">No donors have responded yet. Share this request to reach more people.</p>
             ) : (
               donorResponses.map((response: typeof donorResponses[number]) => (
-                <div key={response.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-500/20 bg-rose-950/70 px-4 py-3">
+                <div
+                  key={response.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft px-4 py-3"
+                >
                   <div>
                     <Link
                       href={`/members/${response.donor.username}`}
-                      className="text-sm font-semibold text-white underline-offset-2 hover:text-rose-100 hover:underline"
+                      className="text-sm font-semibold text-primary underline-offset-4 hover:text-[var(--color-text-accent)] hover:underline"
                     >
                       {response.donor.name ?? response.donor.username}
                     </Link>
-                    <p className="text-xs text-rose-100/70">
-                      Responded on {new Date(response.createdAt).toLocaleString()}
-                    </p>
+                    <p className="text-xs text-muted">Responded on {new Date(response.createdAt).toLocaleString()}</p>
                   </div>
-                  <span className="inline-flex min-w-[3rem] justify-center rounded-full border border-rose-500/30 bg-rose-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-rose-50">
+                  <span className="inline-flex min-w-[3rem] justify-center rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
                     {response.donor.bloodGroup ?? "Unknown"}
                   </span>
                 </div>
@@ -314,11 +315,11 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
       </section>
 
       <section className="grid gap-4" id="comments">
-        <Card className="border border-rose-500/20 bg-rose-950/70">
+        <Card className="border border-soft bg-surface-card shadow-soft">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white">Comments</CardTitle>
+            <CardTitle className="text-lg font-semibold text-primary">Comments</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4">
+          <CardContent className="grid gap-4 text-secondary">
             <CommentThread requestId={bloodRequest.id} comments={comments} />
           </CardContent>
         </Card>

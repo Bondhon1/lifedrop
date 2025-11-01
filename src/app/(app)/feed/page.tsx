@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
-import { addDays } from "date-fns";
+import { addDays, formatDistanceToNow } from "date-fns";
 import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -205,12 +205,16 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
     { label: "Needed within 48h", value: closingSoonCount },
   ];
 
+  const lastUpdatedRelative = requests.length
+    ? formatDistanceToNow(requests[0].updatedAt, { addSuffix: true })
+    : "just now";
+
   return (
     <div className="grid gap-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-white">Community News Feed</h1>
-          <p className="text-sm text-rose-100/80">
+          <h1 className="text-3xl font-semibold text-primary">Community News Feed</h1>
+          <p className="text-sm text-secondary">
             Explore active blood requests, fine-tune filters, and rally donors for the cases that need help most.
           </p>
         </div>
@@ -220,11 +224,11 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       </header>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-rose-500/15 bg-rose-950/70 p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-rose-100/70">Filters</h2>
-          <div className="mt-4 space-y-4">
+        <div className="rounded-3xl border border-soft bg-surface-card p-5 shadow-soft">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-secondary">Filters</h2>
+          <div className="mt-4 space-y-4 text-secondary">
             <div>
-              <p className="text-xs font-medium uppercase text-rose-100/60">Blood group</p>
+              <p className="text-xs font-medium uppercase text-muted">Blood group</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {BLOOD_GROUPS.map((group) => (
                   <Button
@@ -243,7 +247,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
             </div>
 
             <div>
-              <p className="text-xs font-medium uppercase text-rose-100/60">Urgency</p>
+              <p className="text-xs font-medium uppercase text-muted">Urgency</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {URGENCY_OPTIONS.map((option) => (
                   <Button
@@ -262,7 +266,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
             </div>
 
             <div>
-              <p className="text-xs font-medium uppercase text-rose-100/60">Status</p>
+              <p className="text-xs font-medium uppercase text-muted">Status</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {STATUS_OPTIONS.map((option) => (
                   <Button
@@ -282,13 +286,13 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-rose-500/15 bg-rose-950/70 p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-rose-100/70">At a glance</h2>
+        <div className="rounded-3xl border border-soft bg-surface-card p-5 shadow-soft">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-secondary">At a glance</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {stats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-rose-500/15 bg-rose-500/10 p-4">
-                <p className="text-xs uppercase tracking-wide text-rose-100/60">{stat.label}</p>
-                <p className="mt-1 text-2xl font-semibold text-white">{stat.value}</p>
+              <div key={stat.label} className="rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-4">
+                <p className="text-xs uppercase tracking-wide text-muted">{stat.label}</p>
+                <p className="mt-1 text-2xl font-semibold text-primary">{stat.value}</p>
               </div>
             ))}
           </div>
@@ -296,9 +300,9 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       </section>
 
       {activeBadges.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 rounded-3xl border border-rose-500/15 bg-rose-500/10 p-4 text-xs text-rose-100/80">
+        <div className="flex flex-wrap items-center gap-3 rounded-3xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-4 text-xs text-secondary">
           {activeBadges.map((badge) => (
-            <Badge key={badge.key} className="bg-rose-500/20 text-rose-50">
+            <Badge key={badge.key} variant="secondary">
               {badge.label}
             </Badge>
           ))}
@@ -309,7 +313,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
               status: undefined,
               page: undefined,
             })}
-            className="text-xs font-semibold text-rose-100 underline-offset-2 hover:text-white hover:underline"
+            className="text-xs font-semibold text-[var(--color-text-accent)] underline-offset-4 hover:text-[var(--color-text-accent-hover)] hover:underline"
           >
             Clear all
           </Link>
@@ -318,9 +322,9 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
 
       <section className="grid gap-5">
         {feedItems.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-rose-500/30 bg-rose-500/10 p-10 text-center">
-            <h2 className="text-xl font-semibold text-white">No requests match these filters yet</h2>
-            <p className="mt-2 text-sm text-rose-100/80">
+          <div className="rounded-3xl border border-dashed border-[var(--color-border-primary)] bg-surface-primary-soft p-10 text-center">
+            <h2 className="text-xl font-semibold text-primary">No requests match these filters yet</h2>
+            <p className="mt-2 text-sm text-secondary">
               Try broadening your filters or create a new request for your community.
             </p>
             <div className="mt-6 flex justify-center">
@@ -335,22 +339,25 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       </section>
 
       {(hasPrev || hasMore) && (
-        <footer className="flex flex-wrap items-center justify-between gap-3 text-sm text-rose-100/80">
-          {hasPrev ? (
-            <Button variant="secondary" size="sm" asChild>
-              <Link href={createHref(activeFilters, { page: String(page - 1) })}>Newer updates</Link>
-            </Button>
-          ) : (
-            <span>You&apos;re viewing the latest updates</span>
-          )}
+        <footer className="flex flex-wrap items-center justify-between gap-3 text-sm text-secondary">
+          <div className="flex flex-wrap items-center gap-3">
+            {hasPrev ? (
+              <Button variant="secondary" size="sm" asChild>
+                <Link href={createHref(activeFilters, { page: String(page - 1) })}>Newer updates</Link>
+              </Button>
+            ) : (
+              <span>You&apos;re viewing the latest updates</span>
+            )}
 
-          {hasMore ? (
-            <Button variant="secondary" size="sm" asChild>
-              <Link href={createHref(activeFilters, { page: String(page + 1) })}>Older updates</Link>
-            </Button>
-          ) : (
-            <span>No older requests</span>
-          )}
+            {hasMore ? (
+              <Button variant="secondary" size="sm" asChild>
+                <Link href={createHref(activeFilters, { page: String(page + 1) })}>Older updates</Link>
+              </Button>
+            ) : (
+              <span>No older requests</span>
+            )}
+          </div>
+          <div className="text-xs text-muted">Updated {lastUpdatedRelative}</div>
         </footer>
       )}
     </div>

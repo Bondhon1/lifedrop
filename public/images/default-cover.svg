@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400" role="img" aria-label="Default cover image">
+  <defs>
+    <linearGradient id="coverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fee2e2" />
+      <stop offset="50%" stop-color="#fecdd3" />
+      <stop offset="100%" stop-color="#fda4af" />
+    </linearGradient>
+    <radialGradient id="glow" cx="30%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.8)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="400" fill="url(#coverGradient)" />
+  <circle cx="400" cy="160" r="220" fill="url(#glow)" />
+  <circle cx="1260" cy="80" r="180" fill="rgba(255,255,255,0.25)" />
+</svg>

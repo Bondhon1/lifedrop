@@ -69,7 +69,7 @@ export function OutgoingRequestsList({ requests }: OutgoingRequestsListProps) {
 
   if (requests.length === 0) {
     return (
-      <div className="rounded-3xl border border-dashed border-rose-500/25 bg-rose-500/10 p-8 text-center text-sm text-rose-100/80">
+      <div className="rounded-3xl border border-dashed border-[var(--color-border-primary)] bg-surface-primary-soft p-8 text-center text-sm text-[var(--color-text-secondary)]">
         You have not sent any pending requests.
       </div>
     );
@@ -77,41 +77,36 @@ export function OutgoingRequestsList({ requests }: OutgoingRequestsListProps) {
 
   return (
     <div className="grid gap-4">
-      {error && <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-3 text-sm text-rose-100">{error}</p>}
+      {error && (
+        <p className="rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-3 text-sm text-[var(--color-text-secondary)]">
+          {error}
+        </p>
+      )}
       {requests.map((request) => {
         const { receiver } = request;
         const avatar = resolveAvatar(receiver.profilePicture);
         const displayName = receiver.name?.trim() && receiver.name.length > 0 ? receiver.name : receiver.username;
-        const initials =
-          displayName
-            .split(/\s+/)
-            .filter(Boolean)
-            .map((segment) => segment[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase() || displayName.slice(0, 2).toUpperCase();
 
         return (
           <article
             key={request.id}
-            className="flex flex-col gap-4 rounded-3xl border border-rose-500/20 bg-rose-950/20 p-4 md:flex-row md:items-center md:justify-between"
+            className="flex flex-col gap-4 rounded-3xl border border-soft bg-surface-card p-4 shadow-soft md:flex-row md:items-center md:justify-between"
           >
             <div className="flex flex-1 items-center gap-4">
               <Avatar
                 src={avatar ?? undefined}
                 alt={displayName}
                 size="lg"
-                className="border border-rose-500/40 bg-rose-900/60"
-                fallbackIcon={<span className="text-sm font-semibold text-rose-100">{initials}</span>}
+                className="border border-[var(--color-border-primary)] bg-surface-card-muted"
               />
               <div className="min-w-0">
-                <h4 className="truncate text-lg font-semibold text-white">{displayName}</h4>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-rose-100/80">
-                  {receiver.bloodGroup ? <span>Blood group {receiver.bloodGroup}</span> : null}
-                  <span className="text-rose-100/60">Sent {friendlyDate(request.createdAt)}</span>
+                <h4 className="truncate text-lg font-semibold text-primary">{displayName}</h4>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-secondary">
+                  {receiver.bloodGroup ? <span className="text-primary">Blood group {receiver.bloodGroup}</span> : null}
+                  <span className="text-muted">Sent {friendlyDate(request.createdAt)}</span>
                 </div>
                 {(receiver.district || receiver.division) && (
-                  <p className="mt-1 truncate text-sm text-rose-100/70">
+                  <p className="mt-1 truncate text-sm text-muted">
                     {[receiver.district, receiver.division].filter(Boolean).join(", ")}
                   </p>
                 )}

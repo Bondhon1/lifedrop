@@ -67,6 +67,7 @@ export default async function ProfilePage() {
 
   const profilePictureUrl = resolveImageUrl(user.profilePicture);
   const coverPhotoUrl = resolveImageUrl(user.coverPhoto);
+  const displayCoverPhotoUrl = coverPhotoUrl ?? "/images/default-cover.svg";
 
   const locationOptions = {
     divisions: divisions.map((division) => ({ id: division.id, name: division.name })),
@@ -76,13 +77,9 @@ export default async function ProfilePage() {
 
   return (
     <div className="grid gap-8">
-      <section className="overflow-hidden rounded-3xl border border-rose-500/25 bg-rose-950/70 shadow-2xl shadow-rose-900/40">
+      <section className="overflow-hidden rounded-3xl border border-soft bg-surface-card shadow-soft">
         <div className="relative h-48 w-full">
-          {coverPhotoUrl ? (
-            <Image src={coverPhotoUrl} alt="Cover photo" fill className="object-cover" priority />
-          ) : (
-            <div className="h-full w-full bg-gradient-to-r from-rose-900/70 via-rose-800/60 to-rose-900/70" />
-          )}
+          <Image src={displayCoverPhotoUrl} alt="Cover photo" fill className="object-cover" priority sizes="100vw" />
         </div>
         <div className="relative px-6 pb-6">
           <div className="-mt-14 flex flex-wrap items-end gap-4">
@@ -90,12 +87,12 @@ export default async function ProfilePage() {
               src={profilePictureUrl ?? undefined}
               alt={user.name ?? user.username}
               size="lg"
-              className="h-24 w-24 border-4 border-rose-950/80 bg-rose-900/60 shadow-xl"
+              className="h-24 w-24 border-4 border-[var(--color-border-primary)] bg-surface-card-muted shadow-soft"
             />
             <div className="min-w-0 pb-2">
-              <h1 className="truncate text-2xl font-semibold text-white">{user.name ?? user.username}</h1>
-              <p className="truncate text-sm text-rose-100/80">{user.email}</p>
-              <p className="mt-1 text-xs text-rose-100/60">Last updated {new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(user.updatedAt)}</p>
+              <h1 className="truncate text-2xl font-semibold text-primary">{user.name ?? user.username}</h1>
+              <p className="truncate text-sm text-secondary">{user.email}</p>
+              <p className="mt-1 text-xs text-muted">Last updated {new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(user.updatedAt)}</p>
             </div>
           </div>
         </div>

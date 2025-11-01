@@ -48,10 +48,10 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <Card className="bg-slate-950/90">
+    <Card className="bg-white/95">
       <CardHeader>
-        <CardTitle className="text-3xl font-semibold text-white">Admin sign in</CardTitle>
-        <p className="text-sm text-slate-300">
+        <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">Admin sign in</CardTitle>
+        <p className="text-sm text-[#5F5F5F]">
           Access moderation tools, donor applications, and reports for the entire platform.
         </p>
       </CardHeader>
@@ -74,9 +74,9 @@ export default function AdminLoginPage() {
           </Button>
         </Form>
 
-        <p className="text-sm text-slate-300">
+        <p className="text-sm text-[#5F5F5F]">
           Are you a community member? {" "}
-          <Link href="/login" className="font-semibold text-rose-200 underline-offset-4 hover:text-white hover:underline">
+          <Link href="/login" className="font-semibold text-[#0072FF] underline-offset-4 hover:text-[#00C6FF] hover:underline">
             Switch to member login
           </Link>
           .

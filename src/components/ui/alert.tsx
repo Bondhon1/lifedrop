@@ -15,9 +15,9 @@ export function Alert({
   actions?: ReactNode;
 }) {
   const variantStyles = {
-    default: "border-rose-500/25 bg-rose-500/10 text-rose-50",
-    success: "border-emerald-500/40 bg-emerald-500/20 text-emerald-100",
-    destructive: "border-rose-500/40 bg-rose-500/25 text-rose-100",
+    default: "border-soft bg-surface-primary-soft text-primary",
+    success: "border-success bg-success-soft text-success",
+    destructive: "border-danger bg-danger-soft text-[var(--color-text-danger)]",
   } as const;
 
   return (
@@ -29,8 +29,8 @@ export function Alert({
       )}
     >
       <div className="grid gap-1">
-        <p className="text-sm font-semibold uppercase tracking-wide">{title}</p>
-        {description ? <div className="text-sm leading-relaxed text-white/80">{description}</div> : null}
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{title}</p>
+        {description ? <div className="text-sm leading-relaxed text-secondary">{description}</div> : null}
       </div>
       {actions}
     </div>

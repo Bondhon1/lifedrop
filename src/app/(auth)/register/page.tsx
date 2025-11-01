@@ -56,10 +56,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="bg-slate-950/90">
+    <Card className="bg-white/95">
       <CardHeader>
-        <CardTitle className="text-3xl font-semibold text-white">Create your account</CardTitle>
-        <p className="text-sm text-slate-300">
+        <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">Create your account</CardTitle>
+        <p className="text-sm text-[#5F5F5F]">
           Join a thriving community of donors and coordinators making blood availability transparent.
         </p>
       </CardHeader>
@@ -97,7 +97,7 @@ export default function RegisterPage() {
               type="button"
               variant="outline"
               disabled={isPending}
-              className="w-full border-slate-700/60 bg-white text-slate-900 hover:bg-slate-100 hover:text-slate-950"
+              className="w-full"
               onClick={handleGoogleSignUp}
             >
               Continue with Google
@@ -110,7 +110,7 @@ export default function RegisterPage() {
           title="Already verified donor?"
           description={
             <span>
-              If you already have an account, <Link href="/login" className="font-semibold text-white underline">sign in here</Link>.
+              If you already have an account, <Link href="/login" className="font-semibold text-[#0072FF] underline">sign in here</Link>.
             </span>
           }
         />

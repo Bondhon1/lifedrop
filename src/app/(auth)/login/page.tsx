@@ -61,10 +61,10 @@ function LoginContent() {
   };
 
   return (
-    <Card className="bg-slate-950/90">
+    <Card className="bg-white/95">
       <CardHeader>
-        <CardTitle className="text-3xl font-semibold text-white">Welcome back</CardTitle>
-        <p className="text-sm text-slate-300">
+        <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">Welcome back</CardTitle>
+        <p className="text-sm text-[#5F5F5F]">
           Sign in to manage blood requests, chat with donors, and stay ahead of urgent needs.
         </p>
       </CardHeader>
@@ -82,8 +82,8 @@ function LoginContent() {
             <FormMessage>{form.formState.errors.password?.message}</FormMessage>
           </FormItem>
 
-          <div className="flex items-center justify-between text-sm text-slate-300">
-            <Link href="/forgot-password" className="font-medium text-rose-200 hover:text-white">
+          <div className="flex items-center justify-between text-sm text-[#5F5F5F]">
+            <Link href="/forgot-password" className="font-medium text-[#0072FF] hover:text-[#00C6FF]">
               Forgot password?
             </Link>
           </div>
@@ -96,7 +96,7 @@ function LoginContent() {
               type="button"
               variant="outline"
               disabled={isPending}
-              className="w-full border-slate-700/60 bg-white text-slate-900 hover:bg-slate-100 hover:text-slate-950"
+              className="w-full"
               onClick={handleGoogleSignIn}
             >
               Continue with Google
@@ -109,7 +109,7 @@ function LoginContent() {
           title="New here?"
           description={
             <span>
-              Create an account in minutes. <Link href="/register" className="font-semibold text-white underline">Join now</Link>.
+              Create an account in minutes. <Link href="/register" className="font-semibold text-[#0072FF] underline">Join now</Link>.
             </span>
           }
         />

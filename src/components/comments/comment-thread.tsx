@@ -100,9 +100,9 @@ export function CommentThread({ requestId, comments }: CommentThreadProps) {
 
   return (
     <div className="grid gap-4">
-      <form onSubmit={handleSubmit} className="grid gap-3 rounded-2xl border border-rose-500/20 bg-rose-950/60 p-4 shadow-lg shadow-rose-900/30">
-        <label htmlFor="comment" className="flex items-center gap-2 text-sm font-semibold text-white">
-          <MessageCircle className="h-4 w-4" /> Add a comment
+      <form onSubmit={handleSubmit} className="grid gap-3 rounded-2xl border border-soft bg-surface-card p-4 shadow-soft">
+        <label htmlFor="comment" className="flex items-center gap-2 text-sm font-semibold text-primary">
+          <MessageCircle className="h-4 w-4 text-[var(--color-text-accent)]" /> Add a comment
         </label>
         <Textarea
           id="comment"
@@ -123,7 +123,7 @@ export function CommentThread({ requestId, comments }: CommentThreadProps) {
 
       <div className="grid gap-3">
         {thread.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-rose-500/30 bg-rose-500/10 p-6 text-center text-sm text-rose-100/80">
+          <p className="rounded-2xl border border-dashed border-[var(--color-border-primary)] bg-surface-primary-soft p-6 text-center text-sm text-secondary">
             No comments yet. Be the first to share an update.
           </p>
         ) : (
@@ -131,35 +131,40 @@ export function CommentThread({ requestId, comments }: CommentThreadProps) {
             <article
               key={comment.id}
               className={cn(
-                "flex flex-col gap-3 rounded-2xl border border-rose-500/20 bg-rose-950/70 p-4 shadow-lg shadow-rose-900/30",
-                comment.likedByViewer ? "border-rose-400/40" : "",
+                "flex flex-col gap-3 rounded-2xl border border-soft bg-surface-card p-4 shadow-soft",
+                comment.likedByViewer ? "border-[var(--color-border-primary)] bg-surface-primary-soft" : "",
               )}
             >
-              <header className="flex items-center justify-between text-sm text-rose-100/80">
+              <header className="flex items-center justify-between text-sm text-secondary">
                 <div>
                   <Link
                     href={`/members/${comment.author.username}`}
-                    className="font-semibold text-white underline-offset-2 hover:text-rose-100 hover:underline"
+                    className="font-semibold text-primary underline-offset-4 hover:text-[var(--color-text-accent)] hover:underline"
                   >
                     {comment.author.name ?? comment.author.username}
                   </Link>
-                  <p className="text-xs text-rose-100/60">{formatRelativeTime(comment.createdAt)}</p>
+                  <p className="text-xs text-muted">{formatRelativeTime(comment.createdAt)}</p>
                 </div>
                 {comment.author.bloodGroup ? (
-                  <span className="rounded-full bg-rose-500/15 px-3 py-1 text-xs text-rose-100/80">
+                  <span className="rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1 text-xs text-secondary">
                     {comment.author.bloodGroup}
                   </span>
                 ) : null}
               </header>
-              <p className="whitespace-pre-line text-sm text-rose-50/95">{comment.text}</p>
-              <footer className="flex items-center justify-between text-xs text-rose-100/70">
+              <p className="whitespace-pre-line text-sm text-primary">{comment.text}</p>
+              <footer className="flex items-center justify-between text-xs text-muted">
                 <button
                   type="button"
                   onClick={() => handleToggleLike(comment.id)}
-                  className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-3 py-1 text-rose-100/80 transition hover:bg-rose-500/25"
+                  className="inline-flex items-center gap-1 rounded-full border border-transparent bg-surface-primary-soft px-3 py-1 text-secondary transition hover:border-[var(--color-border-primary)] hover:text-primary"
                   disabled={isPending}
                 >
-                  <ThumbsUp className={cn("h-3.5 w-3.5", comment.likedByViewer ? "text-rose-300" : "")} />
+                  <ThumbsUp
+                    className={cn(
+                      "h-3.5 w-3.5",
+                      comment.likedByViewer ? "text-[var(--color-text-accent)]" : "text-[var(--color-text-muted)]",
+                    )}
+                  />
                   {comment.likeCount}
                 </button>
               </footer>

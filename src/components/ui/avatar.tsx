@@ -1,13 +1,11 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { HTMLAttributes } from "react";
-import { User as UserIcon } from "lucide-react";
 
 export function Avatar({
   src,
   alt,
   className,
-  fallbackIcon = <UserIcon className="h-5 w-5" />,
   size = "md",
   ...props
 }: {
@@ -15,12 +13,18 @@ export function Avatar({
   alt?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
-  fallbackIcon?: React.ReactNode;
 } & HTMLAttributes<HTMLDivElement>) {
   const sizeMap = {
     sm: "h-9 w-9",
     md: "h-11 w-11",
     lg: "h-14 w-14",
+  } as const;
+
+  const resolvedSrc = src && src.trim().length > 0 ? src : "/images/default-avatar.svg";
+  const sizeToPixelsMap = {
+    sm: "36px",
+    md: "44px",
+    lg: "56px",
   } as const;
 
   return (
@@ -32,13 +36,7 @@ export function Avatar({
       )}
       {...props}
     >
-      {src ? (
-        <Image src={src} alt={alt ?? "Avatar"} fill className="object-cover" sizes="48px" />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center text-white/70">
-          {fallbackIcon}
-        </div>
-      )}
+      <Image src={resolvedSrc} alt={alt ?? "Avatar"} fill className="object-cover" sizes={sizeToPixelsMap[size]} />
     </div>
   );
 }

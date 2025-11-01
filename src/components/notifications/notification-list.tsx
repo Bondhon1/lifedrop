@@ -154,10 +154,10 @@ export function NotificationList({ notifications, unreadCount }: NotificationLis
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-rose-500/30 bg-rose-500/10 p-10 text-center text-sm text-rose-100/80">
-        <Bell className="h-10 w-10 text-rose-300" />
+      <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-[var(--color-border-primary)] bg-surface-primary-soft p-10 text-center text-sm text-[var(--color-text-secondary)]">
+        <Bell className="h-10 w-10 text-[var(--color-text-danger)]" />
         <p>No notifications yet.</p>
-        <p className="text-xs text-rose-100/60">We&apos;ll let you know when there&apos;s an update that needs your attention.</p>
+        <p className="text-xs text-muted">We&apos;ll let you know when there&apos;s an update that needs your attention.</p>
       </div>
     );
   }
@@ -165,10 +165,14 @@ export function NotificationList({ notifications, unreadCount }: NotificationLis
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-rose-100/80">
-          {unread > 0 ? `${unread} unread` : "All caught up"}
-        </p>
-        <Button variant="secondary" size="sm" className="border border-rose-400/50" onClick={handleMarkAll} disabled={isPending || unread === 0}>
+        <p className="text-sm text-secondary">{unread > 0 ? `${unread} unread` : "All caught up"}</p>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="border border-[var(--color-border-primary)]"
+          onClick={handleMarkAll}
+          disabled={isPending || unread === 0}
+        >
           Mark all as read
         </Button>
       </div>
@@ -181,33 +185,30 @@ export function NotificationList({ notifications, unreadCount }: NotificationLis
             <div
               key={item.id}
               className={cn(
-                "flex w-full flex-col gap-2 rounded-2xl border border-rose-500/20 bg-rose-950/70 p-4 shadow-lg transition",
-                !item.isRead ? "border-rose-400/40 bg-rose-500/20 shadow-rose-900/30" : "shadow-rose-900/20",
+                "flex w-full flex-col gap-2 rounded-2xl border border-soft bg-surface-card p-4 shadow-soft transition",
+                !item.isRead ? "border-[var(--color-border-primary)] bg-surface-primary-strong" : "",
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="text-sm text-white">
+                <div className="text-sm text-primary">
                   {item.message}
-                  {item.senderName ? <span className="text-rose-100/70"> · {item.senderName}</span> : null}
+                  {item.senderName ? <span className="text-secondary"> · {item.senderName}</span> : null}
                 </div>
-                <span className="text-xs text-rose-100/60">{relativeTime}</span>
+                <span className="text-xs text-muted">{relativeTime}</span>
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-rose-100/75">
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-secondary">
                 {href ? (
-                  <Link href={href} className="font-semibold text-rose-300 transition hover:text-rose-200">
+                  <Link
+                    href={href}
+                    className="font-semibold text-[var(--color-text-accent)] transition hover:text-[var(--color-text-accent-hover)]"
+                  >
                     View details
                   </Link>
                 ) : (
-                  <span className="text-rose-100/60">No link provided</span>
+                  <span className="text-muted">No link provided</span>
                 )}
                 {!item.isRead ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleMarkAsRead(item.id)}
-                    disabled={isPending}
-                    className="text-rose-100/80 hover:text-white"
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleMarkAsRead(item.id)} disabled={isPending}>
                     Mark as read
                   </Button>
                 ) : null}

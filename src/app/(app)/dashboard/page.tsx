@@ -99,7 +99,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge>Active Requests</Badge>
-            <CardTitle className="text-3xl font-semibold text-white">{activeRequests}</CardTitle>
+            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">{activeRequests}</CardTitle>
             <CardDescription>Requests you&apos;ve opened and are currently tracking.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge variant="success">Donor Matches</Badge>
-            <CardTitle className="text-3xl font-semibold text-white">{donorResponses}</CardTitle>
+            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">{donorResponses}</CardTitle>
             <CardDescription>Successful matches you&apos;ve facilitated or joined.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge variant="warning">Unread Messages</Badge>
-            <CardTitle className="text-3xl font-semibold text-white">{unreadMessages}</CardTitle>
+            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">{unreadMessages}</CardTitle>
             <CardDescription>Conversations waiting for your response.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge variant="secondary">Safety Center</Badge>
-            <CardTitle className="text-3xl font-semibold text-white">3</CardTitle>
+            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">3</CardTitle>
             <CardDescription>Pending approvals and reports requiring attention.</CardDescription>
           </CardHeader>
           <CardContent>

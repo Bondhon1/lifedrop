@@ -153,26 +153,26 @@ export default async function DonorsPage() {
     <div className="grid gap-6">
       <section className="grid gap-4 md:grid-cols-3">
         {statCards.map((card) => (
-          <Card key={card.title} className="border border-rose-500/25 bg-rose-950/70">
+          <Card key={card.title}>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-lg text-white">{card.title}</CardTitle>
-                <p className="text-sm text-rose-100/70">{card.description}</p>
+                <CardTitle className="text-lg">{card.title}</CardTitle>
+                <p className="text-sm text-secondary">{card.description}</p>
               </div>
-              <card.icon className="h-8 w-8 text-rose-300" />
+              <card.icon className="h-8 w-8 text-[var(--color-text-danger)]" />
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-semibold text-white">{card.value}</p>
+              <p className="text-3xl font-semibold text-primary">{card.value}</p>
             </CardContent>
           </Card>
         ))}
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="border border-rose-500/25 bg-rose-950/70">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-white">Become a verified donor</CardTitle>
-            <p className="text-sm text-rose-100/80">
+            <CardTitle className="text-2xl font-semibold">Become a verified donor</CardTitle>
+            <p className="text-sm text-[var(--color-text-secondary)]">
               Submit your documents once and get fast-tracked for urgent matches. You can update your availability at any time.
             </p>
           </CardHeader>
@@ -181,24 +181,24 @@ export default async function DonorsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border border-rose-500/25 bg-rose-950/70">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl font-semibold text-white">How matching works</CardTitle>
-            <p className="text-sm text-rose-100/80">Stay prepared so coordinators can reach you first during critical requests.</p>
+            <CardTitle className="text-xl font-semibold">How matching works</CardTitle>
+            <p className="text-sm text-[var(--color-text-secondary)]">Stay prepared so coordinators can reach you first during critical requests.</p>
           </CardHeader>
           <CardContent>
-            <ul className="grid gap-3 text-sm text-rose-100/80">
-              <li className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3">
-                <strong className="text-white">Keep your blood group and location up to date.</strong>
-                <p className="text-rose-100/70">We match donors based on proximity and compatibility.</p>
+            <ul className="grid gap-3 text-sm text-[var(--color-text-secondary)]">
+              <li className="rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-3">
+                <strong className="text-primary">Keep your blood group and location up to date.</strong>
+                <p className="text-[var(--color-text-secondary)]">We match donors based on proximity and compatibility.</p>
               </li>
-              <li className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3">
-                <strong className="text-white">Maintain a 90 day gap between donations.</strong>
-                <p className="text-rose-100/70">Set a reminder after you donate so medical teams know when you&apos;re ready again.</p>
+              <li className="rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-3">
+                <strong className="text-primary">Maintain a 90 day gap between donations.</strong>
+                <p className="text-[var(--color-text-secondary)]">Set a reminder after you donate so medical teams know when you&apos;re ready again.</p>
               </li>
-              <li className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3">
-                <strong className="text-white">Share medical notes for faster approval.</strong>
-                <p className="text-rose-100/70">Upload recent test results or doctor recommendations to streamline verification.</p>
+              <li className="rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-3">
+                <strong className="text-primary">Share medical notes for faster approval.</strong>
+                <p className="text-[var(--color-text-secondary)]">Upload recent test results or doctor recommendations to streamline verification.</p>
               </li>
             </ul>
             <div className="mt-5 flex flex-wrap gap-3">
@@ -218,8 +218,8 @@ export default async function DonorsPage() {
       <section className="grid gap-4">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-white">Featured donors</h2>
-            <p className="text-sm text-rose-100/80">
+            <h2 className="text-xl font-semibold text-primary">Featured donors</h2>
+            <p className="text-sm text-secondary">
               Connect with verified donors who recently pledged to help. Send a friend request to coordinate faster.
             </p>
           </div>
@@ -229,7 +229,7 @@ export default async function DonorsPage() {
         </header>
 
         {donorApplications.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-rose-500/30 bg-rose-500/10 p-10 text-center text-sm text-rose-100/80">
+          <div className="rounded-3xl border border-dashed border-[var(--color-border-primary)] bg-surface-primary-soft p-10 text-center text-sm text-secondary">
             No approved donors yet. Submit your application and invite friends to grow the network.
           </div>
         ) : (
@@ -244,34 +244,31 @@ export default async function DonorsPage() {
               const joined = formatDate(application.updatedAt ?? application.createdAt);
 
               return (
-                <article
-                  key={application.id}
-                  className="flex h-full flex-col justify-between gap-4 rounded-3xl border border-rose-500/20 bg-rose-950/70 p-5 shadow-lg shadow-rose-900/30"
-                >
+                <article key={application.id} className="flex h-full flex-col justify-between gap-4 rounded-3xl border border-soft bg-surface-card p-5 shadow-soft">
                   <div className="flex items-start gap-4">
-                    <Avatar src={profileImage} alt={`${displayName} avatar`} className="ring-2 ring-rose-500/40" />
+                    <Avatar src={profileImage} alt={`${displayName} avatar`} className="ring-2 ring-[var(--color-border-primary)]" />
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-base font-semibold text-white">{displayName}</p>
-                        {application.user.bloodGroup ? <Badge className="bg-rose-500/30 text-rose-50">{application.user.bloodGroup}</Badge> : null}
+                        <p className="text-base font-semibold text-primary">{displayName}</p>
+                        {application.user.bloodGroup ? <Badge variant="default">{application.user.bloodGroup}</Badge> : null}
                       </div>
-                      <p className="text-xs uppercase tracking-wide text-rose-200/70">@{application.user.username}</p>
-                      {location ? <p className="text-sm text-rose-100/70">{location}</p> : null}
+                      <p className="text-xs uppercase tracking-wide text-muted">@{application.user.username}</p>
+                      {location ? <p className="text-sm text-secondary">{location}</p> : null}
                     </div>
                   </div>
 
-                  <div className="grid gap-3 text-sm text-rose-100/80">
-                    <div className="flex items-center justify-between rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-2">
+                  <div className="grid gap-3 text-sm text-secondary">
+                    <div className="flex items-center justify-between rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft px-4 py-2">
                       <span>Last donation</span>
-                      <span className="text-white">{lastDonation ?? "Not shared"}</span>
+                      <span className="text-primary">{lastDonation ?? "Not shared"}</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-2">
+                    <div className="flex items-center justify-between rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft px-4 py-2">
                       <span>Joined network</span>
-                      <span className="text-white">{joined ?? "Recently"}</span>
+                      <span className="text-primary">{joined ?? "Recently"}</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-2">
+                    <div className="flex items-center justify-between rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft px-4 py-2">
                       <span>Eligible status</span>
-                      <span className="text-white">{application.hasDonatedBefore ? "Experienced donor" : "Ready for first donation"}</span>
+                      <span className="text-primary">{application.hasDonatedBefore ? "Experienced donor" : "Ready for first donation"}</span>
                     </div>
                   </div>
 

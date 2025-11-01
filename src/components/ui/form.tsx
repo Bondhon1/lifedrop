@@ -28,7 +28,7 @@ export function FormItem({ className, ...props }: React.HTMLAttributes<HTMLDivEl
 }
 
 export const FormLabel = ({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) => (
-  <label className={cn("text-sm font-medium text-slate-200", className)} {...props} />
+  <label className={cn("text-sm font-medium text-primary", className)} {...props} />
 );
 
 export const FormMessage = ({
@@ -38,7 +38,7 @@ export const FormMessage = ({
 }: React.HTMLAttributes<HTMLParagraphElement>) => {
   if (!children) return null;
   return (
-    <p className={cn("text-sm text-rose-300", className)} {...props}>
+  <p className={cn("text-sm text-[var(--color-text-danger)]", className)} {...props}>
       {children}
     </p>
   );

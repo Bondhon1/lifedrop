@@ -82,48 +82,48 @@ export default async function AdminOverviewPage() {
   return (
     <div className="grid gap-6">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold text-white">Admin Console</h1>
-        <p className="text-sm text-rose-100/80">Monitor platform health, review escalated requests, and keep the community safe.</p>
+        <h1 className="text-3xl font-semibold text-[#2E2E2E]">Admin Console</h1>
+        <p className="text-sm text-[#5F5F5F]">Monitor platform health, review escalated requests, and keep the community safe.</p>
       </header>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Total members</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Total members</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{totalUsers}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{totalUsers}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Open requests</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Open requests</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{openRequests}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{openRequests}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Fulfilled requests</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Fulfilled requests</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{fulfilledRequests}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{fulfilledRequests}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Donor pledges</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Donor pledges</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{donorResponses}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{donorResponses}</CardContent>
         </Card>
         <Link href="/admin/donors" className="group block">
-          <Card className="cursor-pointer transition group-hover:border-rose-400/40 group-hover:bg-rose-950/80">
+          <Card className="cursor-pointer transition group-hover:border-[#D31027]/30 group-hover:bg-[#D31027]/8">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold text-rose-100/80">Pending donor applications</CardTitle>
+              <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Pending donor applications</CardTitle>
             </CardHeader>
-            <CardContent className="text-3xl font-semibold text-white">{pendingApplications}</CardContent>
+            <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{pendingApplications}</CardContent>
           </Card>
         </Link>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Reports awaiting review</CardTitle>
+            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Reports awaiting review</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{unresolvedReports}</CardContent>
+          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{unresolvedReports}</CardContent>
         </Card>
       </section>
 

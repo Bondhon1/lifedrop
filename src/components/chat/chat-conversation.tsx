@@ -50,7 +50,7 @@ export function ChatConversation({ currentUserId, partner, messages }: ChatConve
 
   if (!partner) {
     return (
-      <section className="flex h-full flex-col items-center justify-center rounded-3xl border border-rose-500/20 bg-rose-950/70 text-center text-sm text-rose-100/80">
+      <section className="flex h-full flex-col items-center justify-center rounded-3xl border border-soft bg-surface-card text-center text-sm text-secondary">
         <p>Select a conversation to start chatting.</p>
       </section>
     );
@@ -229,17 +229,17 @@ export function ChatConversation({ currentUserId, partner, messages }: ChatConve
   }, [partner, thread]);
 
   return (
-    <section className="flex h-full flex-col rounded-3xl border border-rose-500/20 bg-rose-950/70">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-rose-500/15 px-6 py-4">
+    <section className="flex h-full flex-col rounded-3xl border border-soft bg-surface-card">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-soft px-6 py-4">
         <div className="min-w-0">
-          <h2 className="truncate text-lg font-semibold text-white">{partner.name ?? partner.username}</h2>
-          {partner.bloodGroup ? <p className="text-sm text-rose-100/75">Blood group: {partner.bloodGroup}</p> : null}
+          <h2 className="truncate text-lg font-semibold text-primary">{partner.name ?? partner.username}</h2>
+          {partner.bloodGroup ? <p className="text-sm text-secondary">Blood group: {partner.bloodGroup}</p> : null}
         </div>
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
         {thread.length === 0 ? (
-          <p className="text-sm text-rose-100/80">Start the conversation with a quick hello.</p>
+          <p className="text-sm text-secondary">Start the conversation with a quick hello.</p>
         ) : (
           thread.map((message) => {
             const isOwnMessage = message.senderId === currentUserId;
@@ -250,15 +250,15 @@ export function ChatConversation({ currentUserId, partner, messages }: ChatConve
                 <div
                   className={
                     isOwnMessage
-                      ? `ml-auto max-w-[70%] rounded-2xl px-4 py-3 text-sm text-rose-50 shadow-lg shadow-rose-900/30 ${
-                          message.optimistic ? "bg-rose-500/20 opacity-70" : "bg-rose-500/30"
+                      ? `ml-auto max-w-[70%] rounded-2xl bg-[var(--color-primary-start)] px-4 py-3 text-sm text-white shadow-soft ${
+                          message.optimistic ? "opacity-70" : ""
                         }`
-                      : "mr-auto max-w-[70%] rounded-2xl bg-rose-500/15 px-4 py-3 text-sm text-rose-50/90"
+                      : "mr-auto max-w-[70%] rounded-2xl border border-soft bg-surface-card-muted px-4 py-3 text-sm text-secondary"
                   }
                 >
                   {message.content}
                 </div>
-                <span className={`text-xs ${isOwnMessage ? "ml-auto text-rose-200" : "text-rose-100/60"}`}>
+                <span className={`text-xs ${isOwnMessage ? "ml-auto text-muted" : "text-muted"}`}>
                   {relativeTime}
                 </span>
               </div>
@@ -268,7 +268,7 @@ export function ChatConversation({ currentUserId, partner, messages }: ChatConve
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="grid gap-3 border-t border-rose-500/15 px-6 py-4">
+      <form onSubmit={handleSubmit} className="grid gap-3 border-t border-soft px-6 py-4">
         <Textarea
           placeholder="Write a message…"
           value={text}

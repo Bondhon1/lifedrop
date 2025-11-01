@@ -59,14 +59,14 @@ function VerifyEmailContent() {
 
   if (state.status === "missing") {
     return (
-      <Card className="bg-slate-950/90">
+      <Card className="bg-surface-panel">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl text-white">
-            <XCircle className="h-6 w-6 text-rose-400" />
+          <CardTitle className="flex items-center gap-2 text-2xl text-primary">
+            <XCircle className="h-6 w-6 text-[var(--color-primary-end)]" />
             Missing verification token
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5 text-slate-200">
+        <CardContent className="space-y-5 text-secondary">
           <p>
             The verification link is incomplete. Please use the link we emailed you or request a new one from your profile settings.
           </p>
@@ -82,14 +82,14 @@ function VerifyEmailContent() {
 
   if (state.status === "error") {
     return (
-      <Card className="bg-slate-950/90">
+      <Card className="bg-surface-panel">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl text-white">
-            <XCircle className="h-6 w-6 text-rose-400" />
+          <CardTitle className="flex items-center gap-2 text-2xl text-primary">
+            <XCircle className="h-6 w-6 text-[var(--color-primary-end)]" />
             Verification failed
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5 text-slate-200">
+        <CardContent className="space-y-5 text-secondary">
           <p>{state.message}</p>
           <div className="flex flex-wrap gap-3">
             <Button asChild variant="secondary">
@@ -106,16 +106,16 @@ function VerifyEmailContent() {
 
   if (state.status === "success") {
     return (
-      <Card className="bg-slate-950/90">
+      <Card className="bg-surface-panel">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl text-white">
-            <CheckCircle className="h-6 w-6 text-emerald-400" />
+          <CardTitle className="flex items-center gap-2 text-2xl text-primary">
+            <CheckCircle className="h-6 w-6 text-success" />
             Email verified
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5 text-slate-200">
+        <CardContent className="space-y-5 text-secondary">
           <p>
-            Thanks! <span className="font-semibold text-white">{state.email}</span> is now verified. You can sign in and start using Lifedrop.
+            Thanks! <span className="font-semibold text-[var(--color-text-danger)]">{state.email}</span> is now verified. You can sign in and start using Lifedrop.
           </p>
           <div className="flex gap-3">
             <Button asChild>
@@ -131,14 +131,14 @@ function VerifyEmailContent() {
   }
 
   return (
-    <Card className="bg-slate-950/90">
+    <Card className="bg-surface-panel">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-2xl text-white">
-          <Loader2 className="h-6 w-6 animate-spin text-sky-400" />
+        <CardTitle className="flex items-center gap-2 text-2xl text-primary">
+          <Loader2 className="h-6 w-6 animate-spin text-[var(--color-secondary-start)]" />
           Verifying your email
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-5 text-slate-200">
+      <CardContent className="space-y-5 text-secondary">
         <p>Please wait… we are confirming your verification link.</p>
       </CardContent>
     </Card>
@@ -148,14 +148,14 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <Card className="bg-slate-950/90">
+      <Card className="bg-surface-panel">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl text-white">
-            <Loader2 className="h-6 w-6 animate-spin text-sky-400" />
+          <CardTitle className="flex items-center gap-2 text-2xl text-primary">
+            <Loader2 className="h-6 w-6 animate-spin text-[var(--color-secondary-start)]" />
             Verifying your email
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5 text-slate-200">
+        <CardContent className="space-y-5 text-secondary">
           <p>Please wait… we are confirming your verification link.</p>
         </CardContent>
       </Card>

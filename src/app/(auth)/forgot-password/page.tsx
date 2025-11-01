@@ -38,10 +38,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Card className="bg-slate-950/90">
+    <Card className="bg-white/95">
       <CardHeader>
-        <CardTitle className="text-3xl font-semibold text-white">Reset password</CardTitle>
-        <p className="text-sm text-slate-300">
+        <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">Reset password</CardTitle>
+        <p className="text-sm text-[#5F5F5F]">
           Enter the email associated with your account and we&apos;ll send a secure reset link.
         </p>
       </CardHeader>
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
 
         <Alert
           title="Remembered your password?"
-          description={<Link href="/login" className="font-semibold text-white underline">Return to sign in</Link>}
+          description={<Link href="/login" className="font-semibold text-[#0072FF] underline">Return to sign in</Link>}
         />
       </CardContent>
     </Card>

@@ -12,9 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 
 const statusStyles: Record<string, string> = {
-  Pending: "bg-amber-500/20 text-amber-200",
-  Approved: "bg-emerald-500/20 text-emerald-200",
-  Rejected: "bg-rose-500/20 text-rose-200",
+  Pending: "bg-warning-soft text-warning border border-warning",
+  Approved: "bg-success-soft text-success border border-success",
+  Rejected: "bg-danger-soft text-[var(--color-text-danger)] border border-danger",
 };
 
 const formatDate = (value: string | null | undefined) => {
@@ -50,7 +50,10 @@ export function DonorProfileManager({ application }: DonorProfileManagerProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
 
-  const statusBadgeClass = useMemo(() => statusStyles[application.status] ?? "bg-rose-500/20 text-rose-100", [application.status]);
+  const statusBadgeClass = useMemo(
+    () => statusStyles[application.status] ?? "bg-surface-primary-soft text-primary border border-[var(--color-border-primary)]",
+    [application.status],
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -79,37 +82,37 @@ export function DonorProfileManager({ application }: DonorProfileManagerProps) {
     <div className="grid gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-rose-200/80">Donor status</p>
-          <p className="text-lg font-semibold text-white">Stay verification-ready</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-muted">Donor status</p>
+          <p className="text-lg font-semibold text-primary">Stay verification-ready</p>
         </div>
         <Badge className={statusBadgeClass}>{application.status}</Badge>
       </div>
 
-      <dl className="grid gap-4 rounded-2xl border border-rose-500/25 bg-rose-500/5 p-5 text-sm text-rose-100/80 md:grid-cols-3">
+      <dl className="grid gap-4 rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-5 text-sm text-[var(--color-text-secondary)] md:grid-cols-3">
         <div>
-          <dt className="text-xs uppercase tracking-wide text-rose-200/70">Date of birth</dt>
-          <dd className="text-white">{formatDate(application.dateOfBirth)}</dd>
+          <dt className="text-xs uppercase tracking-wide text-muted">Date of birth</dt>
+          <dd className="text-primary">{formatDate(application.dateOfBirth)}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-rose-200/70">Donation history</dt>
-          <dd className="text-white">{application.hasDonatedBefore ? "Has donated before" : "New donor"}</dd>
+          <dt className="text-xs uppercase tracking-wide text-muted">Donation history</dt>
+          <dd className="text-primary">{application.hasDonatedBefore ? "Has donated before" : "New donor"}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-rose-200/70">Last donation</dt>
-          <dd className="text-white">{formatDate(application.lastDonationDate)}</dd>
+          <dt className="text-xs uppercase tracking-wide text-muted">Last donation</dt>
+          <dd className="text-primary">{formatDate(application.lastDonationDate)}</dd>
         </div>
       </dl>
 
-      <div className="grid gap-3 rounded-2xl border border-rose-500/20 bg-rose-950/40 p-5">
-        <h3 className="text-base font-semibold text-white">Identity & Documents</h3>
-        <div className="text-sm text-rose-100/80">
+      <div className="grid gap-3 rounded-2xl border border-soft bg-surface-card-muted p-5">
+        <h3 className="text-base font-semibold text-primary">Identity & Documents</h3>
+        <div className="text-sm text-secondary">
           <p className="mb-2">We keep your documents secure. Only admins can view them for verification.</p>
           <div className="flex flex-wrap gap-3 text-xs">
             <Link
               href={application.nidOrBirthCertificate}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-rose-400/40 px-3 py-1 text-rose-100/80 hover:border-rose-300/80 hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border-primary)] px-3 py-1 text-secondary transition hover:bg-surface-primary-soft hover:text-primary"
             >
               View ID document
             </Link>
@@ -120,12 +123,12 @@ export function DonorProfileManager({ application }: DonorProfileManagerProps) {
                   href={item}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-rose-400/30 px-3 py-1 text-rose-100/80 hover:border-rose-300/70 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border-primary)] px-3 py-1 text-secondary transition hover:bg-surface-primary-soft hover:text-primary"
                 >
                   Medical file {index + 1}
                 </Link>
               ))
-              : <span className="inline-flex items-center gap-2 rounded-full border border-rose-500/20 px-3 py-1 text-rose-100/60">No medical attachments yet</span>}
+              : <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1 text-muted">No medical attachments yet</span>}
           </div>
         </div>
       </div>
@@ -135,11 +138,11 @@ export function DonorProfileManager({ application }: DonorProfileManagerProps) {
           ref={formRef}
           onSubmit={handleSubmit}
           encType="multipart/form-data"
-          className="grid gap-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-5"
+          className="grid gap-4 rounded-2xl border border-success bg-success-soft p-5"
         >
           <input type="hidden" name="applicationId" value={application.id} />
-          <h3 className="text-base font-semibold text-white">Keep your availability up to date</h3>
-          <p className="text-sm text-emerald-100/80">
+          <h3 className="text-base font-semibold text-primary">Keep your availability up to date</h3>
+          <p className="text-sm text-secondary">
             Update your last donation and add any recent medical notes so coordinators can match you quickly.
           </p>
 
@@ -177,7 +180,7 @@ export function DonorProfileManager({ application }: DonorProfileManagerProps) {
           </div>
         </form>
       ) : (
-        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-5 text-sm text-amber-100/80">
+        <div className="rounded-2xl border border-warning bg-warning-soft p-5 text-sm text-secondary">
           {application.status === "Pending"
             ? "Your application is under review. We will notify you once it is approved."
             : "Your previous application needs attention. Contact support to reapply."}

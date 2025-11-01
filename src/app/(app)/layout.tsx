@@ -23,10 +23,21 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const safeUserId = Number.isInteger(userId) ? userId : null;
 
   let unreadNotifications = 0;
+  let profileImage: string | null = typeof user.image === "string" && user.image.length > 0 ? user.image : null;
 
   if (safeUserId !== null) {
     try {
-      unreadNotifications = await prisma.notification.count({ where: { recipientId: safeUserId, isRead: false } });
+      const [notificationCount, profileRecord] = await Promise.all([
+        prisma.notification.count({ where: { recipientId: safeUserId, isRead: false } }),
+        profileImage
+          ? Promise.resolve(null)
+          : prisma.user.findUnique({ where: { id: safeUserId }, select: { profilePicture: true } }),
+      ]);
+
+      unreadNotifications = notificationCount;
+      if (!profileImage && profileRecord?.profilePicture) {
+        profileImage = profileRecord.profilePicture;
+      }
     } catch (error: unknown) {
       if (isDatabaseUnavailableError(error)) {
         console.error("Database is unavailable while loading notification count. Rendering fallback.", error);
@@ -38,7 +49,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <SocketProvider userId={safeUserId}>
-      <AppShell user={user} unreadNotifications={unreadNotifications}>
+      <AppShell user={user} unreadNotifications={unreadNotifications} avatarUrl={profileImage}>
         {children}
       </AppShell>
     </SocketProvider>

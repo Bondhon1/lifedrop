@@ -51,18 +51,18 @@ export function DonorApplicationForm() {
       <div className="grid gap-2">
         <Label htmlFor="nidDocument">NID or birth certificate (image)</Label>
         <Input id="nidDocument" name="nidDocument" type="file" accept="image/*" required aria-required />
-        <p className="text-xs text-rose-100/70">Accepted formats: JPG, PNG, or WEBP up to 5MB.</p>
+        <p className="text-xs text-muted">Accepted formats: JPG, PNG, or WEBP up to 5MB.</p>
       </div>
 
       <div className="flex items-center gap-2">
         <input
           id="hasDonatedBeforeCheckbox"
           type="checkbox"
-          className="h-4 w-4 rounded border border-rose-400/70 bg-rose-500/10 text-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-400/60"
+          className="h-4 w-4 rounded border border-soft bg-surface-primary-soft text-[var(--color-primary-end)] focus:outline-none focus:ring-2 focus:ring-[var(--ring-primary)]"
           checked={hasDonatedBefore}
           onChange={(event) => setHasDonatedBefore(event.target.checked)}
         />
-        <Label htmlFor="hasDonatedBeforeCheckbox" className="text-sm text-rose-100/80">
+        <Label htmlFor="hasDonatedBeforeCheckbox" className="text-sm text-secondary">
           I&apos;ve donated blood before
         </Label>
       </div>
@@ -87,7 +87,7 @@ export function DonorApplicationForm() {
       <div className="grid gap-2">
         <Label htmlFor="medicalHistoryImages">Supporting medical documents (optional)</Label>
         <Input id="medicalHistoryImages" name="medicalHistoryImages" type="file" accept="image/*" multiple />
-        <p className="text-xs text-rose-100/70">Upload lab reports or doctor letters to speed up approval (max 5MB each).</p>
+        <p className="text-xs text-muted">Upload lab reports or doctor letters to speed up approval (max 5MB each).</p>
       </div>
 
       <Button type="submit" disabled={isPending} className="mt-2">

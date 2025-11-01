@@ -113,11 +113,11 @@ export function ProfileInfoForm({ profile, bloodGroups, locationOptions }: Profi
   ]);
 
   return (
-    <section className="grid gap-6 rounded-3xl border border-rose-500/25 bg-rose-950/70 p-6 shadow-xl shadow-rose-900/40">
+    <section className="grid gap-6 rounded-3xl border border-soft bg-surface-card p-6 shadow-soft">
       <header className="grid gap-1">
-        <p className="text-xs uppercase tracking-[0.35em] text-rose-200/80">Profile</p>
-        <h2 className="text-2xl font-semibold text-white">Keep your details current</h2>
-        <p className="text-sm text-rose-100/80">
+        <p className="text-xs uppercase tracking-[0.35em] text-muted">Profile</p>
+        <h2 className="text-2xl font-semibold text-primary">Keep your details current</h2>
+        <p className="text-sm text-secondary">
           Share the right contact and location details so coordinators and nearby donors can reach you quickly.
         </p>
       </header>
@@ -218,12 +218,12 @@ export function ProfileInfoForm({ profile, bloodGroups, locationOptions }: Profi
             placeholder="Add any ongoing medications, allergies, or donor-specific notes."
             defaultValue={profile.medicalHistory}
           />
-          <p className="text-xs text-rose-100/60">
+          <p className="text-xs text-muted">
             Visible only to you unless you choose to share directly with coordinators.
           </p>
         </div>
 
-        <div className="grid gap-1 rounded-2xl border border-rose-500/25 bg-rose-500/10 p-4 text-xs text-rose-100/70">
+        <div className="grid gap-1 rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-4 text-xs text-secondary">
           <p>
             {locationLabel
               ? `Current location: ${locationLabel}`

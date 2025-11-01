@@ -125,17 +125,17 @@ export default async function FriendsPage() {
 
   return (
     <div className="grid gap-10">
-      <header className="rounded-3xl border border-rose-500/30 bg-rose-500/10 p-8 shadow-lg shadow-rose-950/30">
-        <h1 className="text-3xl font-semibold text-white">Connections</h1>
-        <p className="mt-3 max-w-2xl text-sm text-rose-100/80">
+      <header className="rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+        <h1 className="text-3xl font-semibold text-primary">Connections</h1>
+        <p className="mt-3 max-w-2xl text-sm text-secondary">
           Manage your confirmed friends, act on pending requests, and keep your donor network close.
         </p>
       </header>
 
       <section className="grid gap-4">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold text-white">Your friends</h2>
-          <p className="text-sm text-rose-100/70">{friends.length} connected</p>
+          <h2 className="text-xl font-semibold text-primary">Your friends</h2>
+          <p className="text-sm text-secondary">{friends.length} connected</p>
         </div>
         <FriendList friends={friends} />
       </section>
@@ -143,15 +143,15 @@ export default async function FriendsPage() {
       <section className="grid gap-6 lg:grid-cols-2">
         <div className="grid gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-white">Incoming requests</h3>
-            <p className="text-sm text-rose-100/70">Accept requests from members who want to connect.</p>
+            <h3 className="text-lg font-semibold text-primary">Incoming requests</h3>
+            <p className="text-sm text-secondary">Accept requests from members who want to connect.</p>
           </div>
           <PendingRequestsList requests={pendingIncoming} />
         </div>
         <div className="grid gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-white">Sent requests</h3>
-            <p className="text-sm text-rose-100/70">Track requests you have sent to other members.</p>
+            <h3 className="text-lg font-semibold text-primary">Sent requests</h3>
+            <p className="text-sm text-secondary">Track requests you have sent to other members.</p>
           </div>
           <OutgoingRequestsList requests={pendingOutgoing} />
         </div>

@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { respondToBloodRequest, toggleBloodRequestUpvote } from "@/server/actions/blood-request";
-import { cn } from "@/lib/utils";
 import { Droplet, Heart, MapPin, MessageCircle, Share2 } from "lucide-react";
 
 export type BloodRequestFeedItem = {
@@ -45,17 +44,30 @@ export type BloodRequestFeedItem = {
   isOwner: boolean;
 };
 
-const urgencyClassNames: Record<string, string> = {
-  Normal: "bg-emerald-500/15 text-emerald-200",
-  Urgent: "bg-amber-500/20 text-amber-100",
-  Critical: "bg-rose-600/20 text-rose-100",
+type BadgeVariant = "default" | "secondary" | "success" | "warning";
+
+type BadgeStyle = { variant: BadgeVariant; className?: string };
+
+const urgencyStyles: Record<BloodRequestFeedItem["urgencyStatus"], BadgeStyle> = {
+  Normal: { variant: "secondary" },
+  Urgent: { variant: "warning" },
+  Critical: {
+    variant: "default",
+    className: "border-[var(--color-danger-border)] bg-[var(--color-danger-bg)] text-[var(--color-text-danger)]",
+  },
 };
 
-const statusBadgeClasses: Record<string, string> = {
-  Open: "bg-sky-500/20 text-sky-100",
-  Pending: "bg-amber-500/20 text-amber-100",
-  Fulfilled: "bg-emerald-500/20 text-emerald-100",
-  Closed: "bg-slate-500/20 text-slate-100",
+const statusStyles: Record<BloodRequestFeedItem["status"], BadgeStyle> = {
+  Open: {
+    variant: "secondary",
+    className: "border-[var(--color-border-secondary)] bg-surface-secondary-soft text-[var(--color-text-accent-strong)]",
+  },
+  Pending: { variant: "warning" },
+  Fulfilled: { variant: "success" },
+  Closed: {
+    variant: "default",
+    className: "border-soft bg-surface-card-muted text-muted",
+  },
 };
 
 const formatRelativeTime = (iso: string) => {
@@ -86,8 +98,8 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
 
   const requestIsFulfilled = donorsAssigned >= request.amountNeeded || request.status === "Fulfilled";
 
-  const urgencyBadgeClass = useMemo(() => urgencyClassNames[request.urgencyStatus] ?? urgencyClassNames.Normal, [request.urgencyStatus]);
-  const statusBadgeClass = useMemo(() => statusBadgeClasses[request.status] ?? statusBadgeClasses.Open, [request.status]);
+  const urgencyStyle = useMemo(() => urgencyStyles[request.urgencyStatus], [request.urgencyStatus]);
+  const statusStyle = useMemo(() => statusStyles[request.status], [request.status]);
 
   const reasonToDisplay = showFullReason ? request.reason : truncate(request.reason, 260);
 
@@ -145,16 +157,16 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
   const disableRespondButton = request.isOwner || requestIsFulfilled || hasResponded || isPending;
 
   return (
-    <Card className="overflow-hidden border border-rose-500/20 bg-rose-950/70 shadow-2xl shadow-rose-900/40">
-      <CardHeader className="flex flex-col gap-4 border-b border-rose-500/15 bg-rose-500/10 pb-4">
+    <Card className="overflow-hidden border border-soft bg-surface-card shadow-soft transition hover:-translate-y-0.5">
+      <CardHeader className="flex flex-col gap-4 border-b border-soft bg-surface-primary-soft pb-4 text-primary">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <CardTitle className="text-xl font-semibold text-white">{request.patientName}</CardTitle>
-            <CardDescription className="text-rose-100/80">
+            <CardTitle className="text-xl font-semibold text-primary">{request.patientName}</CardTitle>
+            <CardDescription className="text-sm text-secondary">
               Requested by{" "}
               <Link
                 href={`/members/${request.owner.username}`}
-                className="font-semibold text-rose-50/90 underline-offset-2 hover:text-white hover:underline"
+                className="font-semibold text-[var(--color-text-accent)] underline-offset-4 hover:text-[var(--color-text-accent-hover)] hover:underline"
               >
                 {request.owner.name ?? request.owner.username}
               </Link>{" "}
@@ -162,56 +174,60 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
             </CardDescription>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge className={cn("text-xs font-semibold", urgencyBadgeClass)}>{request.urgencyStatus}</Badge>
-            <Badge className={cn("text-xs font-semibold", statusBadgeClass)}>{request.status}</Badge>
+            <Badge variant={urgencyStyle.variant} className={urgencyStyle.className}>
+              {request.urgencyStatus}
+            </Badge>
+            <Badge variant={statusStyle.variant} className={statusStyle.className}>
+              {request.status}
+            </Badge>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-sm text-rose-50/90">
-          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-3 py-1">
-            <Droplet className="h-4 w-4 text-rose-300" />
+        <div className="flex flex-wrap items-center gap-3 text-sm text-secondary">
+          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1">
+            <Droplet className="h-4 w-4 text-[var(--color-text-danger)]" />
             {request.bloodGroup}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-3 py-1">
-            <Heart className="h-4 w-4 text-rose-300" />
+          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1">
+            <Heart className="h-4 w-4 text-[var(--color-text-danger)]" />
             {donorsAssigned}/{request.amountNeeded} donors pledged
           </span>
           <Link
             href={`/requests/${request.id}#comments`}
-            className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-3 py-1 text-rose-50/90 transition hover:bg-rose-500/25 hover:text-white"
+            className="inline-flex items-center gap-1 rounded-full border border-transparent bg-surface-primary-soft px-3 py-1 text-secondary transition hover:border-[var(--color-border-primary)] hover:text-primary"
           >
-            <MessageCircle className="h-4 w-4 text-rose-300" /> {request.commentCount} comments
+            <MessageCircle className="h-4 w-4 text-[var(--color-text-accent)]" /> {request.commentCount} comments
           </Link>
         </div>
       </CardHeader>
 
       <CardContent className="grid gap-5 p-6">
-        <div className="grid gap-2 text-sm text-rose-50/80">
+        <div className="grid gap-2 text-sm text-secondary">
           <p>
-            <strong className="text-white">Hospital:</strong> {request.hospitalName}
+            <strong className="text-primary">Hospital:</strong> {request.hospitalName}
           </p>
           <p>
-            <strong className="text-white">Location:</strong> {locationLabel}
+            <strong className="text-primary">Location:</strong> {locationLabel}
             {mapLink ? (
               <a
                 href={mapLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 inline-flex items-center gap-1 text-xs text-rose-200 underline-offset-2 hover:text-white hover:underline"
+                className="ml-2 inline-flex items-center gap-1 text-xs text-[var(--color-text-accent)] underline-offset-4 hover:text-[var(--color-text-accent-hover)] hover:underline"
               >
                 <MapPin className="h-3 w-3" /> View map
               </a>
             ) : null}
           </p>
-          {coordinateLabel && <p className="text-xs text-rose-100/60">GPS: {coordinateLabel}</p>}
+          {coordinateLabel && <p className="text-xs text-muted">GPS: {coordinateLabel}</p>}
           <p>
-            <strong className="text-white">Needed by:</strong> {new Date(request.requiredDate).toLocaleDateString()}
+            <strong className="text-primary">Needed by:</strong> {new Date(request.requiredDate).toLocaleDateString()}
           </p>
           <p>
-            <strong className="text-white">Smoker preference:</strong> {request.smokerPreference}
+            <strong className="text-primary">Smoker preference:</strong> {request.smokerPreference}
           </p>
         </div>
 
-        <p className="text-sm leading-relaxed text-rose-50/95">{reasonToDisplay}</p>
+        <p className="text-sm leading-relaxed text-primary">{reasonToDisplay}</p>
 
         <div className="flex flex-wrap items-center gap-3">
           <Button
@@ -219,7 +235,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
             size="sm"
             onClick={handleToggleUpvote}
             disabled={isPending}
-            className={cn("min-w-[8rem]", hasUpvoted ? "border border-rose-400" : "")}
+            className="min-w-[8rem] gap-2"
           >
             <Heart className="h-4 w-4" /> {upvoteCount} supports
           </Button>
@@ -229,18 +245,28 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
             size="sm"
             onClick={handleRespond}
             disabled={disableRespondButton}
-            className="min-w-[10rem] border border-rose-400/60 text-rose-50"
+            className="min-w-[10rem]"
           >
             {request.isOwner ? "You created this" : requestIsFulfilled ? "Request fulfilled" : hasResponded ? "You’ve responded" : "I can donate"}
           </Button>
 
-          <Button variant="ghost" size="sm" asChild className="text-rose-100/80 hover:text-white">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="text-[var(--color-text-accent)] hover:text-[var(--color-text-accent-hover)]"
+          >
             <Link href={`/requests/${request.id}#comments`}>
               <MessageCircle className="mr-2 h-4 w-4" /> Discuss
             </Link>
           </Button>
 
-          <Button variant="ghost" size="sm" asChild className="text-rose-100/80 hover:text-white">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="text-[var(--color-text-accent)] hover:text-[var(--color-text-accent-hover)]"
+          >
             <Link href={`/requests/${request.id}`}>
               <Share2 className="mr-2 h-4 w-4" /> View details
             </Link>

@@ -11,14 +11,14 @@ export default function AdminLogoutPage() {
   }, []);
 
   return (
-    <Card className="bg-slate-950/90">
+    <Card className="bg-white/95">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-2xl text-white">
-          <Loader2 className="h-6 w-6 animate-spin" />
+        <CardTitle className="flex items-center gap-2 text-2xl text-[#2E2E2E]">
+          <Loader2 className="h-6 w-6 animate-spin text-[#D31027]" />
           Signing you out
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4 text-slate-200">
+      <CardContent className="space-y-4 text-[#5F5F5F]">
         <p>Logging you out of the admin console now. You’ll be back at the admin sign-in screen in a moment.</p>
       </CardContent>
     </Card>

@@ -8,7 +8,7 @@ import { registerUserSchema } from "@/lib/validators/user";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert } from "@/components/ui/alert";
 import { Form, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
@@ -56,12 +56,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="bg-white/95">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">Create your account</CardTitle>
-        <p className="text-sm text-[#5F5F5F]">
+        <CardTitle className="text-3xl font-semibold">Create your account</CardTitle>
+        <CardDescription>
           Join a thriving community of donors and coordinators making blood availability transparent.
-        </p>
+        </CardDescription>
       </CardHeader>
       <CardContent className="gap-5">
         <Form form={form} className="grid gap-5" onSubmit={form.handleSubmit(onSubmit)}>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
           title="Already verified donor?"
           description={
             <span>
-              If you already have an account, <Link href="/login" className="font-semibold text-[#0072FF] underline">sign in here</Link>.
+              If you already have an account, <Link href="/login" className="font-semibold text-accent underline">sign in here</Link>.
             </span>
           }
         />

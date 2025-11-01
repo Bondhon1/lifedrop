@@ -99,11 +99,11 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge>Active Requests</Badge>
-            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">{activeRequests}</CardTitle>
+            <CardTitle className="text-3xl font-semibold">{activeRequests}</CardTitle>
             <CardDescription>Requests you&apos;ve opened and are currently tracking.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" size="sm" className="border border-rose-400/50" asChild>
+            <Button variant="secondary" size="sm" className="border border-[var(--color-border-primary)]" asChild>
               <Link href="/requests">Manage requests</Link>
             </Button>
           </CardContent>
@@ -112,11 +112,11 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge variant="success">Donor Matches</Badge>
-            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">{donorResponses}</CardTitle>
+            <CardTitle className="text-3xl font-semibold">{donorResponses}</CardTitle>
             <CardDescription>Successful matches you&apos;ve facilitated or joined.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" size="sm" className="border border-rose-400/50" asChild>
+            <Button variant="secondary" size="sm" className="border border-[var(--color-border-primary)]" asChild>
               <Link href="/donors">View donor network</Link>
             </Button>
           </CardContent>
@@ -125,11 +125,11 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge variant="warning">Unread Messages</Badge>
-            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">{unreadMessages}</CardTitle>
+            <CardTitle className="text-3xl font-semibold">{unreadMessages}</CardTitle>
             <CardDescription>Conversations waiting for your response.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" size="sm" className="border border-rose-400/50" asChild>
+            <Button variant="secondary" size="sm" className="border border-[var(--color-border-primary)]" asChild>
               <Link href="/chat">Open inbox</Link>
             </Button>
           </CardContent>
@@ -138,25 +138,24 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <Badge variant="secondary">Safety Center</Badge>
-            <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">3</CardTitle>
+            <CardTitle className="text-3xl font-semibold">3</CardTitle>
             <CardDescription>Pending approvals and reports requiring attention.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" size="sm" className="border border-rose-400/50" asChild>
+            <Button variant="secondary" size="sm" className="border border-[var(--color-border-primary)]" asChild>
               <Link href="/notifications">Review alerts</Link>
             </Button>
           </CardContent>
         </Card>
       </section>
-
-      <section className="grid gap-4 rounded-3xl border border-rose-500/20 bg-rose-950/70 p-6 shadow-xl shadow-rose-900/30">
+      <section className="grid gap-4 rounded-3xl border border-soft bg-surface-card p-6 shadow-soft">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h3 className="text-xl font-semibold text-white">Latest Activity</h3>
-            <p className="text-sm text-rose-100/80">Track urgent requests in the community and your contributions.</p>
+            <h3 className="text-xl font-semibold text-primary">Latest Activity</h3>
+            <p className="text-sm text-secondary">Track urgent requests in the community and your contributions.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button variant="secondary" size="sm" className="border border-rose-400/50" asChild>
+            <Button variant="secondary" size="sm" className="border border-[var(--color-border-primary)]" asChild>
               <Link href="/requests">View all</Link>
             </Button>
             <Button size="sm" asChild>
@@ -166,36 +165,36 @@ export default async function DashboardPage() {
         </header>
 
         <div className="grid gap-3">
-          {latestRequests.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-rose-500/30 bg-rose-500/10 px-6 py-10 text-center text-sm text-rose-100/80">
+          {latestRequests.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-subtle bg-surface-primary-soft px-6 py-10 text-center text-sm text-secondary">
               No recent activity yet. Create your first request or explore the donor network to get started.
             </div>
-          )}
+          ) : null}
 
           {latestRequests.map((request: LatestRequest) => (
             <Link
               key={request.id}
               href={`/requests/${request.id}`}
-              className="group flex w-full flex-col gap-4 rounded-2xl border border-rose-500/20 bg-rose-950/70 px-5 py-4 transition hover:border-rose-400/50 hover:bg-rose-950/80 sm:flex-row sm:items-center sm:justify-between"
+              className="group flex w-full flex-col gap-4 rounded-2xl border border-soft bg-surface-card-muted px-5 py-4 shadow-soft transition hover:border-[var(--color-border-primary)] hover:shadow-card sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="grid gap-1">
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-primary">
                   {request.patientName} · {request.bloodGroup}
                 </p>
-                <p className="text-xs uppercase tracking-widest text-rose-200">{request.urgencyStatus}</p>
-                <p className="text-sm text-rose-100/80">
+                <p className="text-xs uppercase tracking-[0.3em] text-muted">{request.urgencyStatus}</p>
+                <p className="text-sm text-secondary">
                   Posted by {request.user.username} — needs {Number(request.amountNeeded)} units
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-4 text-rose-100/75">
-                <span className="inline-flex items-center gap-1 text-xs">
-                  <HeartPulse className="h-3.5 w-3.5" /> {request.upvoteCount} supports
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted">
+                <span className="inline-flex items-center gap-1">
+                  <HeartPulse className="h-4 w-4 text-[var(--color-text-danger)]" /> {request.upvoteCount} supports
                 </span>
-                <span className="inline-flex items-center gap-1 text-xs">
-                  <Droplet className="h-3.5 w-3.5" /> {request.donorsAssigned}/{Number(request.amountNeeded)} donors
+                <span className="inline-flex items-center gap-1">
+                  <Droplet className="h-4 w-4 text-[var(--color-text-danger)]" /> {request.donorsAssigned}/{Number(request.amountNeeded)} donors
                 </span>
-                <span className="inline-flex items-center gap-1 text-xs">
-                  <MessageCircle className="h-3.5 w-3.5" /> {request._count.comments} comments
+                <span className="inline-flex items-center gap-1">
+                  <MessageCircle className="h-4 w-4 text-[var(--color-text-danger)]" /> {request._count.comments} comments
                 </span>
               </div>
             </Link>
@@ -204,29 +203,29 @@ export default async function DashboardPage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
-        <Card className="border border-rose-500/20 bg-gradient-to-br from-rose-600/25 via-rose-950 to-[#120005]">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-white">Need guidance?</CardTitle>
-            <CardDescription className="text-rose-100/85">
+            <CardTitle>Need guidance?</CardTitle>
+            <CardDescription>
               Our best-practice checklist keeps you compliant and confident when managing donor outreach.
             </CardDescription>
           </CardHeader>
           <CardContent className="gap-4">
-            <Button variant="secondary" className="border border-rose-400/50" asChild>
+            <Button variant="secondary" className="border border-[var(--color-border-primary)]" asChild>
               <Link href="/playbooks/emergency-response">Open emergency playbook</Link>
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="border border-rose-500/20 bg-gradient-to-br from-rose-500/25 via-rose-950 to-[#20020d]">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-white">Verify your donor badge</CardTitle>
-            <CardDescription className="text-rose-100/85">
+            <CardTitle>Verify your donor badge</CardTitle>
+            <CardDescription>
               Upload medical records securely and get priority access to urgent matches in your area.
             </CardDescription>
           </CardHeader>
           <CardContent className="gap-4">
-            <Button variant="secondary" className="border border-rose-400/50" asChild>
+            <Button variant="secondary" className="border border-[var(--color-border-primary)]" asChild>
               <Link href="/profile/verifications">Manage verifications</Link>
             </Button>
           </CardContent>

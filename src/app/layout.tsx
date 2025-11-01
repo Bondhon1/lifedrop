@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#170107] text-rose-50 overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-page text-primary antialiased overflow-x-hidden`}
       >
         <Providers>
           <div className="relative mx-auto min-h-screen w-full max-w-[1440px] px-4 pb-12 pt-6 sm:px-8">

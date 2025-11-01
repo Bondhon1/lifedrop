@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Alert } from "@/components/ui/alert";
 import { Form, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -61,12 +61,12 @@ function LoginContent() {
   };
 
   return (
-    <Card className="bg-white/95">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">Welcome back</CardTitle>
-        <p className="text-sm text-[#5F5F5F]">
+        <CardTitle className="text-3xl font-semibold">Welcome back</CardTitle>
+        <CardDescription>
           Sign in to manage blood requests, chat with donors, and stay ahead of urgent needs.
-        </p>
+        </CardDescription>
       </CardHeader>
       <CardContent className="gap-5">
         <Form form={form} className="grid gap-5" onSubmit={form.handleSubmit(onSubmit)}>
@@ -82,8 +82,8 @@ function LoginContent() {
             <FormMessage>{form.formState.errors.password?.message}</FormMessage>
           </FormItem>
 
-          <div className="flex items-center justify-between text-sm text-[#5F5F5F]">
-            <Link href="/forgot-password" className="font-medium text-[#0072FF] hover:text-[#00C6FF]">
+          <div className="flex items-center justify-between text-sm text-secondary">
+            <Link href="/forgot-password" className="font-semibold text-accent hover:text-accent">
               Forgot password?
             </Link>
           </div>
@@ -109,7 +109,7 @@ function LoginContent() {
           title="New here?"
           description={
             <span>
-              Create an account in minutes. <Link href="/register" className="font-semibold text-[#0072FF] underline">Join now</Link>.
+              Create an account in minutes. <Link href="/register" className="font-semibold text-accent underline">Join now</Link>.
             </span>
           }
         />

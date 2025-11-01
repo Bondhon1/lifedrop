@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -38,12 +38,12 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Card className="bg-white/95">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-3xl font-semibold text-[#2E2E2E]">Reset password</CardTitle>
-        <p className="text-sm text-[#5F5F5F]">
+        <CardTitle className="text-3xl font-semibold">Reset password</CardTitle>
+        <CardDescription>
           Enter the email associated with your account and we&apos;ll send a secure reset link.
-        </p>
+        </CardDescription>
       </CardHeader>
       <CardContent className="gap-5">
         <Form form={form} className="grid gap-5" onSubmit={form.handleSubmit(onSubmit)}>
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
 
         <Alert
           title="Remembered your password?"
-          description={<Link href="/login" className="font-semibold text-[#0072FF] underline">Return to sign in</Link>}
+          description={<Link href="/login" className="font-semibold text-accent underline">Return to sign in</Link>}
         />
       </CardContent>
     </Card>

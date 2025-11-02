@@ -40,6 +40,8 @@ Then visit `http://localhost:3000`.
 | `SMTP_USER` | SMTP username (app email account) |
 | `SMTP_PASS` | SMTP password or app password |
 | `SMTP_FROM` | Friendly from address shown in emails |
+| `BLOB_READ_WRITE_TOKEN` | (Production) Vercel Blob token for storing uploads (required on Vercel) |
+| `BLOB_UPLOAD_PREFIX` | Optional subfolder prefix for blob uploads (default `uploads`) |
 
 See `.env.example` for current values.
 
@@ -106,7 +108,7 @@ See [`docs/migration-plan.md`](./docs/migration-plan.md) for the rolling status 
 
 - The entire Flask codebase is preserved under `copy/` for cross-checking business logic.
 - Database tables map 1:1 to Prisma models (see `schema.prisma`). Additional enums were added for `UserRole`.
-- File uploads (profile pics, medical docs, chat attachments) will be abstracted behind a storage service adapter; local disk will back development until an object store is chosen.
+- File uploads (profile pics, medical docs, chat attachments) now default to Vercel Blob in production and fall back to the local disk during development.
 - Chat + notifications will leverage a Next.js Route Handler with a shared Socket.io server instance.
 
 ## Testing & quality

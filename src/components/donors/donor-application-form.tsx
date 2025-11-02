@@ -26,16 +26,21 @@ export function DonorApplicationForm() {
     formData.set("hasDonatedBefore", hasDonatedBefore ? "true" : "false");
 
     startTransition(async () => {
-      const result = await submitDonorApplication(formData);
-      if (!result.ok) {
-        toast.error(result.message);
-        return;
-      }
+      try {
+        const result = await submitDonorApplication(formData);
+        if (!result.ok) {
+          toast.error(result.message);
+          return;
+        }
 
-      toast.success(result.data.message);
-      formRef.current?.reset();
-      setHasDonatedBefore(false);
-      router.refresh();
+        toast.success(result.data.message);
+        formRef.current?.reset();
+        setHasDonatedBefore(false);
+        router.refresh();
+      } catch (error) {
+        console.error("DonorApplicationForm:submit", error);
+        toast.error("We couldn't submit your application. Check your connection and try again.");
+      }
     });
   };
 

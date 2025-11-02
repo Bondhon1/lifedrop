@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -10,8 +10,28 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useSocket } from "@/components/providers/socket-provider";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Bell, ClipboardCheck, Droplets, LayoutDashboard, MessageCircle, Newspaper, ShieldCheck, User, UserPlus, Users } from "lucide-react";
+import {
+  Bell,
+  ClipboardCheck,
+  Droplets,
+  FileWarning,
+  LayoutDashboard,
+  ListChecks,
+  MessageCircle,
+  Newspaper,
+  ShieldCheck,
+  User,
+  UserCog,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import type { SessionUser } from "@/lib/auth";
+import { NotificationHoverPanel } from "@/components/navigation/notification-hover-panel";
+import { ConversationHoverPanel } from "@/components/navigation/conversation-hover-panel";
+import type { ConversationPreviewItem, NotificationPreviewItem } from "./app-shell.types";
+
+const MAX_NOTIFICATION_PREVIEWS = 10;
+const MAX_CONVERSATION_PREVIEWS = 10;
 
 const baseLinks = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, roles: ["USER", "ADMIN"] as const },
@@ -27,6 +47,9 @@ const baseLinks = [
 const adminLinks = [
   { href: "/admin/overview", label: "Admin Console", icon: ShieldCheck, roles: ["ADMIN"] },
   { href: "/admin/donors", label: "Donor Reviews", icon: ClipboardCheck, roles: ["ADMIN"] },
+  { href: "/admin/users", label: "Member Directory", icon: ListChecks, roles: ["ADMIN"] },
+  { href: "/admin/reports", label: "Reports Queue", icon: FileWarning, roles: ["ADMIN"] },
+  { href: "/admin/admins", label: "Admin Accounts", icon: UserCog, roles: ["ADMIN"] },
 ];
 
 type AppShellProps = {
@@ -34,6 +57,8 @@ type AppShellProps = {
   children: ReactNode;
   unreadNotifications?: number;
   avatarUrl?: string | null;
+  initialNotifications?: NotificationPreviewItem[];
+  initialConversations?: ConversationPreviewItem[];
 };
 
 const resolveAvatarUrl = (path: string | null | undefined) => {
@@ -43,27 +68,124 @@ const resolveAvatarUrl = (path: string | null | undefined) => {
   return `/uploads/${path}`;
 };
 
-export function AppShell({ user, children, unreadNotifications = 0, avatarUrl }: AppShellProps) {
+export function AppShell({
+  user,
+  children,
+  unreadNotifications = 0,
+  avatarUrl,
+  initialNotifications = [],
+  initialConversations = [],
+}: AppShellProps) {
   const pathname = usePathname() ?? "";
   const socket = useSocket();
-  const [notificationCount, setNotificationCount] = useState(unreadNotifications);
   const logoutHref = user.isAdmin ? "/admin-logout" : "/logout";
+
+  const [notificationCount, setNotificationCount] = useState(unreadNotifications);
+  const [notificationItems, setNotificationItems] = useState<NotificationPreviewItem[]>(
+    initialNotifications.slice(0, MAX_NOTIFICATION_PREVIEWS),
+  );
+  const [conversationItems, setConversationItems] = useState<ConversationPreviewItem[]>(
+    initialConversations.slice(0, MAX_CONVERSATION_PREVIEWS),
+  );
+  const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
+  const [showConversationsPanel, setShowConversationsPanel] = useState(false);
+
+  const currentUserId = useMemo(() => {
+    const rawId = user.id;
+    if (!rawId) {
+      return null;
+    }
+
+    if (typeof rawId === "string") {
+      if (rawId.startsWith("admin:")) {
+        const parsed = Number(rawId.split(":")[1]);
+        return Number.isInteger(parsed) ? parsed : null;
+      }
+      const parsed = Number(rawId);
+      return Number.isInteger(parsed) ? parsed : null;
+    }
+
+    if (typeof rawId === "number" && Number.isInteger(rawId)) {
+      return rawId;
+    }
+
+    return null;
+  }, [user.id]);
+
+  const conversationUnreadTotal = useMemo(
+    () => conversationItems.reduce((total, conversation) => total + (conversation.unreadCount ?? 0), 0),
+    [conversationItems],
+  );
 
   useEffect(() => {
     setNotificationCount(unreadNotifications);
   }, [unreadNotifications]);
 
   useEffect(() => {
+    setNotificationItems(initialNotifications.slice(0, MAX_NOTIFICATION_PREVIEWS));
+  }, [initialNotifications]);
+
+  useEffect(() => {
+    setConversationItems(initialConversations.slice(0, MAX_CONVERSATION_PREVIEWS));
+  }, [initialConversations]);
+
+  useEffect(() => {
     if (!socket) {
       return;
     }
 
-    const handleNew = (payload: { unreadCount?: number } | undefined) => {
+    const handleNew = (
+      payload:
+        | {
+            notification?: {
+              id: number;
+              message: string;
+              link?: string | null;
+              isRead: boolean;
+              createdAt: string;
+              senderName?: string | null;
+            };
+            unreadCount?: number;
+          }
+        | undefined,
+    ) => {
+      if (payload?.notification) {
+        const incoming: NotificationPreviewItem = {
+          id: payload.notification.id,
+          message: payload.notification.message,
+          link: payload.notification.link ?? null,
+          isRead: payload.notification.isRead,
+          createdAt: payload.notification.createdAt,
+          senderName: payload.notification.senderName ?? null,
+        };
+
+        setNotificationItems((prev) => {
+          const existingIndex = prev.findIndex((item) => item.id === incoming.id);
+          if (existingIndex >= 0) {
+            const updated = [...prev];
+            updated[existingIndex] = incoming;
+            return updated;
+          }
+          return [incoming, ...prev].slice(0, MAX_NOTIFICATION_PREVIEWS);
+        });
+      }
+
       if (typeof payload?.unreadCount === "number") {
         setNotificationCount(payload.unreadCount);
-      } else {
+      } else if (!payload?.notification?.isRead) {
         setNotificationCount((prev) => prev + 1);
       }
+    };
+
+    const handleUpdated = (payload: { notificationId?: number; isRead?: boolean } | undefined) => {
+      if (typeof payload?.notificationId !== "number") {
+        return;
+      }
+      setNotificationItems((prev) =>
+        prev.map((item) =>
+          item.id === payload.notificationId ? { ...item, isRead: payload.isRead ?? item.isRead } : item,
+        ),
+      );
     };
 
     const handleUnreadCount = (payload: { unreadCount?: number } | undefined) => {
@@ -73,19 +195,96 @@ export function AppShell({ user, children, unreadNotifications = 0, avatarUrl }:
     };
 
     const handleAllRead = (payload: { unreadCount?: number } | undefined) => {
+      setNotificationItems((prev) => prev.map((item) => ({ ...item, isRead: true })));
       setNotificationCount(payload?.unreadCount ?? 0);
     };
 
     socket.on("notification:new", handleNew);
+    socket.on("notification:updated", handleUpdated);
     socket.on("notification:unread-count", handleUnreadCount);
     socket.on("notification:all-read", handleAllRead);
 
     return () => {
       socket.off("notification:new", handleNew);
+      socket.off("notification:updated", handleUpdated);
       socket.off("notification:unread-count", handleUnreadCount);
       socket.off("notification:all-read", handleAllRead);
     };
   }, [socket]);
+
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+
+    const handleNewMessage = (
+      payload:
+        | {
+            content?: string;
+            createdAt?: string;
+            senderId?: number;
+            receiverId?: number;
+            partner?: {
+              id: number;
+              username: string;
+              name?: string | null;
+              profilePicture?: string | null;
+            };
+            unreadFromPartner?: number;
+          }
+        | undefined,
+    ) => {
+      if (!payload?.partner) {
+        return;
+      }
+
+      const partner = payload.partner;
+
+      setConversationItems((prev) => {
+        const partnerId = partner.id;
+        const existing = prev.find((item) => item.partnerId === partnerId);
+
+        const computedUnread = typeof payload.unreadFromPartner === "number"
+          ? payload.unreadFromPartner
+          : payload.senderId && payload.senderId !== currentUserId
+            ? (existing?.unreadCount ?? 0) + 1
+            : existing?.unreadCount ?? 0;
+
+        const partnerAvatar = partner.profilePicture ?? existing?.partnerAvatar ?? null;
+
+        const nextItem: ConversationPreviewItem = {
+          partnerId,
+          partnerName: partner.name ?? partner.username,
+          partnerUsername: partner.username,
+          partnerAvatar,
+          lastMessage: payload.content ?? existing?.lastMessage ?? "",
+          lastMessageAt: payload.createdAt ?? existing?.lastMessageAt ?? new Date().toISOString(),
+          lastSenderId: payload.senderId ?? existing?.lastSenderId ?? currentUserId ?? 0,
+          unreadCount: computedUnread,
+        };
+
+        const others = prev.filter((item) => item.partnerId !== partnerId);
+  return [nextItem, ...others].slice(0, MAX_CONVERSATION_PREVIEWS);
+      });
+    };
+
+    const handleConversationRead = (payload: { partnerId?: number } | undefined) => {
+      if (typeof payload?.partnerId !== "number") {
+        return;
+      }
+      setConversationItems((prev) =>
+        prev.map((item) => (item.partnerId === payload.partnerId ? { ...item, unreadCount: 0 } : item)),
+      );
+    };
+
+    socket.on("chat:new-message", handleNewMessage);
+    socket.on("chat:conversation-read", handleConversationRead);
+
+    return () => {
+      socket.off("chat:new-message", handleNewMessage);
+      socket.off("chat:conversation-read", handleConversationRead);
+    };
+  }, [socket, currentUserId]);
 
   const links = user.isAdmin ? [...baseLinks, ...adminLinks] : baseLinks;
   const resolvedAvatar = resolveAvatarUrl(avatarUrl ?? user.image ?? null);
@@ -104,7 +303,12 @@ export function AppShell({ user, children, unreadNotifications = 0, avatarUrl }:
           <nav className="grid gap-2">
             {links.map((link) => {
               const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
-              const showNotificationBadge = link.href === "/notifications" && notificationCount > 0;
+              const badgeValue = link.href === "/notifications"
+                ? notificationCount
+                : link.href === "/chat"
+                  ? conversationUnreadTotal
+                  : 0;
+              const showBadge = badgeValue > 0;
               return (
                 <Link
                   key={link.href}
@@ -118,9 +322,9 @@ export function AppShell({ user, children, unreadNotifications = 0, avatarUrl }:
                 >
                   <link.icon className="h-4 w-4" />
                   <span className="flex-1">{link.label}</span>
-                  {showNotificationBadge ? (
+                  {showBadge ? (
                     <span className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-xs font-bold text-white">
-                      {Math.min(notificationCount, 99)}
+                      {Math.min(badgeValue, 99)}
                     </span>
                   ) : null}
                 </Link>
@@ -161,16 +365,94 @@ export function AppShell({ user, children, unreadNotifications = 0, avatarUrl }:
             <Button variant="secondary" size="sm" asChild>
               <Link href="/requests/new">Create Request</Link>
             </Button>
-            <Button variant="ghost" size="icon" className="relative" asChild>
-              <Link href="/notifications">
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                setShowNotificationsPanel(true);
+                setShowConversationsPanel(false);
+              }}
+              onMouseLeave={() => {
+                setShowNotificationsPanel(false);
+              }}
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="relative"
+                aria-haspopup="dialog"
+                aria-expanded={showNotificationsPanel}
+                onClick={() => {
+                  setShowNotificationsPanel((prev) => {
+                    const next = !prev;
+                    if (next) {
+                      setShowConversationsPanel(false);
+                    }
+                    return next;
+                  });
+                }}
+              >
                 <Bell className="h-4 w-4" />
                 {notificationCount > 0 ? (
                   <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
                     {Math.min(notificationCount, 99)}
                   </span>
                 ) : null}
-              </Link>
-            </Button>
+              </Button>
+              {showNotificationsPanel ? (
+                <div className="absolute right-0 z-40 mt-2">
+                  <NotificationHoverPanel
+                    notifications={notificationItems}
+                    unreadCount={notificationCount}
+                    onClose={() => setShowNotificationsPanel(false)}
+                  />
+                </div>
+              ) : null}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                setShowConversationsPanel(true);
+                setShowNotificationsPanel(false);
+              }}
+              onMouseLeave={() => {
+                setShowConversationsPanel(false);
+              }}
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="relative"
+                aria-haspopup="dialog"
+                aria-expanded={showConversationsPanel}
+                onClick={() => {
+                  setShowConversationsPanel((prev) => {
+                    const next = !prev;
+                    if (next) {
+                      setShowNotificationsPanel(false);
+                    }
+                    return next;
+                  });
+                }}
+              >
+                <MessageCircle className="h-4 w-4" />
+                {conversationUnreadTotal > 0 ? (
+                  <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white shadow">
+                    {Math.min(conversationUnreadTotal, 99)}
+                  </span>
+                ) : null}
+              </Button>
+              {showConversationsPanel ? (
+                <div className="absolute right-0 z-40 mt-2">
+                  <ConversationHoverPanel
+                    conversations={conversationItems}
+                    currentUserId={currentUserId}
+                    onClose={() => setShowConversationsPanel(false)}
+                  />
+                </div>
+              ) : null}
+            </div>
             <ThemeToggle />
             <Button variant="outline" size="sm" asChild>
               <Link href={logoutHref}>Sign out</Link>
@@ -188,7 +470,12 @@ export function AppShell({ user, children, unreadNotifications = 0, avatarUrl }:
           <div className="flex gap-2 overflow-x-auto rounded-3xl border border-soft bg-surface-card p-3 shadow-soft">
             {links.map((link) => {
               const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
-              const showNotificationBadge = link.href === "/notifications" && notificationCount > 0;
+              const badgeValue = link.href === "/notifications"
+                ? notificationCount
+                : link.href === "/chat"
+                  ? conversationUnreadTotal
+                  : 0;
+              const showBadge = badgeValue > 0;
               return (
                 <Link
                   key={`mobile-${link.href}`}
@@ -202,9 +489,9 @@ export function AppShell({ user, children, unreadNotifications = 0, avatarUrl }:
                 >
                   <link.icon className="h-4 w-4" />
                   <span>{link.label}</span>
-                  {showNotificationBadge ? (
+                  {showBadge ? (
                     <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
-                      {Math.min(notificationCount, 99)}
+                      {Math.min(badgeValue, 99)}
                     </span>
                   ) : null}
                 </Link>

@@ -144,6 +144,15 @@ export async function submitDonorApplication(formData: FormData): Promise<Action
   const medicalHistoryUploads = formData.getAll("medicalHistoryImages");
   const medicalHistoryFiles: File[] = medicalHistoryUploads.filter((entry): entry is File => entry instanceof File && entry.size > 0);
 
+  if (medicalHistoryFiles.length > 6) {
+    return failure("Upload up to 6 supporting medical documents.");
+  }
+
+  const totalMedicalSize = medicalHistoryFiles.reduce((sum, file) => sum + file.size, 0);
+  if (totalMedicalSize > 15 * 1024 * 1024) {
+    return failure("Supporting documents must be under 15MB in total.");
+  }
+
   const medicalImagePaths: string[] = [];
 
   for (const file of medicalHistoryFiles) {
@@ -226,6 +235,15 @@ export async function updateDonorApplication(formData: FormData): Promise<Action
 
   const medicalHistoryUploads = formData.getAll("medicalHistoryImages");
   const medicalHistoryFiles: File[] = medicalHistoryUploads.filter((entry): entry is File => entry instanceof File && entry.size > 0);
+
+  if (medicalHistoryFiles.length > 6) {
+    return failure("Upload up to 6 supporting medical documents.");
+  }
+
+  const totalMedicalSize = medicalHistoryFiles.reduce((sum, file) => sum + file.size, 0);
+  if (totalMedicalSize > 15 * 1024 * 1024) {
+    return failure("Supporting documents must be under 15MB in total.");
+  }
 
   const newMedicalImages: string[] = [];
 

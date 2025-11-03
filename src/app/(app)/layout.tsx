@@ -93,7 +93,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             isRead: false,
           },
           _count: {
-            senderId: true,
+            _all: true,
           },
         }),
       ]);
@@ -115,7 +115,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       const unreadLookup = new Map<number, number>();
       unreadGroups.forEach((group) => {
         if (typeof group.senderId === "number") {
-          unreadLookup.set(group.senderId, group._count.senderId);
+          unreadLookup.set(group.senderId, group._count._all ?? 0);
         }
       });
 

@@ -6,10 +6,9 @@ import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { chatMessageSchema } from "@/lib/validators/chat";
 import { emitToUser } from "@/lib/socket-server";
-import { createNotification } from "@/server/services/notification";
 import { failure, success, type ActionState } from "./types";
 
-const REVALIDATE_PATHS = ["/chat", "/notifications"];
+const REVALIDATE_PATHS = ["/chat"];
 
 const ensureAuthenticatedUser = async () => {
   const session = await auth();
@@ -108,13 +107,6 @@ export async function sendChatMessage(formData: FormData): Promise<ActionState<{
       data: {
         isRead: true,
       },
-    });
-
-    await createNotification({
-      recipientId: values.receiverId,
-      senderId: authResult.userId,
-      message: `${authResult.sessionUser?.name ?? authResult.sessionUser?.email ?? "Someone"} sent you a message`,
-      link: `/chat?user=${authResult.userId}`,
     });
 
     const receiverUnreadFromSender = await prisma.chatMessage.count({

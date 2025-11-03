@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,7 +44,17 @@ export function ConversationHoverPanel({ conversations, currentUserId, onClose }
     <div className="w-[22rem] max-w-[calc(100vw-2rem)] rounded-3xl border border-soft bg-surface-card text-primary shadow-xl">
       <div className="flex items-center justify-between gap-2 border-b border-soft/60 bg-[var(--color-surface-primary-soft)] px-5 pb-4 pt-5">
         <div>
-          <p className="text-sm font-semibold text-primary">Recent conversations</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold text-primary">Recent conversations</p>
+            {unreadTotal > 0 ? (
+              <Badge
+                variant="secondary"
+                className="bg-[var(--color-primary-start)] text-white shadow-sm border-transparent"
+              >
+                {unreadTotal} unread
+              </Badge>
+            ) : null}
+          </div>
           <p className="text-xs text-secondary">
             {unreadTotal > 0 ? `${unreadTotal} unread messages` : "All chats are up to date"}
           </p>
@@ -59,6 +70,8 @@ export function ConversationHoverPanel({ conversations, currentUserId, onClose }
           conversations.map((conversation) => {
             const avatar = resolveAvatar(conversation.partnerAvatar ?? null);
             const isIncoming = currentUserId === null ? true : conversation.lastSenderId !== currentUserId;
+            const unreadCount = conversation.unreadCount ?? 0;
+            const hasUnread = unreadCount > 0 && isIncoming;
             const directionLabel = isIncoming
               ? `Received from ${conversation.partnerName}`
               : `Sent to ${conversation.partnerName}`;
@@ -72,7 +85,12 @@ export function ConversationHoverPanel({ conversations, currentUserId, onClose }
                 key={conversation.partnerId}
                 href={`/chat?user=${conversation.partnerId}`}
                 onClick={onClose}
-                className="group flex items-start gap-3 rounded-2xl border border-soft bg-[var(--color-surface-panel)] p-4 text-sm transition-colors hover:border-[var(--color-primary-start)]/40 hover:bg-[var(--color-surface-primary-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-primary)]"
+                className={cn(
+                  "group flex items-start gap-3 rounded-2xl border px-4 py-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-primary)]",
+                  hasUnread
+                    ? "border-[var(--color-primary-start)] bg-[var(--color-primary-start)]/12 shadow-soft"
+                    : "border-soft bg-[var(--color-surface-panel)] hover:border-[var(--color-primary-start)]/40 hover:bg-[var(--color-surface-primary-strong)]",
+                )}
               >
                 <Avatar
                   src={avatar}
@@ -85,14 +103,24 @@ export function ConversationHoverPanel({ conversations, currentUserId, onClose }
                     <p className="truncate text-sm font-semibold text-primary group-hover:text-primary">
                       {conversation.partnerName}
                     </p>
-                    {conversation.unreadCount > 0 ? (
-                      <Badge className="bg-[var(--color-primary-start)]/10 text-[var(--color-primary-start)]">
-                        {conversation.unreadCount} new
+                    {unreadCount > 0 ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-[var(--color-primary-start)] text-white border-transparent shadow-sm"
+                      >
+                        {unreadCount} new
                       </Badge>
                     ) : null}
                   </div>
                   <p className="text-xs uppercase tracking-wide text-muted">{directionLabel}</p>
-                  <p className="mt-1 text-sm text-secondary">{messageSnippet}</p>
+                  <p
+                    className={cn(
+                      "mt-1 text-sm",
+                      hasUnread ? "font-semibold text-primary" : "text-secondary",
+                    )}
+                  >
+                    {messageSnippet}
+                  </p>
                   <div className="mt-2 flex items-center justify-between text-xs text-muted">
                     <span>@{conversation.partnerUsername}</span>
                     <span>{formatRelative(conversation.lastMessageAt)}</span>

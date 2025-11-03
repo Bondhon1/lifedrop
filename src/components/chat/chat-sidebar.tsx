@@ -27,10 +27,19 @@ export function ChatSidebar({ friends }: ChatSidebarProps) {
     );
   }
 
+  const totalUnread = friends.reduce((sum, friend) => sum + (friend.unreadCount ?? 0), 0);
+
   return (
     <aside className="flex h-full flex-col gap-4 rounded-3xl border border-soft bg-surface-card p-4">
       <header className="px-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-secondary">Conversations</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-secondary">Conversations</h2>
+          {totalUnread > 0 ? (
+            <Badge className="bg-[var(--color-primary-start)] text-white">
+              {Math.min(totalUnread, 99)}
+            </Badge>
+          ) : null}
+        </div>
       </header>
       <nav className="flex-1 space-y-2 overflow-y-auto pr-2">
         {friends.map((friend) => (
@@ -48,7 +57,7 @@ export function ChatSidebar({ friends }: ChatSidebarProps) {
                 {friend.bloodGroup ? <p className="text-xs text-muted">{friend.bloodGroup}</p> : null}
               </div>
               {friend.unreadCount > 0 ? (
-                <Badge variant="secondary" className="ml-2">
+                <Badge className="ml-2 bg-[var(--color-primary-start)] text-white">
                   {Math.min(friend.unreadCount, 99)}
                 </Badge>
               ) : null}

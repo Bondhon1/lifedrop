@@ -114,14 +114,14 @@ export default function Home() {
               href="/register"
               className="group inline-flex items-center gap-2 rounded-full bg-primary-solid px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:opacity-90"
             >
-              Get Started
+              Register
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
-              href="/demo"
+              href="/login"
               className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border-primary)] px-6 py-3 text-sm font-semibold text-primary transition hover:text-secondary"
             >
-              Book a demo
+              Log in
             </Link>
           </div>
           <div className="flex flex-wrap gap-6 text-sm text-muted">
@@ -138,7 +138,7 @@ export default function Home() {
           <div className="absolute inset-0 rounded-[48px] bg-surface-primary-soft blur-2xl" />
           <div className="relative overflow-hidden rounded-[32px] border border-subtle bg-surface-card shadow-card">
             <Image
-              src="/images/hero-illustration.svg"
+              src="/images/hero-illustration.png"
               alt="Coordinators matching blood donors"
               width={640}
               height={480}

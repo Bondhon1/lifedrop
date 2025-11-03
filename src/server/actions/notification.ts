@@ -22,7 +22,7 @@ const ensureAuthenticatedUser = async () => {
 };
 
 const revalidateNotificationViews = () => {
-  ["/notifications", "/dashboard", "/feed", "/requests"].forEach((path) => revalidatePath(path));
+  ["/notifications", "/feed", "/requests"].forEach((path) => revalidatePath(path));
 };
 
 export async function markNotificationRead(notificationId: number): Promise<ActionState<{ unreadCount: number }>> {

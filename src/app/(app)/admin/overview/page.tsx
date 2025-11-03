@@ -18,7 +18,7 @@ export default async function AdminOverviewPage() {
   }
 
   if (!user.isAdmin) {
-    redirect("/dashboard");
+    redirect("/feed");
   }
 
   const [

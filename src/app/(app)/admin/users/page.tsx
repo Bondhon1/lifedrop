@@ -13,7 +13,7 @@ export default async function AdminUserDirectoryPage() {
   }
 
   if (!user.isAdmin) {
-    redirect("/dashboard");
+    redirect("/feed");
   }
 
   const weekStart = new Date();

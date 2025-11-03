@@ -11,7 +11,7 @@ import { saveImageFile } from "@/lib/storage";
 import { failure, success, type ActionState } from "./types";
 import type { SessionUser } from "@/lib/auth";
 
-const REVALIDATE_PATHS = ["/feed", "/requests", "/dashboard", "/notifications"];
+const REVALIDATE_PATHS = ["/feed", "/requests", "/notifications"];
 
 const ensureAuthenticatedUser = async () => {
   const session = await auth();

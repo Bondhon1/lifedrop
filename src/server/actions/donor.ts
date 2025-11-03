@@ -27,7 +27,7 @@ async function requireAdmin(): Promise<boolean> {
   return Boolean(sessionUser?.isAdmin);
 }
 
-const ADMIN_REVALIDATE_PATHS = ["/donors", "/dashboard", "/admin/overview", "/admin/donors"] as const;
+const ADMIN_REVALIDATE_PATHS = ["/donors", "/admin/overview", "/admin/donors"] as const;
 
 function revalidateAdminDonorViews() {
   ADMIN_REVALIDATE_PATHS.forEach((path) => revalidatePath(path));
@@ -182,7 +182,7 @@ export async function submitDonorApplication(formData: FormData): Promise<Action
     return failure("We couldn’t save your application right now. Please try again later.");
   }
 
-  ["/donors", "/profile", "/dashboard"].forEach((path) => revalidatePath(path));
+  ["/donors", "/profile"].forEach((path) => revalidatePath(path));
 
   return success({ message: "Your application was submitted. Our team will review it shortly." });
 }

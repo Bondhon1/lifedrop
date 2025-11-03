@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
-import { addDays, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -13,7 +13,6 @@ const PAGE_SIZE = 6;
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"] as const;
 const URGENCY_OPTIONS = ["Normal", "Urgent", "Critical"] as const;
-const STATUS_OPTIONS = ["Open", "Pending", "Fulfilled", "Closed"] as const;
 
 type FeedPageProps = {
   searchParams?: Promise<Record<string, string | string[]>>;
@@ -23,7 +22,6 @@ type FeedFilters = {
   page?: string;
   bloodGroup?: string;
   urgency?: string;
-  status?: string;
 };
 
 const toSingleValue = (value: string | string[] | undefined): string | undefined => {
@@ -42,7 +40,6 @@ const createHref = (current: FeedFilters, overrides: Partial<FeedFilters>) => {
 
   if (merged.bloodGroup) params.set("bloodGroup", merged.bloodGroup);
   if (merged.urgency) params.set("urgency", merged.urgency);
-  if (merged.status) params.set("status", merged.status);
   if (merged.page) params.set("page", merged.page);
 
   const query = params.toString();
@@ -63,7 +60,6 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
     page: toSingleValue(resolvedSearchParams.page),
     bloodGroup: toSingleValue(resolvedSearchParams.bloodGroup),
     urgency: toSingleValue(resolvedSearchParams.urgency),
-    status: toSingleValue(resolvedSearchParams.status),
   };
 
   const page = Math.max(1, Number(rawFilters.page) || 1);
@@ -85,34 +81,8 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
     where.urgencyStatus = activeFilters.urgency;
   }
 
-  if (activeFilters.status) {
-    where.status = activeFilters.status;
-  }
 
-  const locationAwareWhere: Prisma.BloodRequestWhereInput = {
-    ...where,
-    latitude: { not: null },
-    longitude: { not: null },
-  };
-
-  const criticalWhere: Prisma.BloodRequestWhereInput = {
-    ...where,
-  };
-
-  if (!activeFilters.urgency) {
-    criticalWhere.urgencyStatus = "Critical";
-  }
-
-  const closingSoonWhere: Prisma.BloodRequestWhereInput = {
-    ...where,
-    requiredDate: { lte: addDays(new Date(), 2) },
-  };
-
-  if (!activeFilters.status) {
-    closingSoonWhere.status = { in: ["Open", "Pending"] };
-  }
-
-  const [requests, totalMatchingRequests, withLocationCount, criticalCount, closingSoonCount] = await Promise.all([
+  const [requests, totalMatchingRequests] = await Promise.all([
     prisma.bloodRequest.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -150,9 +120,6 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       },
     }),
     prisma.bloodRequest.count({ where }),
-    prisma.bloodRequest.count({ where: locationAwareWhere }),
-    prisma.bloodRequest.count({ where: criticalWhere }),
-    prisma.bloodRequest.count({ where: closingSoonWhere }),
   ]);
 
   const feedItems: BloodRequestFeedItem[] = requests.map((request) => ({
@@ -195,15 +162,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   const activeBadges = [
     activeFilters.bloodGroup ? { key: "bloodGroup", label: `Blood group: ${activeFilters.bloodGroup}` } : null,
     activeFilters.urgency ? { key: "urgency", label: `Urgency: ${activeFilters.urgency}` } : null,
-    activeFilters.status ? { key: "status", label: `Status: ${activeFilters.status}` } : null,
   ].filter(Boolean) as { key: string; label: string }[];
-
-  const stats = [
-    { label: "Matching requests", value: totalMatchingRequests },
-    { label: "Location enabled", value: withLocationCount },
-    { label: "Critical priority", value: criticalCount },
-    { label: "Needed within 48h", value: closingSoonCount },
-  ];
 
   const lastUpdatedRelative = requests.length
     ? formatDistanceToNow(requests[0].updatedAt, { addSuffix: true })
@@ -223,78 +182,44 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
         </Button>
       </header>
 
-      <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-soft bg-surface-card p-5 shadow-soft">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-secondary">Filters</h2>
-          <div className="mt-4 space-y-4 text-secondary">
-            <div>
-              <p className="text-xs font-medium uppercase text-muted">Blood group</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {BLOOD_GROUPS.map((group) => (
-                  <Button
-                    key={group}
-                    asChild
-                    size="sm"
-                    variant={activeFilters.bloodGroup === group ? "primary" : "secondary"}
-                  >
-                    <Link href={createHref(activeFilters, { bloodGroup: group, page: undefined })}>{group}</Link>
-                  </Button>
-                ))}
-                <Button asChild size="sm" variant="ghost">
-                  <Link href={createHref(activeFilters, { bloodGroup: undefined, page: undefined })}>Any</Link>
+      <section className="rounded-2xl border border-soft bg-surface-card p-4 shadow-soft">
+        <div className="flex flex-wrap items-end gap-4 text-secondary">
+          <div className="min-w-[200px]">
+            <p className="text-xs font-medium uppercase text-muted">Blood group</p>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {BLOOD_GROUPS.map((group) => (
+                <Button
+                  key={group}
+                  asChild
+                  size="sm"
+                  variant={activeFilters.bloodGroup === group ? "primary" : "secondary"}
+                >
+                  <Link href={createHref(activeFilters, { bloodGroup: group, page: undefined })}>{group}</Link>
                 </Button>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium uppercase text-muted">Urgency</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {URGENCY_OPTIONS.map((option) => (
-                  <Button
-                    key={option}
-                    asChild
-                    size="sm"
-                    variant={activeFilters.urgency === option ? "primary" : "secondary"}
-                  >
-                    <Link href={createHref(activeFilters, { urgency: option, page: undefined })}>{option}</Link>
-                  </Button>
-                ))}
-                <Button asChild size="sm" variant="ghost">
-                  <Link href={createHref(activeFilters, { urgency: undefined, page: undefined })}>Any</Link>
-                </Button>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium uppercase text-muted">Status</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {STATUS_OPTIONS.map((option) => (
-                  <Button
-                    key={option}
-                    asChild
-                    size="sm"
-                    variant={activeFilters.status === option ? "primary" : "secondary"}
-                  >
-                    <Link href={createHref(activeFilters, { status: option, page: undefined })}>{option}</Link>
-                  </Button>
-                ))}
-                <Button asChild size="sm" variant="ghost">
-                  <Link href={createHref(activeFilters, { status: undefined, page: undefined })}>Any</Link>
-                </Button>
-              </div>
+              ))}
+              <Button asChild size="sm" variant="ghost">
+                <Link href={createHref(activeFilters, { bloodGroup: undefined, page: undefined })}>Any</Link>
+              </Button>
             </div>
           </div>
-        </div>
 
-        <div className="rounded-3xl border border-soft bg-surface-card p-5 shadow-soft">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-secondary">At a glance</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {stats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-4">
-                <p className="text-xs uppercase tracking-wide text-muted">{stat.label}</p>
-                <p className="mt-1 text-2xl font-semibold text-primary">{stat.value}</p>
-              </div>
-            ))}
+          <div className="min-w-[200px]">
+            <p className="text-xs font-medium uppercase text-muted">Urgency</p>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {URGENCY_OPTIONS.map((option) => (
+                <Button
+                  key={option}
+                  asChild
+                  size="sm"
+                  variant={activeFilters.urgency === option ? "primary" : "secondary"}
+                >
+                  <Link href={createHref(activeFilters, { urgency: option, page: undefined })}>{option}</Link>
+                </Button>
+              ))}
+              <Button asChild size="sm" variant="ghost">
+                <Link href={createHref(activeFilters, { urgency: undefined, page: undefined })}>Any</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -310,7 +235,6 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
             href={createHref(activeFilters, {
               bloodGroup: undefined,
               urgency: undefined,
-              status: undefined,
               page: undefined,
             })}
             className="text-xs font-semibold text-[var(--color-text-accent)] underline-offset-4 hover:text-[var(--color-text-accent-hover)] hover:underline"

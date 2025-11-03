@@ -24,7 +24,7 @@ export default async function AdminManageAdminsPage() {
   }
 
   if (!user.isAdmin) {
-    redirect("/dashboard");
+    redirect("/feed");
   }
 
   const currentAdminId = resolveAdminId(user);

@@ -24,7 +24,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams?.get("callbackUrl") ?? "/dashboard";
+  const callbackUrl = searchParams?.get("callbackUrl") ?? "/feed";
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),

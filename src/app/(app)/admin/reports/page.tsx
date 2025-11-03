@@ -13,7 +13,7 @@ export default async function AdminReportsPage() {
   }
 
   if (!user.isAdmin) {
-    redirect("/dashboard");
+    redirect("/feed");
   }
 
   const [openReports, reports] = await Promise.all([

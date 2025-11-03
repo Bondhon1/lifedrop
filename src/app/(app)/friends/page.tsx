@@ -125,13 +125,6 @@ export default async function FriendsPage() {
 
   return (
     <div className="grid gap-10">
-      <header className="rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
-        <h1 className="text-3xl font-semibold text-primary">Connections</h1>
-        <p className="mt-3 max-w-2xl text-sm text-secondary">
-          Manage your confirmed friends, act on pending requests, and keep your donor network close.
-        </p>
-      </header>
-
       <section className="grid gap-4">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-xl font-semibold text-primary">Your friends</h2>

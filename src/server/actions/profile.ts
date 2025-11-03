@@ -102,7 +102,7 @@ export async function updateProfile(formData: FormData): Promise<ActionState<{ m
       },
     });
 
-    ["/profile", "/dashboard", "/requests", "/feed"].forEach((path) => revalidatePath(path));
+  ["/profile", "/requests", "/feed"].forEach((path) => revalidatePath(path));
 
     return success({ message: "Profile updated" });
   } catch (error) {
@@ -174,7 +174,7 @@ export async function updateProfileImages(formData: FormData): Promise<ActionSta
       await deleteStoredFile(currentUser.coverPhoto);
     }
 
-    ["/profile", "/dashboard", "/chat"].forEach((path) => revalidatePath(path));
+  ["/profile", "/chat"].forEach((path) => revalidatePath(path));
 
     return success(uploads);
   } catch (error) {
@@ -266,7 +266,7 @@ export async function verifyEmailToken(token: string): Promise<ActionState<{ ema
     }),
   ]);
 
-  ["/profile", "/dashboard"].forEach((path) => revalidatePath(path));
+  ["/profile"].forEach((path) => revalidatePath(path));
 
   return success({ email: record.identifier });
 }

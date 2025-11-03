@@ -127,10 +127,10 @@ export default function NewBloodRequestPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <Card className="border border-rose-500/25 bg-rose-950/70 shadow-2xl shadow-rose-900/40">
+      <Card className="border border-soft bg-surface-card shadow-soft">
         <CardHeader>
-          <CardTitle className="text-3xl font-semibold text-white">Publish a blood request</CardTitle>
-          <p className="text-sm text-rose-100/80">
+          <CardTitle className="text-3xl font-semibold text-primary">Publish a blood request</CardTitle>
+          <p className="text-sm text-secondary">
             Share clear details so nearby donors can step in quickly. You can edit or close this request later.
           </p>
         </CardHeader>
@@ -262,9 +262,9 @@ export default function NewBloodRequestPage() {
                   ref={imageInputRef}
                   onChange={handleImagesChange}
                 />
-                <p className="text-xs text-rose-100/70">Add up to 6 photos to help volunteers understand the case.</p>
+                <p className="text-xs text-muted">Add up to 6 photos to help volunteers understand the case.</p>
                 {selectedImages.length > 0 ? (
-                  <ul className="space-y-1 text-xs text-rose-100/80">
+                  <ul className="space-y-1 text-xs text-secondary">
                     {selectedImages.map((fileName) => (
                       <li key={fileName} className="truncate">
                         {fileName}

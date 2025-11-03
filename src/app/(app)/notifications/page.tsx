@@ -48,9 +48,9 @@ export default async function NotificationsPage() {
 
   return (
     <div className="grid gap-6">
-      <Card className="border border-rose-500/20 bg-rose-950/70">
+      <Card className="border border-soft bg-surface-card">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-white">Notifications</CardTitle>
+          <CardTitle className="text-2xl font-semibold text-primary">Notifications</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <NotificationList notifications={viewModel} unreadCount={unreadCount} />

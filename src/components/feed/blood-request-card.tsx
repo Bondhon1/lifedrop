@@ -250,23 +250,13 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
             {request.isOwner ? "You created this" : requestIsFulfilled ? "Request fulfilled" : hasResponded ? "You’ve responded" : "I can donate"}
           </Button>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="text-[var(--color-text-accent)] hover:text-[var(--color-text-accent-hover)]"
-          >
+          <Button variant="ghost" size="sm" asChild className="text-primary hover:text-[var(--color-text-accent)]">
             <Link href={`/requests/${request.id}#comments`}>
               <MessageCircle className="mr-2 h-4 w-4" /> Discuss
             </Link>
           </Button>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="text-[var(--color-text-accent)] hover:text-[var(--color-text-accent-hover)]"
-          >
+          <Button variant="ghost" size="sm" asChild className="text-primary hover:text-[var(--color-text-accent)]">
             <Link href={`/requests/${request.id}`}>
               <Share2 className="mr-2 h-4 w-4" /> View details
             </Link>

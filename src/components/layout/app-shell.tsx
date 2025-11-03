@@ -15,14 +15,16 @@ import {
   ClipboardCheck,
   Droplets,
   FileWarning,
-  LayoutDashboard,
   ListChecks,
   MessageCircle,
+  Menu,
   Newspaper,
+  Plus,
   ShieldCheck,
   User,
   UserCog,
   UserPlus,
+  X,
   Users,
 } from "lucide-react";
 import type { SessionUser } from "@/lib/auth";
@@ -34,7 +36,6 @@ const MAX_NOTIFICATION_PREVIEWS = 10;
 const MAX_CONVERSATION_PREVIEWS = 10;
 
 const baseLinks = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, roles: ["USER", "ADMIN"] as const },
   { href: "/feed", label: "News Feed", icon: Newspaper, roles: ["USER", "ADMIN"] as const },
   { href: "/requests", label: "Blood Requests", icon: Droplets, roles: ["USER", "ADMIN"] as const },
   { href: "/donors", label: "Donor Network", icon: Users, roles: ["USER", "ADMIN"] as const },
@@ -89,6 +90,7 @@ export function AppShell({
   );
   const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
   const [showConversationsPanel, setShowConversationsPanel] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const currentUserId = useMemo(() => {
     const rawId = user.id;
@@ -128,6 +130,25 @@ export function AppShell({
   useEffect(() => {
     setConversationItems(initialConversations.slice(0, MAX_CONVERSATION_PREVIEWS));
   }, [initialConversations]);
+
+  useEffect(() => {
+    setIsMobileNavOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isMobileNavOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileNavOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileNavOpen]);
 
   useEffect(() => {
     if (!socket) {
@@ -293,7 +314,7 @@ export function AppShell({
     <div className="grid w-full min-h-screen min-w-0 gap-6 grid-cols-1 lg:grid-cols-[280px_1fr]">
   <aside className="hidden h-full flex-col justify-between rounded-3xl border border-soft bg-surface-sidebar p-6 text-primary shadow-soft lg:flex">
         <div className="grid gap-6">
-          <Link href="/dashboard" className="flex items-center gap-3 text-lg font-semibold text-primary">
+          <Link href="/feed" className="flex items-center gap-3 text-lg font-semibold text-primary">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary bg-surface-card text-[var(--color-text-danger)] shadow-soft">
               <Droplets className="h-5 w-5" />
             </div>
@@ -355,15 +376,134 @@ export function AppShell({
 
       <div className="grid w-full min-w-0 gap-5">
         <header className="flex w-full flex-wrap items-center justify-between gap-4 rounded-3xl border border-soft bg-surface-card px-5 py-4 shadow-soft">
-          <div className="grid gap-1">
-            <p className="text-xs uppercase tracking-[0.35em] text-accent">Welcome back</p>
-            <h2 className="text-2xl font-semibold text-primary leading-tight">
-              {user.name ? `Ready to save lives, ${user.name}?` : "Let’s make a difference today"}
-            </h2>
+          <div className="flex w-full flex-1 items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="mt-1 lg:hidden"
+                aria-label="Open navigation"
+                onClick={() => setIsMobileNavOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <div className="grid gap-1">
+                <p className="text-xs uppercase tracking-[0.35em] text-accent">Welcome back</p>
+                <h2 className="text-2xl font-semibold text-primary leading-tight">
+                  {user.name ? `Ready to save lives, ${user.name}?` : "Let’s make a difference today"}
+                </h2>
+              </div>
+            </div>
+            <div className="hidden flex-shrink-0 items-center gap-3 lg:flex">
+              <Button variant="secondary" size="sm" asChild>
+                <Link href="/requests/new">Create Request</Link>
+              </Button>
+              <div
+                className="relative"
+                onMouseEnter={() => {
+                  setShowNotificationsPanel(true);
+                  setShowConversationsPanel(false);
+                }}
+                onMouseLeave={() => {
+                  setShowNotificationsPanel(false);
+                }}
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  aria-haspopup="dialog"
+                  aria-expanded={showNotificationsPanel}
+                  onClick={() => {
+                    setShowNotificationsPanel((prev) => {
+                      const next = !prev;
+                      if (next) {
+                        setShowConversationsPanel(false);
+                      }
+                      return next;
+                    });
+                  }}
+                >
+                  <Bell className="h-4 w-4" />
+                  {notificationCount > 0 ? (
+                    <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
+                      {Math.min(notificationCount, 99)}
+                    </span>
+                  ) : null}
+                </Button>
+                {showNotificationsPanel ? (
+                  <div className="absolute right-0 z-40 mt-2">
+                    <NotificationHoverPanel
+                      notifications={notificationItems}
+                      unreadCount={notificationCount}
+                      onClose={() => setShowNotificationsPanel(false)}
+                    />
+                  </div>
+                ) : null}
+              </div>
+              <div
+                className="relative"
+                onMouseEnter={() => {
+                  setShowConversationsPanel(true);
+                  setShowNotificationsPanel(false);
+                }}
+                onMouseLeave={() => {
+                  setShowConversationsPanel(false);
+                }}
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  aria-haspopup="dialog"
+                  aria-expanded={showConversationsPanel}
+                  onClick={() => {
+                    setShowConversationsPanel((prev) => {
+                      const next = !prev;
+                      if (next) {
+                        setShowNotificationsPanel(false);
+                      }
+                      return next;
+                    });
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  {conversationUnreadTotal > 0 ? (
+                    <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white shadow">
+                      {Math.min(conversationUnreadTotal, 99)}
+                    </span>
+                  ) : null}
+                </Button>
+                {showConversationsPanel ? (
+                  <div className="absolute right-0 z-40 mt-2">
+                    <ConversationHoverPanel
+                      conversations={conversationItems}
+                      currentUserId={currentUserId}
+                      onClose={() => setShowConversationsPanel(false)}
+                    />
+                  </div>
+                ) : null}
+              </div>
+              <ThemeToggle />
+              <Button variant="outline" size="sm" asChild>
+                <Link href={logoutHref}>Sign out</Link>
+              </Button>
+              <Link
+                href="/profile"
+                className="rounded-full border border-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-[var(--ring-primary)]"
+              >
+                <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? "Profile"} size="sm" className="cursor-pointer" />
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button variant="secondary" size="sm" asChild>
-              <Link href="/requests/new">Create Request</Link>
+          <div className="flex w-full flex-wrap items-center gap-3 lg:hidden">
+            <Button variant="secondary" size="icon" asChild>
+              <Link href="/requests/new" aria-label="Create request">
+                <Plus className="h-4 w-4" />
+              </Link>
             </Button>
             <div
               className="relative"
@@ -400,7 +540,7 @@ export function AppShell({
                 ) : null}
               </Button>
               {showNotificationsPanel ? (
-                <div className="absolute right-0 z-40 mt-2">
+                <div className="absolute left-1/2 top-full z-40 mt-2 w-screen max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:left-auto sm:right-0 sm:w-auto sm:translate-x-0">
                   <NotificationHoverPanel
                     notifications={notificationItems}
                     unreadCount={notificationCount}
@@ -444,7 +584,7 @@ export function AppShell({
                 ) : null}
               </Button>
               {showConversationsPanel ? (
-                <div className="absolute right-0 z-40 mt-2">
+                <div className="absolute left-1/2 top-full z-40 mt-2 w-screen max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:left-auto sm:right-0 sm:w-auto sm:translate-x-0">
                   <ConversationHoverPanel
                     conversations={conversationItems}
                     currentUserId={currentUserId}
@@ -466,44 +606,89 @@ export function AppShell({
           </div>
         </header>
 
-        <nav className="lg:hidden">
-          <div className="flex gap-2 overflow-x-auto rounded-3xl border border-soft bg-surface-card p-3 shadow-soft">
-            {links.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
-              const badgeValue = link.href === "/notifications"
-                ? notificationCount
-                : link.href === "/chat"
-                  ? conversationUnreadTotal
-                  : 0;
-              const showBadge = badgeValue > 0;
-              return (
-                <Link
-                  key={`mobile-${link.href}`}
-                  href={link.href}
-                  className={cn(
-                    "relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold",
-                    isActive
-                      ? "bg-[var(--color-surface-primary-soft)] text-primary shadow-soft"
-                      : "text-secondary hover:bg-[var(--color-surface-primary-soft)] hover:text-primary",
-                  )}
-                >
-                  <link.icon className="h-4 w-4" />
-                  <span>{link.label}</span>
-                  {showBadge ? (
-                    <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
-                      {Math.min(badgeValue, 99)}
-                    </span>
-                  ) : null}
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-
         <main className="grid w-full min-w-0 gap-5 [&>*]:w-full">
           {children}
         </main>
       </div>
+
+      {isMobileNavOpen ? (
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsMobileNavOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col gap-6 overflow-y-auto rounded-tr-3xl rounded-br-3xl border border-soft border-l-0 bg-surface-sidebar p-6 text-primary shadow-2xl">
+            <div className="flex items-center justify-between gap-3">
+              <Link href="/feed" className="flex items-center gap-3 text-lg font-semibold text-primary" onClick={() => setIsMobileNavOpen(false)}>
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-primary bg-surface-card text-[var(--color-text-danger)] shadow-soft">
+                  <Droplets className="h-4 w-4" />
+                </div>
+                Lifedrop
+              </Link>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Close navigation"
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <nav className="grid gap-2">
+              {links.map((link) => {
+                const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+                const badgeValue = link.href === "/notifications"
+                  ? notificationCount
+                  : link.href === "/chat"
+                    ? conversationUnreadTotal
+                    : 0;
+                const showBadge = badgeValue > 0;
+                return (
+                  <Link
+                    key={`drawer-${link.href}`}
+                    href={link.href}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className={cn(
+                      "group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition",
+                      isActive
+                        ? "bg-[var(--color-surface-primary-soft)] text-primary shadow-soft"
+                        : "bg-transparent text-secondary hover:bg-[var(--color-surface-primary-soft)] hover:text-primary",
+                    )}
+                  >
+                    <link.icon className="h-4 w-4" />
+                    <span className="flex-1">{link.label}</span>
+                    {showBadge ? (
+                      <span className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-xs font-bold text-white">
+                        {Math.min(badgeValue, 99)}
+                      </span>
+                    ) : null}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="mt-auto grid gap-3">
+              <div className="flex items-center gap-3 rounded-2xl border border-subtle bg-surface-card p-4 shadow-soft">
+                <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? user.email ?? "User"} className="flex-shrink-0" />
+                <div className="grid gap-1">
+                  <span className="text-sm font-semibold text-primary">{user.name ?? user.email ?? "Member"}</span>
+                  {user.role ? <Badge variant={user.isAdmin ? "secondary" : "default"}>{user.role}</Badge> : null}
+                </div>
+              </div>
+              <Button
+                asChild
+                variant="outline"
+                className="border-transparent bg-[var(--color-primary-start)] text-white hover:bg-[var(--color-primary-end)] hover:text-white focus-visible:text-white"
+              >
+                <Link href={logoutHref}>Sign out</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

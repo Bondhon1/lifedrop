@@ -27,7 +27,7 @@ export default function RegisterPage() {
   });
 
   const [isPending, startTransition] = useTransition();
-  const callbackUrl = "/dashboard";
+  const callbackUrl = "/feed";
 
   const onSubmit = (values: z.infer<typeof registerUserSchema>) => {
     const formData = new FormData();

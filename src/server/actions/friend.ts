@@ -18,7 +18,7 @@ async function requireUser() {
   return { userId, sessionUser };
 }
 
-const REVALIDATE = ["/friends", "/chat", "/dashboard"];
+const REVALIDATE = ["/friends", "/chat"];
 
 export async function sendFriendRequest(targetUserId: number): Promise<ActionState<{ requestId: number }>> {
   const context = await requireUser();

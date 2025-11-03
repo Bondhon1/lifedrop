@@ -8,7 +8,7 @@ import { commentSchema } from "@/lib/validators/comment";
 import { createNotification } from "@/server/services/notification";
 import { failure, success, type ActionState } from "./types";
 
-const SHARED_REVALIDATE_PATHS = ["/feed", "/requests", "/dashboard", "/notifications"];
+const SHARED_REVALIDATE_PATHS = ["/feed", "/requests", "/notifications"];
 
 const ensureAuthenticatedUser = async () => {
   const session = await auth();

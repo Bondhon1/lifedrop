@@ -13,7 +13,7 @@ export default async function AdminDonorModerationPage() {
   }
 
   if (!user.isAdmin) {
-    redirect("/dashboard");
+    redirect("/feed");
   }
 
   const [pendingCount, approvedCount, rejectedCount, applications] = await Promise.all([

@@ -1,38 +1,40 @@
+import * as React from "react";
+
+import { cva, type VariantProps } from "class-variance-authority";
+
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
 
-export function Alert({
-  title,
-  description,
-  variant = "default",
-  className,
-  actions,
-}: {
-  title: string;
-  description?: ReactNode;
-  variant?: "default" | "success" | "destructive";
-  className?: string;
-  actions?: ReactNode;
-}) {
-  const variantStyles = {
-    default: "border-soft bg-surface-primary-soft text-primary",
-    success: "border-success bg-success-soft text-success",
-    destructive: "border-danger bg-danger-soft text-[var(--color-text-danger)]",
-  } as const;
+const alertVariants = cva("rounded-2xl border p-5 shadow-soft", {
+	variants: {
+		variant: {
+			default: "border-soft bg-surface-card text-primary",
+			info: "border-sky-400/30 bg-sky-950/60 text-sky-50",
+			success: "border-emerald-500/30 bg-emerald-950/60 text-emerald-50",
+			warning: "border-amber-400/40 bg-amber-950/70 text-amber-50",
+			danger: "border-rose-500/30 bg-rose-950/70 text-rose-50",
+		},
+	},
+	defaultVariants: {
+		variant: "default",
+	},
+});
 
-  return (
-    <div
-      className={cn(
-        "flex items-start justify-between gap-4 rounded-2xl border px-5 py-4",
-        variantStyles[variant],
-        className,
-      )}
-    >
-      <div className="grid gap-1">
-        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{title}</p>
-        {description ? <div className="text-sm leading-relaxed text-secondary">{description}</div> : null}
-      </div>
-      {actions}
-    </div>
-  );
-}
+type AlertProps = React.HTMLAttributes<HTMLDivElement> &
+	VariantProps<typeof alertVariants> & {
+		title?: React.ReactNode;
+		description?: React.ReactNode;
+	};
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+	({ className, variant, title, description, children, ...props }, ref) => (
+		<div ref={ref} className={cn(alertVariants({ variant }), className)} role="status" {...props}>
+			{title ? <h3 className="text-base font-semibold leading-tight">{title}</h3> : null}
+			{description ? <p className="mt-2 text-sm text-inherit/80">{description}</p> : null}
+			{children}
+		</div>
+	),
+);
+
+Alert.displayName = "Alert";
+
+export { Alert, alertVariants };

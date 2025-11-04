@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { chatMessageSchema } from "@/lib/validators/chat";
-import { emitToUser } from "@/lib/socket-server";
+import { publishToUser } from "@/lib/realtime";
 import { failure, success, type ActionState } from "./types";
 
 const REVALIDATE_PATHS = ["/chat"];
@@ -138,7 +138,7 @@ export async function sendChatMessage(formData: FormData): Promise<ActionState<{
       bloodGroup: message.sender.bloodGroup,
     } as const;
 
-    emitToUser(values.receiverId, "chat:new-message", {
+    void publishToUser(values.receiverId, "chat:new-message", {
       id: message.id,
       content: values.text,
       createdAt: message.createdAt.toISOString(),
@@ -149,7 +149,7 @@ export async function sendChatMessage(formData: FormData): Promise<ActionState<{
       totalUnread: receiverTotalUnread,
     });
 
-    emitToUser(authResult.userId, "chat:new-message", {
+    void publishToUser(authResult.userId, "chat:new-message", {
       id: message.id,
       content: values.text,
       createdAt: message.createdAt.toISOString(),
@@ -196,7 +196,7 @@ export async function markConversationRead(partnerId: number): Promise<ActionSta
     },
   });
 
-  emitToUser(authResult.userId, "chat:conversation-read", {
+  void publishToUser(authResult.userId, "chat:conversation-read", {
     partnerId,
     totalUnread: unreadCount,
   });

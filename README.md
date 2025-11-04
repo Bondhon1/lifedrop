@@ -10,7 +10,7 @@ A ground-up TypeScript rebuild of the BloodDonationTS platform using **Next.js 1
 
 - **Frontend**: Next.js 14 (App Router), React 19, Tailwind CSS 4, React Query, Radix UI primitives
 - **Backend**: Route Handlers + Server Actions, NextAuth (credentials), Prisma ORM (PostgreSQL / Neon)
-- **Real-time**: Socket.io for chat and live notifications
+- **Real-time**: Ably channels for chat and live notifications
 - **Utilities**: Zod validation, React Hook Form, bcrypt password hashing, Lucide icon set
 
 ## Getting started
@@ -34,6 +34,7 @@ Then visit `http://localhost:3000`.
 | `DATABASE_URL` | Neon PostgreSQL connection string |
 | `NEXTAUTH_SECRET` | Random 32+ char string for JWT encryption |
 | `NEXTAUTH_URL` | App base URL (default `http://localhost:3000`) |
+| `ABLY_API_KEY` | Ably API key (used by token route for realtime messaging) |
 | `SMTP_HOST` | SMTP server hostname (e.g. `smtp.gmail.com`) |
 | `SMTP_PORT` | SMTP port (e.g. `587` for TLS) |
 | `SMTP_SECURE` | Set `true` for SMTPS/465, `false` for STARTTLS |
@@ -102,14 +103,14 @@ See [`docs/migration-plan.md`](./docs/migration-plan.md) for the rolling status 
 - **Tailwind-first** components using `class-variance-authority` + `tailwind-merge`
 - **Prisma + Zod** sharing schema contracts to avoid drift
 - **React Query** for client caches and optimistic updates (mutations live under `src/hooks` soon)
-- **Socket.io** connection in a dedicated client provider for chat/notifications (coming next phase)
+- **Ably** connection handled by a dedicated client provider for chat/notifications
 
 ## Migration notes
 
 - The entire Flask codebase is preserved under `copy/` for cross-checking business logic.
 - Database tables map 1:1 to Prisma models (see `schema.prisma`). Additional enums were added for `UserRole`.
 - File uploads (profile pics, medical docs, chat attachments) now default to Vercel Blob in production and fall back to the local disk during development.
-- Chat + notifications will leverage a Next.js Route Handler with a shared Socket.io server instance.
+- Chat + notifications now rely on Ably channels issued via a Next.js token route; no long-lived Node server required on Vercel.
 
 ## Testing & quality
 

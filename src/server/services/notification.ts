@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { emitToUser } from "@/lib/socket-server";
+import { publishToUser } from "@/lib/realtime";
 
 export type CreateNotificationParams = {
   message: string;
@@ -48,7 +48,7 @@ export async function createNotification(params: CreateNotificationParams) {
       },
     });
 
-    emitToUser(notification.recipientId, "notification:new", {
+    void publishToUser(notification.recipientId, "notification:new", {
       notification: {
         id: notification.id,
         message: notification.message,

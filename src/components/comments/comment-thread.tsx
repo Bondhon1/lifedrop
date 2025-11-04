@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition, type FormEvent } from "react";
+import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "react-hot-toast";
 import { MessageCircle, SendHorizontal, ThumbsUp } from "lucide-react";
@@ -110,7 +110,7 @@ export function CommentThread({ requestId, comments }: CommentThreadProps) {
           placeholder="Offer support, coordinate donors, or share an update."
           className="min-h-[120px] resize-y"
           value={commentText}
-          onChange={(event) => setCommentText(event.target.value)}
+          onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setCommentText(event.target.value)}
           disabled={isPending}
         />
         <div className="flex items-center justify-end">

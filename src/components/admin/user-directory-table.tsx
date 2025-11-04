@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import type { ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { toast } from "react-hot-toast";
@@ -92,7 +93,7 @@ export function UserDirectoryTable({ users }: UserDirectoryTableProps) {
         </div>
         <Input
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}
           placeholder="Search community members"
           className="w-full border-rose-500/40 bg-rose-900/40 text-white placeholder:text-rose-100/40 md:w-72"
         />

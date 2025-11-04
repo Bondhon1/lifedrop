@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition, type FormEvent } from "react";
+import { useEffect, useRef, useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "react-hot-toast";
 import { sendChatMessage, markConversationRead } from "@/server/actions/chat";
@@ -272,7 +272,7 @@ export function ChatConversation({ currentUserId, partner, messages }: ChatConve
         <Textarea
           placeholder="Write a message…"
           value={text}
-          onChange={(event) => setText(event.target.value)}
+          onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setText(event.target.value)}
           disabled={isPending}
           className="min-h-[80px] resize-y"
         />

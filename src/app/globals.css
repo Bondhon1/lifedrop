@@ -58,7 +58,6 @@
   --gradient-secondary: linear-gradient(0deg, var(--color-secondary-start), var(--color-secondary-start));
   --gradient-page: linear-gradient(0deg, var(--color-bg-page), var(--color-bg-page));
   --gradient-sidebar: linear-gradient(0deg, var(--color-surface-sidebar), var(--color-surface-sidebar));
-
   --ring-primary: rgba(211, 16, 39, 0.32);
   --ring-secondary: rgba(0, 114, 255, 0.28);
 
@@ -130,7 +129,6 @@
   --gradient-secondary: linear-gradient(0deg, rgba(0, 114, 255, 0.85), rgba(0, 114, 255, 0.85));
   --gradient-page: linear-gradient(0deg, var(--color-bg-page), var(--color-bg-page));
   --gradient-sidebar: linear-gradient(0deg, var(--color-surface-sidebar), var(--color-surface-sidebar));
-
   --ring-primary: rgba(234, 56, 77, 0.5);
   --ring-secondary: rgba(0, 114, 255, 0.5);
 

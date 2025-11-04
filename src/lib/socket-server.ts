@@ -1,59 +1,22 @@
-import type { Server as IOServer } from "socket.io";
+/*
+ * @deprecated This module previously exposed Socket.IO helpers. It now bridges to the Ably-based implementation
+ * to avoid breaking imports that haven’t been updated yet. Prefer importing from '@/lib/realtime'.
+ */
 
-type SocketGlobals = typeof globalThis & {
-  __ioServer?: IOServer;
-  __userSockets?: Map<number, Set<string>>;
-  __socketUsers?: Map<string, number>;
+import { publishToUser } from "./realtime";
+
+export const setIOServer = () => {
+  console.warn("setIOServer is deprecated. Socket.IO support has been removed.");
 };
 
-const globalForSocket = globalThis as SocketGlobals;
-
-if (!globalForSocket.__userSockets) {
-  globalForSocket.__userSockets = new Map();
-}
-
-if (!globalForSocket.__socketUsers) {
-  globalForSocket.__socketUsers = new Map();
-}
-
-export const setIOServer = (io: IOServer) => {
-  globalForSocket.__ioServer = io;
+export const registerSocket = () => {
+  console.warn("registerSocket is deprecated. Socket.IO support has been removed.");
 };
 
-export const getIOServer = () => globalForSocket.__ioServer;
-
-export const registerSocket = (userId: number, socketId: string) => {
-  const userSockets = globalForSocket.__userSockets!;
-  const socketUsers = globalForSocket.__socketUsers!;
-  const sockets = userSockets.get(userId) ?? new Set<string>();
-  sockets.add(socketId);
-  userSockets.set(userId, sockets);
-  socketUsers.set(socketId, userId);
-};
-
-export const unregisterSocket = (socketId: string) => {
-  const socketUsers = globalForSocket.__socketUsers!;
-  const userSockets = globalForSocket.__userSockets!;
-  const userId = socketUsers.get(socketId);
-  if (userId === undefined) {
-    return;
-  }
-
-  socketUsers.delete(socketId);
-  const sockets = userSockets.get(userId);
-  if (sockets) {
-    sockets.delete(socketId);
-    if (sockets.size === 0) {
-      userSockets.delete(userId);
-    }
-  }
+export const unregisterSocket = () => {
+  console.warn("unregisterSocket is deprecated. Socket.IO support has been removed.");
 };
 
 export const emitToUser = (userId: number, event: string, payload: unknown) => {
-  const io = getIOServer();
-  if (!io) {
-    return;
-  }
-
-  io.to(`user:${userId}`).emit(event, payload);
+  void publishToUser(userId, event, payload);
 };

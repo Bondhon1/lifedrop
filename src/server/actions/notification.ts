@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { emitToUser } from "@/lib/socket-server";
+import { publishToUser } from "@/lib/realtime";
 import { failure, success, type ActionState } from "./types";
 
 const ensureAuthenticatedUser = async () => {
@@ -52,12 +52,12 @@ export async function markNotificationRead(notificationId: number): Promise<Acti
     },
   });
 
-  emitToUser(authResult.userId, "notification:updated", {
+  void publishToUser(authResult.userId, "notification:updated", {
     notificationId,
     isRead: true,
   });
 
-  emitToUser(authResult.userId, "notification:unread-count", {
+  void publishToUser(authResult.userId, "notification:unread-count", {
     unreadCount,
   });
 
@@ -82,7 +82,7 @@ export async function markAllNotificationsRead(): Promise<ActionState<{ unreadCo
     },
   });
 
-  emitToUser(authResult.userId, "notification:all-read", {
+  void publishToUser(authResult.userId, "notification:all-read", {
     unreadCount: 0,
   });
 

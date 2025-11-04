@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="dropGradient" x1="20" y1="8" x2="44" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d31027" />
+      <stop offset="1" stop-color="#ea384d" />
+    </linearGradient>
+    <filter id="softShadow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse">
+      <feOffset dy="2" />
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.2 0" />
+      <feBlend in="SourceGraphic" mode="normal" />
+    </filter>
+  </defs>
+  <g filter="url(#softShadow)">
+    <path d="M32 6c-6.8 9.4-16 19.1-16 28.8C16 44.6 23.2 52 32 52s16-7.4 16-17.2C48 25.1 38.8 15.4 32 6z" fill="url(#dropGradient)" />
+  </g>
+  <path d="M24 34c0 4.4 3.6 8 8 8 2.2 0 4.3-.9 5.7-2.3" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.75" />
+</svg>

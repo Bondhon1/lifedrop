@@ -21,6 +21,7 @@ type BloodRequestMapProps = {
 };
 
 const DEFAULT_CENTER: [number, number] = [23.777176, 90.399452];
+const SINGLE_POINT_ZOOM = 13;
 
 export function BloodRequestMap({ requests, className }: BloodRequestMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -122,7 +123,12 @@ export function BloodRequestMap({ requests, className }: BloodRequestMapProps) {
         bounds.extend(marker.getLatLng());
       });
 
-      map.fitBounds(bounds.pad(0.25));
+      if (points.length === 1) {
+        const [single] = points;
+        map.setView([single.latitude as number, single.longitude as number], SINGLE_POINT_ZOOM);
+      } else {
+        map.fitBounds(bounds.pad(0.25));
+      }
     }
 
     void initializeMap();

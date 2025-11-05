@@ -43,10 +43,23 @@ export function LocationPicker({ onError }: LocationPickerProps) {
       if (!markerRef.current) {
         markerRef.current = L.marker(coords, { icon: iconRef.current ?? undefined }).addTo(mapInstanceRef.current);
       } else {
-        markerRef.current.setLatLng(coords);
+        try {
+          markerRef.current.setLatLng(coords);
+        } catch (error) {
+          markerRef.current.remove();
+          markerRef.current = L.marker(coords, { icon: iconRef.current ?? undefined }).addTo(mapInstanceRef.current);
+        }
+        if (!markerRef.current.getElement()) {
+          markerRef.current.remove();
+          markerRef.current = L.marker(coords, { icon: iconRef.current ?? undefined }).addTo(mapInstanceRef.current);
+        }
       }
 
-      mapInstanceRef.current.flyTo(coords, Math.max(mapInstanceRef.current.getZoom(), 14), { duration: 0.35 });
+      try {
+        mapInstanceRef.current.flyTo(coords, Math.max(mapInstanceRef.current.getZoom(), 14), { duration: 0.35 });
+      } catch (error) {
+        // Ignore flyTo issues if the map is mid-teardown; marker already placed.
+      }
     },
     [],
   );

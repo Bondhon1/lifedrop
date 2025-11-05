@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
-import { formatDistanceToNow } from "date-fns";
+import { differenceInHours, formatDistanceToNow } from "date-fns";
 import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -13,6 +13,304 @@ const PAGE_SIZE = 6;
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"] as const;
 const URGENCY_OPTIONS = ["Normal", "Urgent", "Critical"] as const;
+
+const bloodRequestInclude = {
+  user: {
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      bloodGroup: true,
+    },
+  },
+  division: {
+    select: {
+      name: true,
+      latitude: true,
+      longitude: true,
+    },
+  },
+  district: {
+    select: {
+      name: true,
+      latitude: true,
+      longitude: true,
+    },
+  },
+  upazila: {
+    select: {
+      name: true,
+      latitude: true,
+      longitude: true,
+    },
+  },
+  upvotes: {
+    select: {
+      id: true,
+    },
+  },
+  donorResponses: {
+    select: {
+      id: true,
+    },
+  },
+  _count: {
+    select: {
+      comments: true,
+    },
+  },
+} satisfies Prisma.BloodRequestInclude;
+
+type BloodRequestWithRelations = Prisma.BloodRequestGetPayload<{ include: typeof bloodRequestInclude }>;
+
+type Coordinates = {
+  lat: number;
+  lng: number;
+};
+
+type ViewerContext = {
+  coordinates: Coordinates | null;
+  bloodGroup: string | null;
+  address: string | null;
+  divisionId: number | null;
+  districtId: number | null;
+  upazilaId: number | null;
+  divisionName: string | null;
+  districtName: string | null;
+  upazilaName: string | null;
+};
+
+const BLOOD_COMPATIBILITY: Record<string, readonly string[]> = {
+  "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+  "O+": ["O+", "A+", "B+", "AB+"],
+  "A-": ["A-", "A+", "AB-", "AB+"],
+  "A+": ["A+", "AB+"],
+  "B-": ["B-", "B+", "AB-", "AB+"],
+  "B+": ["B+", "AB+"],
+  "AB-": ["AB-", "AB+"],
+  "AB+": ["AB+"],
+} as const;
+
+const URGENCY_SCORES: Record<string, number> = {
+  Normal: 12,
+  Urgent: 28,
+  Critical: 45,
+};
+
+const EARTH_RADIUS_KM = 6371;
+
+const MAX_DISTANCE_PRIORITY_KM = 200;
+const UPCOMING_WINDOW_HOURS = 120;
+const RECENCY_WINDOW_HOURS = 168;
+const PAST_DATE_PENALTY = 140;
+const NON_OPEN_STATUS_PENALTY = 80;
+
+const toRadians = (value: number) => (value * Math.PI) / 180;
+
+const computeDistanceKm = (a: Coordinates, b: Coordinates) => {
+  const dLat = toRadians(b.lat - a.lat);
+  const dLng = toRadians(b.lng - a.lng);
+  const lat1 = toRadians(a.lat);
+  const lat2 = toRadians(b.lat);
+
+  const haversine =
+    Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+
+  const c = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+  return EARTH_RADIUS_KM * c;
+};
+
+const extractCoordinates = (value?: { latitude: number | null; longitude: number | null } | null): Coordinates | null => {
+  if (typeof value?.latitude === "number" && typeof value.longitude === "number") {
+    return { lat: value.latitude, lng: value.longitude };
+  }
+  return null;
+};
+
+const getUserContext = (profile: {
+  bloodGroup: string | null;
+  address: string | null;
+  divisionId: number | null;
+  districtId: number | null;
+  upazilaId: number | null;
+  division: { name: string | null; latitude: number | null; longitude: number | null } | null;
+  district: { name: string | null; latitude: number | null; longitude: number | null } | null;
+  upazila: { name: string | null; latitude: number | null; longitude: number | null } | null;
+} | null): ViewerContext => {
+  if (!profile) {
+    return {
+      coordinates: null,
+      bloodGroup: null,
+      address: null,
+      divisionId: null,
+      districtId: null,
+      upazilaId: null,
+      divisionName: null,
+      districtName: null,
+      upazilaName: null,
+    };
+  }
+
+  const upazilaCoordinates = extractCoordinates(profile.upazila);
+  const districtCoordinates = extractCoordinates(profile.district);
+  const divisionCoordinates = extractCoordinates(profile.division);
+  const coordinates = upazilaCoordinates ?? districtCoordinates ?? divisionCoordinates ?? null;
+
+  return {
+    coordinates,
+    bloodGroup: profile.bloodGroup,
+    address: profile.address ? profile.address.toLowerCase() : null,
+    divisionId: profile.divisionId,
+    districtId: profile.districtId,
+    upazilaId: profile.upazilaId,
+    divisionName: profile.division?.name ?? null,
+    districtName: profile.district?.name ?? null,
+    upazilaName: profile.upazila?.name ?? null,
+  };
+};
+
+const getRequestCoordinates = (request: BloodRequestWithRelations): Coordinates | null => {
+  if (typeof request.latitude === "number" && typeof request.longitude === "number") {
+    return { lat: request.latitude, lng: request.longitude };
+  }
+
+  return (
+    extractCoordinates(request.upazila)
+    ?? extractCoordinates(request.district)
+    ?? extractCoordinates(request.division)
+  );
+};
+
+const isCompatibleBloodGroup = (viewerGroup: string | null, requestGroup: string | null) => {
+  if (!viewerGroup || !requestGroup) {
+    return 0;
+  }
+  if (viewerGroup === requestGroup) {
+    return 60;
+  }
+  const compatible = BLOOD_COMPATIBILITY[viewerGroup];
+  if (compatible?.includes(requestGroup)) {
+    return 35;
+  }
+  return 0;
+};
+
+const computeAddressAffinity = (viewer: ViewerContext, request: BloodRequestWithRelations) => {
+  const target = request.location?.toLowerCase();
+  if (!viewer.address || !target) {
+    return 0;
+  }
+
+  const tokens = viewer.address
+    .split(/[^a-z0-9]+/i)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3);
+
+  if (tokens.length === 0) {
+    return 0;
+  }
+
+  let matchCount = 0;
+  tokens.forEach((token) => {
+    if (token && target.includes(token)) {
+      matchCount += 1;
+    }
+  });
+
+  if (matchCount === 0) {
+    return 0;
+  }
+
+  return 8 + Math.min(matchCount, 4) * 3;
+};
+
+const computeRegionalAffinity = (viewer: ViewerContext, request: BloodRequestWithRelations) => {
+  if (viewer.upazilaId && request.upazilaId === viewer.upazilaId) {
+    return 38;
+  }
+  if (viewer.districtId && request.districtId === viewer.districtId) {
+    return 24;
+  }
+  if (viewer.divisionId && request.divisionId === viewer.divisionId) {
+    return 18;
+  }
+  return 0;
+};
+
+const computePriorityScore = (request: BloodRequestWithRelations, viewer: ViewerContext, now: Date) => {
+  let score = 0;
+
+  const requestCoordinates = getRequestCoordinates(request);
+  if (viewer.coordinates && requestCoordinates) {
+    const distanceKm = computeDistanceKm(viewer.coordinates, requestCoordinates);
+    const clamped = Math.min(distanceKm, MAX_DISTANCE_PRIORITY_KM);
+    const proximityScore = Math.max(0, (MAX_DISTANCE_PRIORITY_KM - clamped) / MAX_DISTANCE_PRIORITY_KM) * 60;
+    score += proximityScore;
+    if (distanceKm <= 15) {
+      score += 12;
+    }
+    if (distanceKm <= 5) {
+      score += 10;
+    }
+  } else {
+    score += computeAddressAffinity(viewer, request);
+  }
+
+  score += computeRegionalAffinity(viewer, request);
+  score += isCompatibleBloodGroup(viewer.bloodGroup, request.bloodGroup);
+  score += URGENCY_SCORES[request.urgencyStatus] ?? 0;
+
+  const requiredDate = request.requiredDate;
+  if (requiredDate) {
+    if (requiredDate.getTime() < now.getTime()) {
+      const hoursPast = Math.max(0, differenceInHours(now, requiredDate));
+      score -= PAST_DATE_PENALTY + Math.min(hoursPast, RECENCY_WINDOW_HOURS) * 0.5;
+    } else {
+      const hoursUntil = Math.max(0, differenceInHours(requiredDate, now));
+      const timeScore = Math.max(0, (UPCOMING_WINDOW_HOURS - Math.min(hoursUntil, UPCOMING_WINDOW_HOURS)) / UPCOMING_WINDOW_HOURS) * 50;
+      score += timeScore;
+    }
+  }
+
+  const createdHoursAgo = Math.max(0, differenceInHours(now, request.createdAt));
+  score += Math.max(0, (RECENCY_WINDOW_HOURS - Math.min(createdHoursAgo, RECENCY_WINDOW_HOURS)) / RECENCY_WINDOW_HOURS) * 18;
+
+  const donorsNeeded = Number(request.amountNeeded ?? 0);
+  if (Number.isFinite(donorsNeeded) && donorsNeeded > 0) {
+    const fulfilledRatio = Math.min(request.donorsAssigned / donorsNeeded, 1);
+    score += Math.max(0, (1 - fulfilledRatio)) * 14;
+    if (fulfilledRatio >= 1) {
+      score -= 60;
+    }
+  }
+
+  if (request.status === "Pending") {
+    score -= 25;
+  } else if (request.status !== "Open") {
+    score -= NON_OPEN_STATUS_PENALTY;
+  }
+
+  if (viewer.divisionName) {
+    const target = request.location?.toLowerCase() ?? "";
+    if (target.includes(viewer.divisionName.toLowerCase())) {
+      score += 6;
+    }
+  }
+  if (viewer.districtName) {
+    const target = request.location?.toLowerCase() ?? "";
+    if (target.includes(viewer.districtName.toLowerCase())) {
+      score += 8;
+    }
+  }
+  if (viewer.upazilaName) {
+    const target = request.location?.toLowerCase() ?? "";
+    if (target.includes(viewer.upazilaName.toLowerCase())) {
+      score += 10;
+    }
+  }
+
+  return score;
+};
 
 type FeedPageProps = {
   searchParams?: Promise<Record<string, string | string[]>>;
@@ -66,6 +364,10 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   const skip = (page - 1) * PAGE_SIZE;
   const userId = Number(sessionUser.id);
 
+  if (!Number.isInteger(userId)) {
+    redirect("/login");
+  }
+
   const activeFilters: FeedFilters = {
     ...rawFilters,
     page: page > 1 ? String(page) : undefined,
@@ -81,48 +383,89 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
     where.urgencyStatus = activeFilters.urgency;
   }
 
-
-  const [requests, totalMatchingRequests] = await Promise.all([
-    prisma.bloodRequest.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      skip,
-      take: PAGE_SIZE,
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-            name: true,
-            bloodGroup: true,
-          },
-        },
-        division: {
-          select: { name: true },
-        },
-        district: {
-          select: { name: true },
-        },
-        upazila: {
-          select: { name: true },
-        },
-        upvotes: {
-          where: { userId },
-          select: { id: true },
-        },
-        donorResponses: {
-          where: { donorId: userId },
-          select: { id: true },
-        },
-        _count: {
-          select: { comments: true },
+  const viewerProfile = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      bloodGroup: true,
+      address: true,
+      divisionId: true,
+      districtId: true,
+      upazilaId: true,
+      division: {
+        select: {
+          name: true,
+          latitude: true,
+          longitude: true,
         },
       },
-    }),
-    prisma.bloodRequest.count({ where }),
-  ]);
+      district: {
+        select: {
+          name: true,
+          latitude: true,
+          longitude: true,
+        },
+      },
+      upazila: {
+        select: {
+          name: true,
+          latitude: true,
+          longitude: true,
+        },
+      },
+    },
+  });
 
-  const feedItems: BloodRequestFeedItem[] = requests.map((request) => ({
+  const viewerContext = getUserContext(viewerProfile);
+
+  const requests = await prisma.bloodRequest.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    include: {
+      ...bloodRequestInclude,
+      upvotes: {
+        ...bloodRequestInclude.upvotes,
+        where: { userId },
+      },
+      donorResponses: {
+        ...bloodRequestInclude.donorResponses,
+        where: { donorId: userId },
+      },
+    },
+  });
+
+  const typedRequests = requests as BloodRequestWithRelations[];
+  const now = new Date();
+
+  const prioritizedRequests = typedRequests
+    .map((request) => ({
+      request,
+      score: computePriorityScore(request, viewerContext, now),
+    }))
+    .sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+
+      const aRequired = a.request.requiredDate?.getTime() ?? Number.POSITIVE_INFINITY;
+      const bRequired = b.request.requiredDate?.getTime() ?? Number.POSITIVE_INFINITY;
+      if (aRequired !== bRequired) {
+        return aRequired - bRequired;
+      }
+
+      const aUpdated = a.request.updatedAt.getTime();
+      const bUpdated = b.request.updatedAt.getTime();
+      if (aUpdated !== bUpdated) {
+        return bUpdated - aUpdated;
+      }
+
+      return b.request.createdAt.getTime() - a.request.createdAt.getTime();
+    })
+    .map((entry) => entry.request);
+
+  const totalMatchingRequests = prioritizedRequests.length;
+  const paginatedRequests = prioritizedRequests.slice(skip, skip + PAGE_SIZE);
+
+  const feedItems: BloodRequestFeedItem[] = paginatedRequests.map((request) => ({
     id: request.id,
     patientName: request.patientName,
     gender: request.gender,
@@ -157,15 +500,15 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   }));
 
   const hasPrev = page > 1;
-  const hasMore = page * PAGE_SIZE < totalMatchingRequests;
+  const hasMore = skip + PAGE_SIZE < totalMatchingRequests;
 
   const activeBadges = [
     activeFilters.bloodGroup ? { key: "bloodGroup", label: `Blood group: ${activeFilters.bloodGroup}` } : null,
     activeFilters.urgency ? { key: "urgency", label: `Urgency: ${activeFilters.urgency}` } : null,
   ].filter(Boolean) as { key: string; label: string }[];
 
-  const lastUpdatedRelative = requests.length
-    ? formatDistanceToNow(requests[0].updatedAt, { addSuffix: true })
+  const lastUpdatedRelative = prioritizedRequests.length
+    ? formatDistanceToNow(prioritizedRequests[0].updatedAt, { addSuffix: true })
     : "just now";
 
   return (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { generateOrganizationSchema, generateWebsiteSchema } from "@/lib/seo-schemas";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,10 +16,70 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Lifedrop | Blood Donation Coordination",
+    default: "Lifedrop | Blood Donation Coordination Platform",
     template: "%s | Lifedrop",
   },
-  description: "Lifedrop connects patients, donors, and coordinators with real-time communication and transparent tracking for every blood donation request.",
+  description: "Lifedrop connects patients, donors, and coordinators with real-time communication and transparent tracking for every blood donation request. Find blood donors near you or become a life-saving donor today.",
+  keywords: [
+    "blood donation",
+    "blood donor",
+    "find blood donor",
+    "donate blood",
+    "emergency blood request",
+    "blood donation platform",
+    "donor network",
+    "lifedrop",
+    "blood bank",
+    "save lives",
+    "blood group matching",
+    "urgent blood needed",
+  ],
+  authors: [{ name: "Lifedrop Team" }],
+  creator: "Lifedrop",
+  publisher: "Lifedrop",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "Lifedrop",
+    title: "Lifedrop | Blood Donation Coordination Platform",
+    description: "Connect with blood donors in real-time. Save lives through our transparent blood donation coordination platform.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Lifedrop - Blood Donation Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lifedrop | Blood Donation Coordination Platform",
+    description: "Connect with blood donors in real-time. Save lives through our transparent blood donation coordination platform.",
+    images: ["/og-image.png"],
+    creator: "@lifedrop",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
@@ -29,13 +90,12 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: "/favicon.png",
   },
-  keywords: [
-    "blood donation",
-    "donor network",
-    "lifedrop",
-    "medical coordination",
-    "healthcare platform",
-  ],
+  verification: {
+    // Add these when you get them:
+    // google: "your-google-verification-code",
+    // yandex: "your-yandex-verification-code",
+    // yahoo: "your-yahoo-verification-code",
+  },
 };
 
 export default function RootLayout({
@@ -43,8 +103,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const organizationSchema = generateOrganizationSchema();
+  const websiteSchema = generateWebsiteSchema();
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>

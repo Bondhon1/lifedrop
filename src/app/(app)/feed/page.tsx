@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
+import type { Metadata } from "next";
 import { differenceInHours, formatDistanceToNow } from "date-fns";
 import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
@@ -8,6 +9,24 @@ import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BloodRequestCard, type BloodRequestFeedItem } from "@/components/feed/blood-request-card";
+
+export const metadata: Metadata = {
+  title: "Blood Donation Requests | Find Donors Near You",
+  description: "Browse urgent and active blood donation requests. Find patients who need your blood type and become a life-saving donor today. Filter by blood group, location, and urgency.",
+  keywords: [
+    "blood donation requests",
+    "urgent blood needed",
+    "find blood donor",
+    "blood donation feed",
+    "emergency blood",
+    "donate blood near me",
+  ],
+  openGraph: {
+    title: "Blood Donation Requests | Lifedrop",
+    description: "Browse urgent blood donation requests and connect with patients in need.",
+    type: "website",
+  },
+};
 
 const PAGE_SIZE = 6;
 

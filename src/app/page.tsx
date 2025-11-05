@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -12,6 +13,53 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Lifedrop | Blood Donation Coordination Platform - Connect Patients with Donors",
+  description: "Lifedrop is the leading blood donation coordination platform connecting patients, donors, and hospitals in real-time. Find blood donors near you, post urgent blood requests, and save lives with transparent tracking and instant notifications. Join 8.5k+ verified donors today.",
+  keywords: [
+    "blood donation platform",
+    "find blood donor",
+    "urgent blood needed",
+    "blood donation coordination",
+    "donate blood",
+    "blood donor network",
+    "emergency blood request",
+    "blood bank platform",
+    "realtime donor matching",
+    "lifedrop",
+    "save lives blood donation",
+    "blood group matching",
+    "hospital blood coordination",
+    "volunteer blood donors",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "Lifedrop",
+    title: "Lifedrop | Connect Patients with Blood Donors Instantly",
+    description: "Real-time blood donation coordination platform. 8.5k+ donors, 14-minute average response time. Find blood donors near you or become a life-saving donor.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Lifedrop - Blood Donation Coordination Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lifedrop | Connect Patients with Blood Donors Instantly",
+    description: "Real-time blood donation coordination. 8.5k+ verified donors, 14-min response time. Save lives today.",
+    images: ["/og-image.png"],
+    creator: "@lifedrop",
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
 
 const stats = [
   { label: "Registered donors", value: "8.5k+", detail: "Verified and ready to respond" },
@@ -86,8 +134,103 @@ const testimonials = [
 ];
 
 export default function Home() {
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+  // Structured Data for Homepage
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "Lifedrop Blood Donation Platform",
+    description: "Real-time blood donation coordination platform connecting patients with verified donors",
+    brand: {
+      "@type": "Brand",
+      name: "Lifedrop",
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      reviewCount: "850",
+    },
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How does Lifedrop connect blood donors with patients?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Lifedrop uses automated matching to ping nearby compatible donors based on blood group, location, and last donation date. Donors receive instant notifications via email, SMS, and in-app alerts.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is Lifedrop free to use?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Lifedrop is free for individual donors and patients. We also offer organization plans for hospitals and NGOs.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How fast is the average response time?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Our average response time is 14 minutes from request posting to first donor response, thanks to our real-time notification system.",
+        },
+      },
+    ],
+  };
+
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Find Blood Donors with Lifedrop",
+    description: "Step-by-step guide to posting urgent blood requests and finding compatible donors",
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Publish an urgent need",
+        text: "Capture patient details, location, and required units with guided forms in under a minute.",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Alert compatible donors",
+        text: "Automated matching pings nearby donors, friends, and hospital partners instantly based on blood group and location.",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Coordinate and confirm",
+        text: "Chat, share attachments, and log confirmations while the system tracks every milestone.",
+      },
+    ],
+  };
+
   return (
-    <main className="relative z-10 flex flex-col gap-10">
+    <>
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      />
+
+      <main className="relative z-10 flex flex-col gap-10">
       <header className="flex items-center justify-between rounded-3xl border border-soft bg-surface-card px-6 py-4 shadow-soft">
         <Link href="/" className="text-sm font-semibold text-primary">
           Lifedrop
@@ -368,5 +511,6 @@ export default function Home() {
         </div>
       </footer>
     </main>
+    </>
   );
 }

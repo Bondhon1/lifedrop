@@ -158,17 +158,21 @@ export const authOptions: AuthOptions = {
         });
 
         if (!user) {
+          console.log("User not found:", emailOrUsername);
           return null;
         }
 
         const valid = await verifyPassword(password, user.password);
         if (!valid) {
+          console.log("Invalid password for user:", emailOrUsername);
           return null;
         }
 
         // Check if email is verified
         if (!user.emailVerified) {
-          throw new Error("Please verify your email before logging in. Check your inbox for the verification link.");
+          console.log("Email not verified for user:", emailOrUsername);
+          // Return null instead of throwing to avoid generic "CredentialsSignin" error
+          return null;
         }
 
         return {

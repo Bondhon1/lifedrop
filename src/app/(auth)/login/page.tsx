@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useTransition } from "react";
+import { Suspense, useTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +25,8 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams?.get("callbackUrl") ?? "/feed";
+  const [showResendLink, setShowResendLink] = useState(false);
+  const [emailForResend, setEmailForResend] = useState("");
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -38,6 +40,32 @@ function LoginContent() {
 
   const onSubmit = (values: LoginValues) => {
     startTransition(async () => {
+      // First, check if user exists and if email is verified
+      try {
+        const checkResponse = await fetch("/api/auth/check-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ emailOrUsername: values.emailOrUsername }),
+        });
+
+        const checkData = await checkResponse.json();
+
+        if (!checkResponse.ok) {
+          toast.error(checkData.error || "Failed to verify account status");
+          return;
+        }
+
+        if (checkData.exists && !checkData.emailVerified) {
+          toast.error("Please verify your email before logging in. Check your inbox for the verification link.");
+          setShowResendLink(true);
+          setEmailForResend(checkData.email);
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking user status:", error);
+      }
+
+      // Proceed with login
       const res = await signIn("user-credentials", {
         ...values,
         redirect: false,
@@ -45,7 +73,9 @@ function LoginContent() {
       });
 
       if (!res?.ok) {
-        if (res?.error) {
+        if (res?.error === "CredentialsSignin") {
+          toast.error("Invalid email/username or password. Please try again.");
+        } else if (res?.error) {
           toast.error(res.error);
         } else {
           toast.error("Invalid credentials. Please try again.");
@@ -53,6 +83,7 @@ function LoginContent() {
         return;
       }
 
+      toast.success("Login successful!");
       router.push(callbackUrl);
       router.refresh();
     });
@@ -107,6 +138,21 @@ function LoginContent() {
             </Button>
           </div>
         </Form>
+
+        {showResendLink && emailForResend && (
+          <Alert
+            variant="danger"
+            title="Email not verified"
+            description={
+              <span>
+                Your email is not verified yet.{" "}
+                <Link href={`/verify-email?email=${encodeURIComponent(emailForResend)}`} className="font-semibold underline">
+                  Resend verification email
+                </Link>
+              </span>
+            }
+          />
+        )}
 
         <Alert
           variant="default"

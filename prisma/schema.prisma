@@ -8,62 +8,62 @@ datasource db {
 }
 
 model User {
-  id                  Int                    @id @default(autoincrement())
-  createdAt           DateTime               @default(now())
-  updatedAt           DateTime               @updatedAt
-  username            String                 @unique
-  email               String                 @unique
-  password            String
-  role                UserRole              @default(USER)
-  emailVerified       DateTime?
-  name                String?
-  phone               String?
-  address             String?
-  bloodGroup          String?
-  medicalHistory      String?
-  divisionId          Int?
-  districtId          Int?
-  upazilaId           Int?
-  profilePicture      String                 @default("default.jpg")
-  coverPhoto          String                 @default("default_cover.jpg")
+  id             Int       @id @default(autoincrement())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  username       String    @unique
+  email          String    @unique
+  password       String
+  role           UserRole  @default(USER)
+  emailVerified  DateTime?
+  name           String?
+  phone          String?
+  address        String?
+  bloodGroup     String?
+  medicalHistory String?
+  divisionId     Int?
+  districtId     Int?
+  upazilaId      Int?
+  profilePicture String    @default("default.jpg")
+  coverPhoto     String    @default("default_cover.jpg")
 
-  division            Divisions?             @relation(fields: [divisionId], references: [id])
-  district            Districts?             @relation(fields: [districtId], references: [id])
-  upazila             Upazilas?              @relation(fields: [upazilaId], references: [id])
+  division Divisions? @relation(fields: [divisionId], references: [id])
+  district Districts? @relation(fields: [districtId], references: [id])
+  upazila  Upazilas?  @relation(fields: [upazilaId], references: [id])
 
-  bloodRequests       BloodRequest[]
-  donorApplication    DonorApplication?
-  donorResponses      DonorResponse[]
-  sentFriendRequests  FriendRequest[]        @relation("sentRequests")
-  receivedFriendRequests FriendRequest[]     @relation("receivedRequests")
-  sentMessages        ChatMessage[]          @relation("sentMessages")
-  receivedMessages    ChatMessage[]          @relation("receivedMessages")
+  bloodRequests          BloodRequest[]
+  donorApplication       DonorApplication?
+  donorResponses         DonorResponse[]
+  sentFriendRequests     FriendRequest[]      @relation("sentRequests")
+  receivedFriendRequests FriendRequest[]      @relation("receivedRequests")
+  sentMessages           ChatMessage[]        @relation("sentMessages")
+  receivedMessages       ChatMessage[]        @relation("receivedMessages")
   // Attachments reachable indirectly via messages
-  comments            Comment[]
-  commentLikes        CommentLike[]
-  upvotes             BloodRequestUpvote[]
-  referrals           Referral[]             @relation("referralsAsDonor")
-  notifications       Notification[]         @relation("userNotifications")
-  notificationsSent   Notification[]         @relation("sentNotifications")
-  reports             Report[]               @relation("userReports")
-  passwordResetTokens PasswordResetToken[]
+  comments               Comment[]
+  commentLikes           CommentLike[]
+  upvotes                BloodRequestUpvote[]
+  referrals              Referral[]           @relation("referralsAsDonor")
+  notifications          Notification[]       @relation("userNotifications")
+  notificationsSent      Notification[]       @relation("sentNotifications")
+  reports                Report[]             @relation("userReports")
+  passwordResetTokens    PasswordResetToken[]
 
-  friends             UserFriend[]           @relation("userFriendUser")
-  friendOf            UserFriend[]           @relation("userFriendFriend")
+  friends  UserFriend[] @relation("userFriendUser")
+  friendOf UserFriend[] @relation("userFriendFriend")
 
-  accounts            Account[]
-  sessions            Session[]
+  accounts Account[]
+  sessions Session[]
 }
 
 model Admin {
-  id            Int             @id @default(autoincrement())
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  username      String          @unique
-  email         String          @unique
-  password      String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+  email     String   @unique
+  password  String
 
-  notifications Notification[]  @relation("adminNotifications")
+  notifications Notification[] @relation("adminNotifications")
 }
 
 model UserFriend {
@@ -78,57 +78,57 @@ model UserFriend {
 }
 
 model FriendRequest {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  status     String   @default("pending")
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    String   @default("pending")
 
   senderId   Int
   receiverId Int
 
-  sender     User     @relation("sentRequests", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver   User     @relation("receivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User @relation("sentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("receivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@unique([senderId, receiverId])
 }
 
 model ChatMessage {
-  id          Int           @id @default(autoincrement())
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  content     String
-  imageUrls   String[]
-  isRead      Boolean       @default(false)
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String
+  imageUrls String[]
+  isRead    Boolean  @default(false)
 
-  senderId    Int
-  receiverId  Int
+  senderId   Int
+  receiverId Int
 
-  sender      User          @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver    User          @relation("receivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender      User             @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User             @relation("receivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   attachments ChatAttachment[]
 }
 
 model ChatAttachment {
-  id          Int         @id @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  filename    String
-  filepath    String
-  filetype    String
-  url         String?
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  filename  String
+  filepath  String
+  filetype  String
+  url       String?
 
-  messageId   Int
-  message     ChatMessage  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId Int
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
 }
 
 model BloodRequest {
-  id               Int                    @id @default(autoincrement())
-  createdAt        DateTime               @default(now())
-  updatedAt        DateTime               @updatedAt
+  id               Int      @id @default(autoincrement())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   patientName      String
   gender           String
   requiredDate     DateTime
   bloodGroup       String
-  amountNeeded     Decimal                @db.Decimal(6, 2)
+  amountNeeded     Decimal  @db.Decimal(6, 2)
   hospitalName     String
   urgencyStatus    String
   reason           String
@@ -139,52 +139,52 @@ model BloodRequest {
   divisionId       Int?
   districtId       Int?
   upazilaId        Int?
-  status           String                 @default("Open")
-  upvoteCount      Int                    @default(0)
-  donorsAssigned   Int                    @default(0)
-  smokerPreference String                 @default("Allow Smokers")
+  status           String   @default("Open")
+  upvoteCount      Int      @default(0)
+  donorsAssigned   Int      @default(0)
+  smokerPreference String   @default("Allow Smokers")
 
-  userId           Int
-  user             User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  division         Divisions?             @relation(fields: [divisionId], references: [id])
-  district         Districts?             @relation(fields: [districtId], references: [id])
-  upazila          Upazilas?              @relation(fields: [upazilaId], references: [id])
+  userId   Int
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  division Divisions? @relation(fields: [divisionId], references: [id])
+  district Districts? @relation(fields: [districtId], references: [id])
+  upazila  Upazilas?  @relation(fields: [upazilaId], references: [id])
 
-  upvotes          BloodRequestUpvote[]
-  comments         Comment[]
-  donorResponses   DonorResponse[]
-  referrals        Referral[]             @relation("referralsForRequest")
-  reports          Report[]               @relation("reportsForRequest")
+  upvotes        BloodRequestUpvote[]
+  comments       Comment[]
+  donorResponses DonorResponse[]
+  referrals      Referral[]           @relation("referralsForRequest")
+  reports        Report[]             @relation("reportsForRequest")
 }
 
 model BloodRequestUpvote {
-  id             Int          @id @default(autoincrement())
-  createdAt      DateTime     @default(now())
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
   userId         Int
   bloodRequestId Int
 
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bloodRequest   BloodRequest @relation(fields: [bloodRequestId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bloodRequest BloodRequest @relation(fields: [bloodRequestId], references: [id], onDelete: Cascade)
 
   @@unique([userId, bloodRequestId])
 }
 
 model Comment {
-  id             Int          @id @default(autoincrement())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  text           String
-  image          String?
-  parentId       Int?
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  text      String
+  image     String?
+  parentId  Int?
 
   userId         Int
   bloodRequestId Int
 
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bloodRequest   BloodRequest @relation(fields: [bloodRequestId], references: [id], onDelete: Cascade)
-  parent         Comment?     @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
-  children       Comment[]    @relation("CommentToComment")
-  likes          CommentLike[]
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bloodRequest BloodRequest  @relation(fields: [bloodRequestId], references: [id], onDelete: Cascade)
+  parent       Comment?      @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  children     Comment[]     @relation("CommentToComment")
+  likes        CommentLike[]
 }
 
 model CommentLike {
@@ -193,115 +193,117 @@ model CommentLike {
   userId    Int
   commentId Int
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@unique([userId, commentId])
 }
 
 model DonorApplication {
-  id                     Int       @id @default(autoincrement())
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
-  dateOfBirth            DateTime
-  nidOrBirthCertificate  String
-  hasDonatedBefore       Boolean
-  lastDonationDate       DateTime?
-  medicalConditions      String?
-  medicalHistoryImages   String[]
-  status                 String    @default("Pending")
+  id                    Int       @id @default(autoincrement())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  dateOfBirth           DateTime
+  nidOrBirthCertificate String
+  hasDonatedBefore      Boolean
+  lastDonationDate      DateTime?
+  medicalConditions     String?
+  medicalHistoryImages  String[]
+  status                String    @default("Pending")
 
-  userId                 Int       @unique
-  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DonorResponse {
-  id          Int          @id @default(autoincrement())
-  createdAt   DateTime     @default(now())
-  donorId     Int
-  requestId   Int
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  donorId    Int
+  requestId  Int
+  status     String    @default("Pending")
+  acceptedAt DateTime?
 
-  donor       User         @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  donor        User         @relation(fields: [donorId], references: [id], onDelete: Cascade)
   bloodRequest BloodRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
   @@unique([donorId, requestId])
 }
 
 model Divisions {
-  id        Int        @id
+  id        Int    @id
   name      String
   latitude  Float?
   longitude Float?
 
-  districts Districts[]
-  users     User[]
+  districts     Districts[]
+  users         User[]
   bloodRequests BloodRequest[]
 }
 
 model Districts {
-  id         Int        @id
+  id         Int    @id
   name       String
   divisionId Int
   latitude   Float?
   longitude  Float?
 
-  division   Divisions  @relation(fields: [divisionId], references: [id], onDelete: Cascade)
-  upazilas   Upazilas[]
-  users      User[]
+  division      Divisions      @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  upazilas      Upazilas[]
+  users         User[]
   bloodRequests BloodRequest[]
 }
 
 model Upazilas {
-  id         Int        @id
-  name       String     @unique
+  id         Int    @id
+  name       String @unique
   districtId Int
   latitude   Float?
   longitude  Float?
 
-  district   Districts  @relation(fields: [districtId], references: [id], onDelete: Cascade)
-  users      User[]
+  district      Districts      @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  users         User[]
   bloodRequests BloodRequest[]
 }
 
 model Report {
-  id           Int          @id @default(autoincrement())
-  createdAt    DateTime     @default(now())
-  reason       String
-  postId       Int?
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  reason    String
+  postId    Int?
 
-  reportedBy   Int?
-  requestId    Int?
+  reportedBy Int?
+  requestId  Int?
 
-  reporter     User?        @relation("userReports", fields: [reportedBy], references: [id], onDelete: SetNull)
+  reporter     User?         @relation("userReports", fields: [reportedBy], references: [id], onDelete: SetNull)
   bloodRequest BloodRequest? @relation("reportsForRequest", fields: [requestId], references: [id], onDelete: SetNull)
 }
 
 model Referral {
-  id          Int          @id @default(autoincrement())
-  createdAt   DateTime     @default(now())
-  status      String       @default("Pending")
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  status    String   @default("Pending")
 
-  requestId   Int
-  donorId     Int
+  requestId Int
+  donorId   Int
 
   bloodRequest BloodRequest @relation("referralsForRequest", fields: [requestId], references: [id], onDelete: Cascade)
   donor        User         @relation("referralsAsDonor", fields: [donorId], references: [id], onDelete: Cascade)
 }
 
 model Notification {
-  id               Int        @id @default(autoincrement())
-  createdAt        DateTime   @default(now())
-  message          String
-  link             String?
-  isRead           Boolean    @default(false)
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
 
   recipientId      Int?
   senderId         Int?
   adminRecipientId Int?
 
-  recipient        User?      @relation("userNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
-  sender           User?      @relation("sentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
-  adminRecipient   Admin?     @relation("adminNotifications", fields: [adminRecipientId], references: [id], onDelete: Cascade)
+  recipient      User?  @relation("userNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  sender         User?  @relation("sentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
+  adminRecipient Admin? @relation("adminNotifications", fields: [adminRecipientId], references: [id], onDelete: Cascade)
 }
 
 model PasswordResetToken {
@@ -309,8 +311,8 @@ model PasswordResetToken {
   token     String   @unique
   expiresAt DateTime
 
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
@@ -319,20 +321,20 @@ enum UserRole {
 }
 
 model Account {
-  id                Int       @id @default(autoincrement())
+  id                Int     @id @default(autoincrement())
   userId            Int
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?   @db.Text
-  access_token      String?   @db.Text
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?   @db.Text
+  id_token          String? @db.Text
   session_state     String?
 
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -343,7 +345,7 @@ model Session {
   userId       Int
   expires      DateTime
 
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

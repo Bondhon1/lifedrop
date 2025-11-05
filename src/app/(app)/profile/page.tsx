@@ -67,6 +67,7 @@ export default async function ProfilePage() {
 
   const profilePictureUrl = resolveImageUrl(user.profilePicture);
   const coverPhotoUrl = resolveImageUrl(user.coverPhoto);
+  const displayProfilePictureUrl = profilePictureUrl ?? "/images/default-avatar.svg";
   const displayCoverPhotoUrl = coverPhotoUrl ?? "/images/default-cover.svg";
 
   const locationOptions = {
@@ -84,7 +85,7 @@ export default async function ProfilePage() {
         <div className="relative px-6 pb-6">
           <div className="-mt-14 flex flex-wrap items-end gap-4">
             <Avatar
-              src={profilePictureUrl ?? undefined}
+              src={displayProfilePictureUrl}
               alt={user.name ?? user.username}
               size="lg"
               className="h-24 w-24 border-4 border-[var(--color-border-primary)] bg-surface-card-muted shadow-soft"

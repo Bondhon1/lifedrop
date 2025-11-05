@@ -89,11 +89,6 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 						sizes={sizeStyles[size].sizeAttr}
 					/>
 				)}
-				{!shouldRenderImage ? (
-					<div className={cn("absolute inset-0 flex items-center justify-center font-semibold", sizeStyles[size].text)}>
-						{fallbackContent}
-					</div>
-				) : null}
 			</div>
 		);
 	},

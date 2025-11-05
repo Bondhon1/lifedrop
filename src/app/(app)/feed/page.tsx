@@ -52,6 +52,8 @@ const bloodRequestInclude = {
   donorResponses: {
     select: {
       id: true,
+      donorId: true,
+      status: true,
     },
   },
   _count: {
@@ -391,6 +393,12 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       divisionId: true,
       districtId: true,
       upazilaId: true,
+      donorApplication: {
+        select: {
+          status: true,
+          lastDonationDate: true,
+        },
+      },
       division: {
         select: {
           name: true,
@@ -465,39 +473,78 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   const totalMatchingRequests = prioritizedRequests.length;
   const paginatedRequests = prioritizedRequests.slice(skip, skip + PAGE_SIZE);
 
-  const feedItems: BloodRequestFeedItem[] = paginatedRequests.map((request) => ({
-    id: request.id,
-    patientName: request.patientName,
-    gender: request.gender,
-    requiredDate: request.requiredDate.toISOString(),
-    bloodGroup: request.bloodGroup,
-    amountNeeded: Number(request.amountNeeded),
-    hospitalName: request.hospitalName,
-    urgencyStatus: request.urgencyStatus,
-    smokerPreference: request.smokerPreference,
-    reason: request.reason,
-    location: request.location,
-    latitude: request.latitude,
-    longitude: request.longitude,
-    divisionName: request.division?.name ?? null,
-    districtName: request.district?.name ?? null,
-    upazilaName: request.upazila?.name ?? null,
-    status: request.status,
-    createdAt: request.createdAt.toISOString(),
-    updatedAt: request.updatedAt.toISOString(),
-    upvotes: request.upvoteCount,
-    commentCount: request._count.comments,
-    donorsAssigned: request.donorsAssigned,
-    owner: {
-      id: request.user.id,
-      username: request.user.username,
-      name: request.user.name,
-      bloodGroup: request.user.bloodGroup,
-    },
-    hasUpvoted: request.upvotes.length > 0,
-    hasResponded: request.donorResponses.length > 0,
-    isOwner: request.user.id === userId,
-  }));
+  // Check if viewer is an approved donor
+  const viewerIsApprovedDonor = viewerProfile?.donorApplication?.status === "Approved";
+  const viewerLastDonationDate = viewerProfile?.donorApplication?.lastDonationDate;
+  const viewerBloodGroup = viewerProfile?.bloodGroup;
+
+  const feedItems: BloodRequestFeedItem[] = paginatedRequests.map((request) => {
+    // Calculate eligibility for this specific request
+    let viewerCanRespond = false;
+    let viewerBlockedReason: string | null = null;
+
+    if (viewerIsApprovedDonor && request.user.id !== userId) {
+      // Check blood group compatibility
+      const donorCanDonateToPatient =
+        viewerBloodGroup && BLOOD_COMPATIBILITY[viewerBloodGroup]?.includes(request.bloodGroup);
+
+      if (!donorCanDonateToPatient) {
+        viewerBlockedReason = `Your blood group (${viewerBloodGroup}) cannot donate to ${request.bloodGroup}`;
+      } else if (viewerLastDonationDate) {
+        // Check 90-day gap
+        const daysSinceLastDonation = Math.floor(
+          (Date.now() - new Date(viewerLastDonationDate).getTime()) / (1000 * 60 * 60 * 24)
+        );
+        if (daysSinceLastDonation < 90) {
+          const daysRemaining = 90 - daysSinceLastDonation;
+          viewerBlockedReason = `You must wait ${daysRemaining} more day${daysRemaining !== 1 ? "s" : ""} before donating again`;
+        } else {
+          viewerCanRespond = true;
+        }
+      } else {
+        // No previous donation, can donate
+        viewerCanRespond = true;
+      }
+    }
+
+    return {
+      id: request.id,
+      patientName: request.patientName,
+      gender: request.gender,
+      requiredDate: request.requiredDate.toISOString(),
+      bloodGroup: request.bloodGroup,
+      amountNeeded: Number(request.amountNeeded),
+      hospitalName: request.hospitalName,
+      urgencyStatus: request.urgencyStatus,
+      smokerPreference: request.smokerPreference,
+      reason: request.reason,
+      location: request.location,
+      latitude: request.latitude,
+      longitude: request.longitude,
+      divisionName: request.division?.name ?? null,
+      districtName: request.district?.name ?? null,
+      upazilaName: request.upazila?.name ?? null,
+      status: request.status,
+      createdAt: request.createdAt.toISOString(),
+      updatedAt: request.updatedAt.toISOString(),
+      upvotes: request.upvoteCount,
+      commentCount: request._count.comments,
+      donorsAssigned: request.donorsAssigned,
+      owner: {
+        id: request.user.id,
+        username: request.user.username,
+        name: request.user.name,
+        bloodGroup: request.user.bloodGroup,
+      },
+      hasUpvoted: request.upvotes.length > 0,
+      hasResponded: request.donorResponses.length > 0,
+      isOwner: request.user.id === userId,
+      viewerIsApprovedDonor,
+      viewerCanRespond,
+      viewerBlockedReason,
+      viewerResponseStatus: request.donorResponses[0]?.status as "Pending" | "Accepted" | "Declined" | undefined,
+    };
+  });
 
   const hasPrev = page > 1;
   const hasMore = skip + PAGE_SIZE < totalMatchingRequests;

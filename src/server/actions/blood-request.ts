@@ -353,9 +353,17 @@ export async function respondToBloodRequest(requestId: number): Promise<ActionSt
     return failure("You can’t respond to your own request.");
   }
 
+  if (request.status === "Closed" || request.status === "Fulfilled") {
+    return failure("This request is no longer accepting donors.");
+  }
+
+  const acceptedCount = await prisma.donorResponse.count({
+    where: { requestId, status: "Accepted" },
+  });
+
   const totalNeeded = Number(request.amountNeeded);
-  if (request.donorsAssigned >= totalNeeded) {
-    return failure("This request has already reached the required donors.");
+  if (acceptedCount >= totalNeeded) {
+    return failure("This request already has the required number of donors.");
   }
 
   const existingResponse = await prisma.donorResponse.findUnique({
@@ -376,38 +384,12 @@ export async function respondToBloodRequest(requestId: number): Promise<ActionSt
   }
 
   try {
-    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      await tx.donorResponse.create({
-        data: {
-          donorId: authResult.userId,
-          requestId,
-        },
-      });
-
-      const result = await tx.bloodRequest.update({
-        where: { id: requestId },
-        data: {
-          donorsAssigned: {
-            increment: 1,
-          },
-          ...(request.donorsAssigned + 1 >= totalNeeded
-            ? { status: "Fulfilled" }
-            : {}),
-        },
-        select: {
-          donorsAssigned: true,
-          amountNeeded: true,
-        },
-      });
-
-      await tx.donorApplication.update({
-        where: { userId: authResult.userId },
-        data: {
-          lastDonationDate: request.requiredDate ?? new Date(),
-        },
-      });
-
-      return result;
+    await prisma.donorResponse.create({
+      data: {
+        donorId: authResult.userId,
+        requestId,
+        status: "Pending",
+      },
     });
 
     if (request.userId !== authResult.userId) {
@@ -421,13 +403,217 @@ export async function respondToBloodRequest(requestId: number): Promise<ActionSt
     }
 
     REVALIDATE_PATHS.forEach((path) => revalidatePath(path));
+    revalidatePath(`/requests/${request.id}`);
+
+    const currentAccepted = await prisma.donorResponse.count({
+      where: { requestId, status: "Accepted" },
+    });
 
     return success({
-      donorsAssigned: updated.donorsAssigned,
-      amountNeeded: Number(updated.amountNeeded),
+      donorsAssigned: currentAccepted,
+      amountNeeded: totalNeeded,
     });
   } catch (error) {
     console.error("respondToBloodRequest:error", error);
     return failure("Something went wrong while recording your response. Please try again.");
+  }
+}
+
+type DonorResponseStatus = "Accepted" | "Declined";
+
+type ContactInfo = {
+  donorId: number;
+  requestId: number;
+  donorName: string;
+  donorEmail: string;
+  donorPhone: string | null;
+  requesterEmail: string;
+  requesterPhone: string | null;
+  requesterName: string;
+  patientName: string;
+};
+
+export async function updateDonorResponseStatus(
+  responseId: number,
+  nextStatus: DonorResponseStatus,
+  contactInfo?: ContactInfo,
+): Promise<ActionState<{ responseId: number; status: DonorResponseStatus | "Pending"; donorsAssigned: number; amountNeeded: number }>> {
+  const authResult = await ensureAuthenticatedUser();
+  if (!authResult.userId) {
+    return failure("You need to be signed in to manage donor responses.");
+  }
+
+  if (!Number.isInteger(responseId)) {
+    return failure("Invalid donor response reference.");
+  }
+
+  if (nextStatus !== "Accepted" && nextStatus !== "Declined") {
+    return failure("Unsupported status change.");
+  }
+
+  const response = await prisma.donorResponse.findUnique({
+    where: { id: responseId },
+    include: {
+      bloodRequest: {
+        select: {
+          id: true,
+          userId: true,
+          patientName: true,
+          amountNeeded: true,
+          status: true,
+        },
+      },
+      donor: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          donorApplication: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!response) {
+    return failure("We couldn’t find that donor response.");
+  }
+
+  if (response.bloodRequest.userId !== authResult.userId) {
+    return failure("Only the request owner can manage donor responses.");
+  }
+
+  if (response.status === nextStatus) {
+    const acceptedCount = await prisma.donorResponse.count({
+      where: { requestId: response.bloodRequest.id, status: "Accepted" },
+    });
+
+    return success({
+      responseId,
+      status: response.status as DonorResponseStatus | "Pending",
+      donorsAssigned: acceptedCount,
+      amountNeeded: Number(response.bloodRequest.amountNeeded),
+    });
+  }
+
+  if (nextStatus === "Accepted" && response.donor.donorApplication?.status !== "Approved") {
+    return failure("Only approved donors can be accepted for a donation.");
+  }
+
+  const now = new Date();
+
+  try {
+    const updateResult = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      await tx.donorResponse.update({
+        where: { id: responseId },
+        data: {
+          status: nextStatus,
+          acceptedAt: nextStatus === "Accepted" ? now : null,
+        },
+      });
+
+      if (nextStatus === "Accepted") {
+        await tx.donorApplication.update({
+          where: { userId: response.donor.id },
+          data: {
+            lastDonationDate: now,
+          },
+        }).catch((error) => {
+          if ((error as { code?: string }).code !== "P2025") {
+            throw error;
+          }
+        });
+      }
+
+      const acceptedCount = await tx.donorResponse.count({
+        where: {
+          requestId: response.bloodRequest.id,
+          status: "Accepted",
+        },
+      });
+
+      const amountNeeded = Number(response.bloodRequest.amountNeeded);
+      const nextRequestStatus = acceptedCount >= amountNeeded
+        ? "Fulfilled"
+        : response.bloodRequest.status === "Closed"
+          ? "Closed"
+          : response.bloodRequest.status === "Pending"
+            ? "Pending"
+            : "Open";
+
+      await tx.bloodRequest.update({
+        where: { id: response.bloodRequest.id },
+        data: {
+          donorsAssigned: acceptedCount,
+          status: nextRequestStatus,
+        },
+      });
+
+      return {
+        acceptedCount,
+        amountNeeded,
+      };
+    });
+
+  const ownerName = authResult.sessionUser?.name ?? authResult.sessionUser?.email ?? "Request owner";
+    const message = nextStatus === "Accepted"
+      ? `${ownerName} accepted your offer to donate for ${response.bloodRequest.patientName}.`
+      : `${ownerName} declined your offer to donate for ${response.bloodRequest.patientName}.`;
+
+    await createNotification({
+      recipientId: response.donor.id,
+      senderId: authResult.userId,
+      message,
+      link: `/requests/${response.bloodRequest.id}`,
+    });
+
+    // Send emails with contact information if accepted
+    if (nextStatus === "Accepted" && contactInfo) {
+      try {
+        const { sendDonorAcceptanceEmail } = await import("@/lib/email");
+        
+        // Email to donor with requester's contact info
+        await sendDonorAcceptanceEmail(
+          contactInfo.donorEmail,
+          contactInfo.donorName,
+          contactInfo.patientName,
+          contactInfo.requesterName,
+          contactInfo.requesterEmail,
+          contactInfo.requesterPhone,
+          response.bloodRequest.id
+        );
+
+        // Email to requester with donor's contact info
+        await sendDonorAcceptanceEmail(
+          contactInfo.requesterEmail,
+          contactInfo.requesterName,
+          contactInfo.patientName,
+          contactInfo.donorName,
+          contactInfo.donorEmail,
+          contactInfo.donorPhone,
+          response.bloodRequest.id
+        );
+      } catch (emailError) {
+        console.error("Failed to send acceptance emails:", emailError);
+        // Don't fail the whole operation if email fails
+      }
+    }
+
+    REVALIDATE_PATHS.forEach((path) => revalidatePath(path));
+    revalidatePath(`/requests/${response.bloodRequest.id}`);
+
+    return success({
+      responseId,
+      status: nextStatus,
+      donorsAssigned: updateResult.acceptedCount,
+      amountNeeded: updateResult.amountNeeded,
+    });
+  } catch (error) {
+    console.error("updateDonorResponseStatus:error", error);
+    return failure("We couldn’t update this donor response. Please try again.");
   }
 }

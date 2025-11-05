@@ -8,8 +8,18 @@ import { BloodRequestCard, type BloodRequestFeedItem } from "@/components/feed/b
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 import { CommentThread } from "@/components/comments/comment-thread";
-import { BloodRequestMap, type BloodRequestMapPoint } from "@/components/requests/blood-request-map";
+import { BloodRequestMap, type BloodRequestMapPoint, DonorResponseActions } from "@/components/requests";
 
+const BLOOD_COMPATIBILITY: Record<string, readonly string[]> = {
+  "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+  "O+": ["O+", "A+", "B+", "AB+"],
+  "A-": ["A-", "A+", "AB-", "AB+"],
+  "A+": ["A+", "AB+"],
+  "B-": ["B-", "B+", "AB-", "AB+"],
+  "B+": ["B+", "AB+"],
+  "AB-": ["AB-", "AB+"],
+  "AB+": ["AB+"],
+} as const;
 
 type RequestDetailPageProps = {
   params: Promise<{
@@ -32,6 +42,20 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
 
   const userId = Number(sessionUser.id);
 
+  // Get viewer's profile with donor application status
+  const viewerProfile = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      bloodGroup: true,
+      donorApplication: {
+        select: {
+          status: true,
+          lastDonationDate: true,
+        },
+      },
+    },
+  });
+
   const bloodRequest = await prisma.bloodRequest.findUnique({
     where: { id: requestId },
     include: {
@@ -41,6 +65,8 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
           username: true,
           name: true,
           bloodGroup: true,
+          email: true,
+          phone: true,
         },
       },
       upvotes: {
@@ -54,11 +80,14 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
           id: true,
           donorId: true,
           createdAt: true,
+          status: true,
           donor: {
             select: {
               username: true,
               name: true,
               bloodGroup: true,
+              email: true,
+              phone: true,
             },
           },
         },
@@ -121,6 +150,48 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
     notFound();
   }
 
+  // Check if viewer is an approved donor
+  const viewerIsApprovedDonor = viewerProfile?.donorApplication?.status === "Approved";
+  const viewerLastDonationDate = viewerProfile?.donorApplication?.lastDonationDate;
+  const viewerBloodGroup = viewerProfile?.bloodGroup;
+
+  // Calculate eligibility for this specific request
+  let viewerCanRespond = false;
+  let viewerBlockedReason: string | null = null;
+  let viewerResponseStatus: "Pending" | "Accepted" | "Declined" | undefined = undefined;
+
+  // Check if viewer has already responded
+  const existingResponse = bloodRequest.donorResponses.find(
+    (response: (typeof bloodRequest.donorResponses)[number]) => response.donorId === userId
+  );
+  if (existingResponse) {
+    viewerResponseStatus = existingResponse.status as "Pending" | "Accepted" | "Declined";
+  }
+
+  if (viewerIsApprovedDonor && bloodRequest.user.id !== userId) {
+    // Check blood group compatibility
+    const donorCanDonateToPatient =
+      viewerBloodGroup && BLOOD_COMPATIBILITY[viewerBloodGroup]?.includes(bloodRequest.bloodGroup);
+
+    if (!donorCanDonateToPatient) {
+      viewerBlockedReason = `Your blood group (${viewerBloodGroup}) cannot donate to ${bloodRequest.bloodGroup}`;
+    } else if (viewerLastDonationDate) {
+      // Check 90-day gap
+      const daysSinceLastDonation = Math.floor(
+        (Date.now() - new Date(viewerLastDonationDate).getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (daysSinceLastDonation < 90) {
+        const daysRemaining = 90 - daysSinceLastDonation;
+        viewerBlockedReason = `You must wait ${daysRemaining} more day${daysRemaining !== 1 ? "s" : ""} before donating again`;
+      } else {
+        viewerCanRespond = true;
+      }
+    } else {
+      // No previous donation, can donate
+      viewerCanRespond = true;
+    }
+  }
+
   const feedItem: BloodRequestFeedItem = {
     id: bloodRequest.id,
     patientName: bloodRequest.patientName,
@@ -153,6 +224,10 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
     hasUpvoted: bloodRequest.upvotes.length > 0,
     hasResponded: bloodRequest.donorResponses.some((response: (typeof bloodRequest.donorResponses)[number]) => response.donorId === userId),
     isOwner: bloodRequest.user.id === userId,
+    viewerIsApprovedDonor,
+    viewerCanRespond,
+    viewerBlockedReason,
+    viewerResponseStatus,
   };
 
   const hasCoordinates = typeof feedItem.latitude === "number" && typeof feedItem.longitude === "number";
@@ -295,7 +370,7 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
                   key={response.id}
                   className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft px-4 py-3"
                 >
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <Link
                       href={`/members/${response.donor.username}`}
                       className="text-sm font-semibold text-primary underline-offset-4 hover:text-[var(--color-text-accent)] hover:underline"
@@ -303,10 +378,31 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
                       {response.donor.name ?? response.donor.username}
                     </Link>
                     <p className="text-xs text-muted">Responded on {new Date(response.createdAt).toLocaleString()}</p>
+                    {response.status !== "Pending" && (
+                      <p className="text-xs font-semibold mt-1 text-primary">
+                        Status: <span className={response.status === "Accepted" ? "text-green-600" : "text-red-600"}>{response.status}</span>
+                      </p>
+                    )}
                   </div>
-                  <span className="inline-flex min-w-[3rem] justify-center rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                    {response.donor.bloodGroup ?? "Unknown"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex min-w-[3rem] justify-center rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                      {response.donor.bloodGroup ?? "Unknown"}
+                    </span>
+                    {bloodRequest.user.id === userId && response.status === "Pending" && (
+                      <DonorResponseActions
+                        responseId={response.id}
+                        donorId={response.donorId}
+                        requestId={bloodRequest.id}
+                        donorName={response.donor.name ?? response.donor.username}
+                        donorEmail={response.donor.email}
+                        donorPhone={response.donor.phone}
+                        requesterEmail={bloodRequest.user.email}
+                        requesterPhone={bloodRequest.user.phone}
+                        requesterName={bloodRequest.user.name ?? bloodRequest.user.username}
+                        patientName={bloodRequest.patientName}
+                      />
+                    )}
+                  </div>
                 </div>
               ))
             )}

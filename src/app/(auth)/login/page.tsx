@@ -45,7 +45,11 @@ function LoginContent() {
       });
 
       if (!res?.ok) {
-        toast.error("Invalid credentials. Please try again.");
+        if (res?.error) {
+          toast.error(res.error);
+        } else {
+          toast.error("Invalid credentials. Please try again.");
+        }
         return;
       }
 

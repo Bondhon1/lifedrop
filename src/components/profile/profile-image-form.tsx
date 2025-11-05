@@ -30,14 +30,14 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
   const profileObjectUrlRef = useRef<string | null>(null);
   const coverObjectUrlRef = useRef<string | null>(null);
 
-  const [profilePreview, setProfilePreview] = useState(profilePictureUrl);
-  const [coverPreview, setCoverPreview] = useState(coverPhotoUrl);
+  const [profilePreview, setProfilePreview] = useState(profilePictureUrl ?? "/images/default-avatar.svg");
+  const [coverPreview, setCoverPreview] = useState(coverPhotoUrl ?? "/images/default-cover.svg");
 
   useEffect(() => {
     baseProfileUrlRef.current = profilePictureUrl;
     baseCoverUrlRef.current = coverPhotoUrl;
-    setProfilePreview(profilePictureUrl);
-    setCoverPreview(coverPhotoUrl);
+    setProfilePreview(profilePictureUrl ?? "/images/default-avatar.svg");
+    setCoverPreview(coverPhotoUrl ?? "/images/default-cover.svg");
   }, [profilePictureUrl, coverPhotoUrl]);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
       profileObjectUrlRef.current = url;
       setProfilePreview(url);
     } else {
-      setProfilePreview(baseProfileUrlRef.current ?? null);
+      setProfilePreview(baseProfileUrlRef.current ?? "/images/default-avatar.svg");
     }
   };
 
@@ -79,7 +79,7 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
       coverObjectUrlRef.current = url;
       setCoverPreview(url);
     } else {
-      setCoverPreview(baseCoverUrlRef.current ?? null);
+      setCoverPreview(baseCoverUrlRef.current ?? "/images/default-cover.svg");
     }
   };
 
@@ -108,7 +108,7 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
       } else if (profileObjectUrlRef.current) {
         URL.revokeObjectURL(profileObjectUrlRef.current);
         profileObjectUrlRef.current = null;
-        setProfilePreview(baseProfileUrlRef.current ?? null);
+        setProfilePreview(baseProfileUrlRef.current ?? "/images/default-avatar.svg");
       }
 
       if (updatedCover) {
@@ -121,7 +121,7 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
       } else if (coverObjectUrlRef.current) {
         URL.revokeObjectURL(coverObjectUrlRef.current);
         coverObjectUrlRef.current = null;
-        setCoverPreview(baseCoverUrlRef.current ?? null);
+        setCoverPreview(baseCoverUrlRef.current ?? "/images/default-cover.svg");
       }
 
       toast.success("Images updated");
@@ -143,11 +143,7 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-3">
             <div className="relative h-40 overflow-hidden rounded-2xl border border-soft bg-surface-card-muted">
-              {profilePreview ? (
-                <img src={profilePreview} alt="Profile preview" className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full items-center justify-center text-sm text-muted">No profile photo yet</div>
-              )}
+              <img src={profilePreview} alt="Profile preview" className="h-full w-full object-cover" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="profilePicture">Profile photo</Label>
@@ -158,11 +154,7 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
 
           <div className="grid gap-3">
             <div className="relative h-40 overflow-hidden rounded-2xl border border-soft bg-surface-card-muted">
-              {coverPreview ? (
-                <img src={coverPreview} alt="Cover preview" className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full items-center justify-center text-sm text-muted">No cover image yet</div>
-              )}
+              <img src={coverPreview} alt="Cover preview" className="h-full w-full object-cover" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="coverPhoto">Cover image</Label>

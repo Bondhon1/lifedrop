@@ -359,15 +359,15 @@ export function AppShell({
         <div className="grid gap-3">
           <div className="flex items-center gap-3 rounded-2xl border border-subtle bg-surface-card p-4 shadow-soft">
             <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? user.email ?? "User"} className="flex-shrink-0" />
-            <div className="grid gap-1">
-              <span className="text-sm font-semibold text-primary">{user.name ?? user.email ?? "Member"}</span>
-              {user.role ? <Badge variant={user.isAdmin ? "secondary" : "default"}>{user.role}</Badge> : null}
+            <div className="grid gap-1 min-w-0 flex-1">
+              <span className="text-sm font-semibold text-primary truncate">{user.name ?? user.email ?? "Member"}</span>
+              {user.role ? <Badge variant={user.isAdmin ? "secondary" : "default"} className="w-fit">{user.role}</Badge> : null}
             </div>
           </div>
           <Button
             asChild
             variant="outline"
-            className="border-transparent bg-[var(--color-primary-start)] text-white hover:bg-[var(--color-primary-end)] hover:text-white focus-visible:text-white"
+            className="w-full border-transparent bg-[var(--color-primary-start)] text-white hover:bg-[var(--color-primary-end)] hover:text-white focus-visible:text-white"
           >
             <Link href={logoutHref}>Sign out</Link>
           </Button>
@@ -673,15 +673,15 @@ export function AppShell({
             <div className="mt-auto grid gap-3">
               <div className="flex items-center gap-3 rounded-2xl border border-subtle bg-surface-card p-4 shadow-soft">
                 <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? user.email ?? "User"} className="flex-shrink-0" />
-                <div className="grid gap-1">
-                  <span className="text-sm font-semibold text-primary">{user.name ?? user.email ?? "Member"}</span>
-                  {user.role ? <Badge variant={user.isAdmin ? "secondary" : "default"}>{user.role}</Badge> : null}
+                <div className="grid gap-1 min-w-0 flex-1">
+                  <span className="text-sm font-semibold text-primary truncate">{user.name ?? user.email ?? "Member"}</span>
+                  {user.role ? <Badge variant={user.isAdmin ? "secondary" : "default"} className="w-fit">{user.role}</Badge> : null}
                 </div>
               </div>
               <Button
                 asChild
                 variant="outline"
-                className="border-transparent bg-[var(--color-primary-start)] text-white hover:bg-[var(--color-primary-end)] hover:text-white focus-visible:text-white"
+                className="w-full border-transparent bg-[var(--color-primary-start)] text-white hover:bg-[var(--color-primary-end)] hover:text-white focus-visible:text-white"
               >
                 <Link href={logoutHref}>Sign out</Link>
               </Button>

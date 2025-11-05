@@ -42,6 +42,10 @@ export type BloodRequestFeedItem = {
   hasUpvoted: boolean;
   hasResponded: boolean;
   isOwner: boolean;
+  viewerIsApprovedDonor?: boolean;
+  viewerCanRespond?: boolean;
+  viewerBlockedReason?: string | null;
+  viewerResponseStatus?: "Pending" | "Accepted" | "Declined" | null;
 };
 
 type BadgeVariant = "default" | "secondary" | "success" | "warning";
@@ -95,6 +99,11 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
   const [hasUpvoted, setHasUpvoted] = useState(request.hasUpvoted);
   const [donorsAssigned, setDonorsAssigned] = useState(request.donorsAssigned);
   const [hasResponded, setHasResponded] = useState(request.hasResponded);
+  const [responseStatus, setResponseStatus] = useState<"Pending" | "Accepted" | "Declined" | null>(request.viewerResponseStatus ?? null);
+
+  const viewerIsApprovedDonor = request.viewerIsApprovedDonor ?? false;
+  const viewerCanRespond = request.viewerCanRespond ?? false;
+  const viewerBlockedReason = request.viewerBlockedReason ?? null;
 
   const requestIsFulfilled = donorsAssigned >= request.amountNeeded || request.status === "Fulfilled";
 
@@ -150,11 +159,74 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
 
       setDonorsAssigned(result.data.donorsAssigned);
       setHasResponded(true);
+      setResponseStatus("Pending");
       toast.success("Thank you! We’ve recorded your availability.");
     });
   };
 
-  const disableRespondButton = request.isOwner || requestIsFulfilled || hasResponded || isPending;
+  const renderRespondAction = () => {
+    if (request.isOwner) {
+      return (
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled
+          className="min-w-[10rem]"
+        >
+          You created this
+        </Button>
+      );
+    }
+
+    if (!viewerIsApprovedDonor) {
+      return (
+        <Button
+          variant="primary"
+          size="sm"
+          asChild
+          className="min-w-[10rem]"
+        >
+          <Link href="/donors">Become a donor</Link>
+        </Button>
+      );
+    }
+
+    let label = "I can donate";
+    let disabled = requestIsFulfilled || isPending;
+
+    if (responseStatus === "Accepted") {
+      label = "Accepted to donate";
+      disabled = true;
+    } else if (responseStatus === "Pending") {
+      label = "Awaiting approval";
+      disabled = true;
+    } else if (responseStatus === "Declined") {
+      label = "Offer declined";
+      disabled = true;
+    } else if (hasResponded) {
+      label = "You’ve responded";
+      disabled = true;
+    } else if (!viewerCanRespond) {
+      label = viewerBlockedReason ?? "Not eligible right now";
+      disabled = true;
+    }
+
+    return (
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => {
+          if (disabled) return;
+          handleRespond();
+        }}
+        disabled={disabled}
+        className="min-w-[10rem]"
+        title={!viewerCanRespond && viewerBlockedReason ? viewerBlockedReason : undefined}
+      >
+        {label}
+      </Button>
+    );
+  };
 
   return (
     <Card className="overflow-hidden border border-soft bg-surface-card shadow-soft transition hover:-translate-y-0.5">
@@ -240,15 +312,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
             <Heart className="h-4 w-4" /> {upvoteCount} supports
           </Button>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleRespond}
-            disabled={disableRespondButton}
-            className="min-w-[10rem]"
-          >
-            {request.isOwner ? "You created this" : requestIsFulfilled ? "Request fulfilled" : hasResponded ? "You’ve responded" : "I can donate"}
-          </Button>
+          {renderRespondAction()}
 
           <Button variant="ghost" size="sm" asChild className="text-primary hover:text-[var(--color-text-accent)]">
             <Link href={`/requests/${request.id}#comments`}>

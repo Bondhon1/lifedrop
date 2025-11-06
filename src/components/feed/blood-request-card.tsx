@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { respondToBloodRequest, toggleBloodRequestUpvote } from "@/server/actions/blood-request";
+import { BloodRequestOptions } from "./blood-request-options";
 import { Droplet, Heart, MapPin, MessageCircle, Share2 } from "lucide-react";
 
 export type BloodRequestFeedItem = {
@@ -231,8 +232,8 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
   return (
     <Card className="overflow-hidden border border-soft bg-surface-card shadow-soft transition hover:-translate-y-0.5">
       <CardHeader className="flex flex-col gap-4 border-b border-soft bg-surface-primary-soft pb-4 text-primary">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <CardTitle className="text-xl font-semibold text-primary">{request.patientName}</CardTitle>
             <CardDescription className="text-sm text-secondary">
               Requested by{" "}
@@ -245,13 +246,19 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
               · {formatRelativeTime(request.createdAt)}
             </CardDescription>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <Badge variant={urgencyStyle.variant} className={urgencyStyle.className}>
               {request.urgencyStatus}
             </Badge>
             <Badge variant={statusStyle.variant} className={statusStyle.className}>
               {request.status}
             </Badge>
+            <BloodRequestOptions
+              requestId={request.id}
+              isOwner={request.isOwner}
+              status={request.status}
+              amountNeeded={request.amountNeeded}
+            />
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm text-secondary">

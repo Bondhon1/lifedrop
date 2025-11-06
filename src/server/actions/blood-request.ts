@@ -614,6 +614,381 @@ export async function updateDonorResponseStatus(
     });
   } catch (error) {
     console.error("updateDonorResponseStatus:error", error);
-    return failure("We couldn’t update this donor response. Please try again.");
+    return failure("We couldn't update this donor response. Please try again.");
+  }
+}
+
+export async function deleteBloodRequest(requestId: number): Promise<ActionState<void>> {
+  const authResult = await ensureAuthenticatedUser();
+  if (!authResult.userId) {
+    return failure("You need to be signed in to delete a blood request.");
+  }
+
+  try {
+    // Check if user owns the request
+    const request = await prisma.bloodRequest.findUnique({
+      where: { id: requestId },
+      select: { userId: true },
+    });
+
+    if (!request) {
+      return failure("Blood request not found.");
+    }
+
+    if (request.userId !== authResult.userId) {
+      return failure("You don't have permission to delete this request.");
+    }
+
+    // Delete the request (cascade will handle related records)
+    await prisma.bloodRequest.delete({
+      where: { id: requestId },
+    });
+
+    REVALIDATE_PATHS.forEach((path) => revalidatePath(path));
+    revalidatePath(`/requests/${requestId}`);
+
+    return success(undefined);
+  } catch (error) {
+    console.error("deleteBloodRequest:error", error);
+    return failure("Failed to delete blood request. Please try again.");
+  }
+}
+
+export async function markDonorFound(requestId: number, donorsFound: number): Promise<ActionState<void>> {
+  const authResult = await ensureAuthenticatedUser();
+  if (!authResult.userId) {
+    return failure("You need to be signed in to update a blood request.");
+  }
+
+  try {
+    // Check if user owns the request
+    const request = await prisma.bloodRequest.findUnique({
+      where: { id: requestId },
+      select: { 
+        userId: true, 
+        patientName: true,
+        status: true,
+        amountNeeded: true,
+      },
+    });
+
+    if (!request) {
+      return failure("Blood request not found.");
+    }
+
+    if (request.userId !== authResult.userId) {
+      return failure("You don't have permission to update this request.");
+    }
+
+    if (request.status === "Fulfilled" || request.status === "Closed") {
+      return failure("This request is already closed.");
+    }
+
+    // Validate donors found
+    const currentAmount = Number(request.amountNeeded);
+    if (donorsFound < 1 || donorsFound > currentAmount) {
+      return failure(`Please enter a valid number between 1 and ${currentAmount}.`);
+    }
+
+    // Calculate new amount needed
+    const newAmount = currentAmount - donorsFound;
+    const newStatus = newAmount === 0 ? "Fulfilled" : request.status;
+
+    // Update the request
+    await prisma.bloodRequest.update({
+      where: { id: requestId },
+      data: { 
+        amountNeeded: newAmount,
+        status: newStatus,
+      },
+    });
+
+    REVALIDATE_PATHS.forEach((path) => revalidatePath(path));
+    revalidatePath(`/requests/${requestId}`);
+
+    return success(undefined);
+  } catch (error) {
+    console.error("markDonorFound:error", error);
+    return failure("Failed to update blood request. Please try again.");
+  }
+}
+
+export async function updateBloodRequest(requestId: number, formData: FormData): Promise<ActionState<{ id: number }>> {
+  const authResult = await ensureAuthenticatedUser();
+  if (!authResult.userId) {
+    return failure("You need to be signed in to update a blood request.");
+  }
+
+  try {
+    // Check if user owns the request
+    const existingRequest = await prisma.bloodRequest.findUnique({
+      where: { id: requestId },
+      include: {
+        donorResponses: {
+          where: { status: "Accepted" },
+          select: {
+            id: true,
+            donorId: true,
+            donor: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!existingRequest) {
+      return failure("Blood request not found.");
+    }
+
+    if (existingRequest.userId !== authResult.userId) {
+      return failure("You don't have permission to edit this request.");
+    }
+
+    const rawInput = {
+      patientName: formData.get("patientName"),
+      gender: formData.get("gender"),
+      requiredDate: formData.get("requiredDate"),
+      bloodGroup: formData.get("bloodGroup"),
+      amountNeeded: formData.get("amountNeeded"),
+      hospitalName: formData.get("hospitalName"),
+      urgencyStatus: formData.get("urgencyStatus"),
+      smokerPreference: formData.get("smokerPreference"),
+      reason: formData.get("reason"),
+      location: formData.get("location"),
+      latitude: formData.get("latitude"),
+      longitude: formData.get("longitude"),
+      divisionId: formData.get("divisionId"),
+      districtId: formData.get("districtId"),
+      upazilaId: formData.get("upazilaId"),
+      addressLabel: formData.get("addressLabel"),
+    };
+
+    const parsed = bloodRequestFormSchema.safeParse(rawInput);
+    if (!parsed.success) {
+      return failure("Please review the highlighted fields.", parsed.error.issues.map((issue) => issue.message));
+    }
+
+    const values = parsed.data;
+
+    // Check if blood group changed
+    const bloodGroupChanged = values.bloodGroup !== existingRequest.bloodGroup;
+    
+    // Check if location changed significantly (more than 100 meters)
+    const oldLat = existingRequest.latitude ? Number(existingRequest.latitude) : null;
+    const oldLng = existingRequest.longitude ? Number(existingRequest.longitude) : null;
+    const newLat = values.latitude ? Number(values.latitude) : null;
+    const newLng = values.longitude ? Number(values.longitude) : null;
+    
+    let locationChanged = false;
+    if (oldLat && oldLng && newLat && newLng) {
+      const distance = Math.sqrt(
+        Math.pow((newLat - oldLat) * 111000, 2) + 
+        Math.pow((newLng - oldLng) * 111000 * Math.cos(oldLat * Math.PI / 180), 2)
+      );
+      locationChanged = distance > 100; // 100 meters threshold
+    } else if (existingRequest.location !== values.location) {
+      locationChanged = true;
+    }
+
+    // Handle blood group change - drop accepted donors
+    if (bloodGroupChanged && existingRequest.donorResponses.length > 0) {
+      // Delete all accepted donor responses
+      await prisma.donorResponse.deleteMany({
+        where: {
+          requestId,
+          status: "Accepted",
+        },
+      });
+
+      // Notify donors that they've been removed due to blood group change
+      for (const response of existingRequest.donorResponses) {
+        await createNotification({
+          recipientId: response.donorId,
+          message: `The blood group for the request you accepted has been changed from ${existingRequest.bloodGroup} to ${values.bloodGroup}. Your commitment has been automatically removed, and you're now eligible to donate to other requests.`,
+          link: `/requests/${requestId}`,
+          senderId: authResult.userId,
+        });
+      }
+    }
+
+    // Handle location change - notify accepted donors
+    if (locationChanged && existingRequest.donorResponses.length > 0 && !bloodGroupChanged) {
+      for (const response of existingRequest.donorResponses) {
+        await createNotification({
+          recipientId: response.donorId,
+          message: `The location for the blood request you accepted has been changed to ${values.location}. You can remove yourself if this is inconvenient.`,
+          link: `/requests/${requestId}`,
+          senderId: authResult.userId,
+        });
+      }
+    }
+
+    // Handle new images
+    const imageEntries = formData.getAll("images");
+    const imageFiles: File[] = imageEntries.filter((entry): entry is File => entry instanceof File && entry.size > 0);
+
+    const storedImages: string[] = [...existingRequest.images];
+
+    for (const file of imageFiles) {
+      if (storedImages.length >= 6) {
+        break;
+      }
+      try {
+        const stored = await saveImageFile(file, "requests");
+        storedImages.push(stored);
+      } catch (error) {
+        console.error("updateBloodRequest:image", error);
+        return failure("One of the images could not be uploaded. Use JPG/PNG/WebP under 5MB.");
+      }
+    }
+
+    // Update the request
+    await prisma.bloodRequest.update({
+      where: { id: requestId },
+      data: {
+        patientName: values.patientName,
+        gender: values.gender,
+        requiredDate: values.requiredDate,
+        bloodGroup: values.bloodGroup,
+        amountNeeded: values.amountNeeded,
+        hospitalName: values.hospitalName,
+        urgencyStatus: values.urgencyStatus,
+        smokerPreference: values.smokerPreference,
+        reason: values.reason,
+        location: values.location || values.addressLabel || "",
+        images: storedImages,
+        latitude: values.latitude,
+        longitude: values.longitude,
+        ...(values.divisionId
+          ? {
+              divisionId: values.divisionId,
+            }
+          : {}),
+        ...(values.districtId
+          ? {
+              districtId: values.districtId,
+            }
+          : {}),
+        ...(values.upazilaId
+          ? {
+              upazilaId: values.upazilaId,
+            }
+          : {}),
+      },
+    });
+
+    REVALIDATE_PATHS.forEach((path) => revalidatePath(path));
+    revalidatePath(`/requests/${requestId}`);
+
+    return success({ id: requestId });
+  } catch (error) {
+    console.error("updateBloodRequest:error", error);
+    return failure("Failed to update blood request. Please try again.");
+  }
+}
+
+export async function referDonor(
+  requestId: number,
+  requestUserId: number,
+  formData: FormData
+): Promise<ActionState<void>> {
+  const authResult = await ensureAuthenticatedUser();
+  if (!authResult.userId) {
+    return failure("You need to be signed in to refer a donor.");
+  }
+
+  try {
+    const donorName = formData.get("donorName")?.toString();
+    const donorPhone = formData.get("donorPhone")?.toString();
+    const donorEmail = formData.get("donorEmail")?.toString() || "";
+    const relationship = formData.get("relationship")?.toString() || "Other";
+    const notes = formData.get("notes")?.toString() || "";
+
+    if (!donorName || !donorPhone) {
+      return failure("Donor name and phone number are required.");
+    }
+
+    // Validate phone format (basic check)
+    const phoneRegex = /^(\+8801|01)[3-9]\d{8}$/;
+    if (!phoneRegex.test(donorPhone.replace(/\s/g, ""))) {
+      return failure("Please provide a valid phone number (e.g., +8801712345678 or 01712345678).");
+    }
+
+    // Create notification for request owner
+    const referralMessage = `${authResult.sessionUser?.name || "Someone"} has referred a donor for your blood request.\n\nDonor: ${donorName}\nPhone: ${donorPhone}${donorEmail ? `\nEmail: ${donorEmail}` : ""}\nRelationship: ${relationship}${notes ? `\n\nNotes: ${notes}` : ""}`;
+
+    await createNotification({
+      recipientId: requestUserId,
+      message: referralMessage,
+      link: `/requests/${requestId}`,
+      senderId: authResult.userId,
+    });
+
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/notifications");
+
+    return success(undefined);
+  } catch (error) {
+    console.error("referDonor:error", error);
+    return failure("Failed to submit referral. Please try again.");
+  }
+}
+
+export async function withdrawFromRequest(requestId: number): Promise<ActionState<void>> {
+  const authResult = await ensureAuthenticatedUser();
+  if (!authResult.userId) {
+    return failure("You need to be signed in to withdraw from a request.");
+  }
+
+  try {
+    // Check if user has an accepted response
+    const response = await prisma.donorResponse.findUnique({
+      where: {
+        donorId_requestId: {
+          donorId: authResult.userId,
+          requestId,
+        },
+        status: "Accepted",
+      },
+      include: {
+        bloodRequest: {
+          select: {
+            userId: true,
+            patientName: true,
+          },
+        },
+      },
+    });
+
+    if (!response) {
+      return failure("You don't have an accepted commitment to this request.");
+    }
+
+    // Delete the donor response
+    await prisma.donorResponse.delete({
+      where: {
+        id: response.id,
+      },
+    });
+
+    // Notify request owner
+    await createNotification({
+      recipientId: response.bloodRequest.userId,
+      message: `${authResult.sessionUser?.name || "A donor"} has withdrawn from your blood request for ${response.bloodRequest.patientName}.`,
+      link: `/requests/${requestId}`,
+      senderId: authResult.userId,
+    });
+
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/notifications");
+
+    return success(undefined);
+  } catch (error) {
+    console.error("withdrawFromRequest:error", error);
+    return failure("Failed to withdraw from request. Please try again.");
   }
 }

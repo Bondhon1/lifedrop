@@ -230,7 +230,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
   };
 
   return (
-    <Card className="overflow-hidden border border-soft bg-surface-card shadow-soft transition hover:-translate-y-0.5">
+    <Card className="overflow-hidden border-2 border-gray-200 dark:border-soft bg-surface-card shadow-lg dark:shadow-soft transition hover:-translate-y-0.5 hover:shadow-xl">
       <CardHeader className="flex flex-col gap-4 border-b border-soft bg-surface-primary-soft pb-4 text-primary">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex-1 min-w-0">

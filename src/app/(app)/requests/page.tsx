@@ -73,43 +73,12 @@ export default async function RequestsPage() {
 
   return (
     <div className="grid gap-6">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold text-primary">Your blood requests</h1>
-          <p className="text-sm text-secondary">
-            Track the status of every request you&apos;ve created and keep donors informed.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="secondary" className="border border-rose-400/50" asChild>
-            <Link href="/feed">View community feed</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/requests/new">Create new request</Link>
-          </Button>
-        </div>
+      <header>
+        <h1 className="text-3xl font-semibold text-primary">Your blood requests</h1>
+        <p className="text-sm text-secondary">
+          Track the status of every request you&apos;ve created and keep donors informed.
+        </p>
       </header>
-
-      <section className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold text-secondary">Open requests</CardTitle>
-          </CardHeader>
-          <CardContent className="text-3xl font-semibold text-primary">{openRequests}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold text-secondary">Fulfilled</CardTitle>
-          </CardHeader>
-          <CardContent className="text-3xl font-semibold text-primary">{fulfilledRequests}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold text-secondary">Total supports received</CardTitle>
-          </CardHeader>
-          <CardContent className="text-3xl font-semibold text-primary">{totalSupports}</CardContent>
-        </Card>
-      </section>
 
       <section className="grid gap-5">
         {feedItems.length === 0 ? (

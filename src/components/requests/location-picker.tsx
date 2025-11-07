@@ -327,20 +327,23 @@ export function LocationPicker({ onError }: LocationPickerProps) {
 
   return (
     <div className="space-y-3">
-      <div className="relative h-72 w-full overflow-hidden rounded-md border border-rose-500/40 bg-rose-950/40">
+      <div className="relative h-72 w-full overflow-hidden rounded-md border border-rose-500/40 bg-white dark:bg-rose-950/40">
         <div ref={containerRef} className="absolute inset-0" />
         {!isMapReady ? (
-          <div className="flex h-full w-full items-center justify-center text-sm text-rose-100/80">Loading map…</div>
+          <div className="flex h-full w-full items-center justify-center text-sm" style={{ color: '#1f2937' }}>
+            Loading map…
+          </div>
         ) : null}
       </div>
-      <div className="flex flex-col gap-2 text-xs text-rose-100/80 sm:flex-row sm:items-center sm:justify-between">
-        <p className="font-medium">
+      <div className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+        <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
           {addressLabel ? `Selected location: ${addressLabel}` : "Tap anywhere on the map to set the hospital location."}
         </p>
         <button
           type="button"
           onClick={useCurrentLocation}
-          className="self-start rounded-md border border-rose-400/70 px-3 py-1 text-rose-100 transition hover:bg-rose-500/10"
+          className="self-start rounded-md border border-rose-600 bg-white dark:bg-rose-950/40 px-3 py-1.5 font-medium transition hover:bg-rose-50 dark:hover:bg-rose-500/10"
+          style={{ color: 'var(--color-text-primary)' }}
           disabled={isResolving}
         >
           {isResolving ? "Locating…" : "Use current location"}

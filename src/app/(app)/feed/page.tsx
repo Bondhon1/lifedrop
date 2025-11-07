@@ -586,27 +586,24 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
             Explore active blood requests, fine-tune filters, and rally donors for the cases that need help most.
           </p>
         </div>
-        <Button asChild>
-          <Link href="/requests/new">Create blood request</Link>
-        </Button>
       </header>
 
       <section className="rounded-2xl border border-soft bg-surface-card p-4 shadow-soft">
         <div className="flex flex-wrap items-end gap-4 text-secondary">
           <div className="min-w-[200px]">
             <p className="text-xs font-medium uppercase text-muted">Blood group</p>
-            <div className="mt-1 flex flex-wrap gap-2">
+            <div className="mt-1 flex flex-wrap gap-1.5">
               {BLOOD_GROUPS.map((group) => (
                 <Button
                   key={group}
                   asChild
-                  size="sm"
+                  className="h-8 px-2.5 text-xs sm:h-9 sm:px-3 sm:text-sm"
                   variant={activeFilters.bloodGroup === group ? "primary" : "secondary"}
                 >
                   <Link href={createHref(activeFilters, { bloodGroup: group, page: undefined })}>{group}</Link>
                 </Button>
               ))}
-              <Button asChild size="sm" variant="ghost">
+              <Button asChild className="h-8 px-2.5 text-xs sm:h-9 sm:px-3 sm:text-sm" variant="ghost">
                 <Link href={createHref(activeFilters, { bloodGroup: undefined, page: undefined })}>Any</Link>
               </Button>
             </div>

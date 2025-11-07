@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfileActionButtons, type FriendStatus } from "@/components/profile/profile-action-buttons";
+import { BloodRequestCard, type BloodRequestFeedItem } from "@/components/feed/blood-request-card";
+import { Mail, MapPin } from "lucide-react";
 
 type MemberProfilePageProps = {
   params: Promise<{
@@ -125,14 +127,20 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
       where: { userId: member.id },
       orderBy: { createdAt: "desc" },
       take: 3,
-      select: {
-        id: true,
-        patientName: true,
-        urgencyStatus: true,
-        bloodGroup: true,
-        requiredDate: true,
-        createdAt: true,
-        status: true,
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            name: true,
+            bloodGroup: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
     }),
   ]);
@@ -144,10 +152,42 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
     .filter(Boolean)
     .join(", ");
 
+  const feedItems: BloodRequestFeedItem[] = recentRequests.map((request) => ({
+    id: request.id,
+    patientName: request.patientName,
+    gender: request.gender,
+    requiredDate: request.requiredDate.toISOString(),
+    bloodGroup: request.bloodGroup,
+    amountNeeded: Number(request.amountNeeded),
+    hospitalName: request.hospitalName,
+    urgencyStatus: request.urgencyStatus,
+    smokerPreference: request.smokerPreference,
+    reason: request.reason,
+    location: request.location,
+    latitude: request.latitude ? Number(request.latitude) : null,
+    longitude: request.longitude ? Number(request.longitude) : null,
+    status: request.status,
+    createdAt: request.createdAt.toISOString(),
+    updatedAt: request.updatedAt.toISOString(),
+    upvotes: request.upvoteCount,
+    commentCount: request._count.comments,
+    donorsAssigned: request.donorsAssigned,
+    owner: {
+      id: request.user.id,
+      username: request.user.username,
+      name: request.user.name,
+      bloodGroup: request.user.bloodGroup,
+    },
+    hasUpvoted: false,
+    hasResponded: false,
+    isOwner: member.id === viewerId,
+  }));
+
   return (
-    <div className="grid gap-8">
-      <section className="overflow-hidden rounded-3xl border border-rose-500/20 bg-rose-950/70 shadow-2xl shadow-rose-900/40">
-        <div className="relative h-48 w-full bg-gradient-to-r from-rose-500/40 via-rose-600/30 to-rose-700/30">
+    <div className="grid gap-6">
+      {/* Profile Header Card */}
+      <Card className="overflow-hidden border-2 border-gray-200 dark:border-rose-500/20 shadow-lg bg-page">
+        <div className="relative h-48 w-full bg-gradient-to-r from-rose-100 via-rose-200 to-rose-300 dark:from-rose-500/40 dark:via-rose-600/30 dark:to-rose-700/30">
           <Image
             src={coverImage}
             alt={`${displayName} cover`}
@@ -157,117 +197,85 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
             priority
           />
         </div>
-        <div className="grid gap-6 px-6 pb-8 md:grid-cols-[auto_1fr] md:items-end">
-          <div className="-mt-14 flex items-end">
-            <div className="rounded-full border-4 border-rose-950/80 bg-rose-900/60 p-1 shadow-2xl shadow-rose-900/40">
-              <div className="relative h-28 w-28 overflow-hidden rounded-full bg-rose-500/20">
-                <Image src={profileImage} alt={`${displayName} avatar`} fill className="object-cover" sizes="112px" priority />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <h1 className="text-3xl font-semibold text-white">{displayName}</h1>
-              <p className="text-sm text-rose-100/80">@{member.username}</p>
-              {location ? <p className="text-sm text-rose-100/70">{location}</p> : null}
-              <div className="flex flex-wrap items-center gap-2 text-sm text-rose-100/80">
-                <Badge variant="secondary">Joined {formatJoinedDate(member.createdAt)}</Badge>
-                {member.bloodGroup ? (
-                  <Badge className="bg-rose-500/30 text-rose-50">Blood group {member.bloodGroup}</Badge>
-                ) : null}
-                <Badge variant="secondary">{friendCount} {friendCount === 1 ? "friend" : "friends"}</Badge>
-              </div>
-            </div>
-
-            <ProfileActionButtons
-              status={friendStatus}
-              targetUserId={member.id}
-              pendingRequestId={pendingRequestId}
-              friendSince={friendSince}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <Card className="border border-rose-500/20 bg-rose-950/70">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white">About {displayName.split(" ")[0]}</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 text-sm text-rose-100/80">
-            <div className="grid gap-1">
-              <p className="font-semibold text-white">Contact details</p>
-              <p>Email: <span className="text-rose-100/70">{member.email ?? "Not shared"}</span></p>
-              <p>Phone: <span className="text-rose-100/70">{member.phone ?? "Not shared"}</span></p>
-              <p>Address: <span className="text-rose-100/70">{member.address ?? "Not shared"}</span></p>
-            </div>
-            <div className="grid gap-1">
-              <p className="font-semibold text-white">Medical notes</p>
-              <p className="whitespace-pre-wrap text-rose-100/70">
-                {member.medicalHistory ? member.medicalHistory : "No medical details shared yet."}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-rose-500/20 bg-rose-950/70">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white">Impact</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid gap-4 text-sm text-rose-50">
-              <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
-                <dt className="text-xs uppercase tracking-widest text-rose-200/80">Requests created</dt>
-                <dd className="text-2xl font-semibold text-white">{requestCount}</dd>
-              </div>
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-                <dt className="text-xs uppercase tracking-widest text-emerald-200/80">Donations pledged</dt>
-                <dd className="text-2xl font-semibold text-white">{donationCount}</dd>
-              </div>
-              <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4">
-                <dt className="text-xs uppercase tracking-widest text-sky-200/80">Connections</dt>
-                <dd className="text-2xl font-semibold text-white">{friendCount}</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid gap-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Recent blood requests</h2>
-          <Link href={`/requests?user=${member.username}`} className="text-sm text-rose-100/80 underline-offset-4 hover:underline">
-            View more
-          </Link>
-        </div>
-        {recentRequests.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-rose-500/30 bg-rose-500/10 p-6 text-sm text-rose-100/80">
-            No blood requests from {displayName.split(" ")[0]} yet.
-          </p>
-        ) : (
-          <ul className="grid gap-3">
-            {recentRequests.map((request: (typeof recentRequests)[number]) => (
-              <li
-                key={request.id}
-                className="flex flex-col gap-2 rounded-2xl border border-rose-500/20 bg-rose-950/70 p-4 shadow-lg shadow-rose-900/30 md:flex-row md:items-center md:justify-between"
-              >
-                <div className="grid gap-1 text-sm text-rose-100/80">
-                  <Link href={`/requests/${request.id}`} className="text-base font-semibold text-white hover:underline">
-                    {request.patientName}
-                  </Link>
-                  <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-wide text-rose-100/60">
-                    <span>{request.bloodGroup}</span>
-                    <span>{request.urgencyStatus}</span>
-                    <span>Required {request.requiredDate.toLocaleDateString()}</span>
-                  </div>
+        
+        <div className="px-6 pb-6 bg-page">
+          <div className="flex flex-col md:flex-row gap-6 md:items-end -mt-16">
+            {/* Avatar */}
+            <div className="flex-shrink-0">
+              <div className="rounded-full border-4 border-white dark:border-rose-950/80 bg-gray-100 dark:bg-rose-900/60 p-1 shadow-lg">
+                <div className="relative h-24 w-24 overflow-hidden rounded-full bg-gray-50 dark:bg-rose-500/20">
+                  <Image src={profileImage} alt={`${displayName} avatar`} fill className="object-cover" sizes="96px" priority />
                 </div>
-                <Badge variant="secondary" className="w-fit">
-                  {request.status}
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 grid gap-3">
+              <div>
+                {member.name && member.name.trim().length > 0 && (
+                  <p className="text-lg font-semibold text-primary">{member.name}</p>
+                )}
+                <h1 className="text-2xl font-bold text-primary">@{member.username}</h1>
+              </div>
+
+              <div className="flex flex-wrap gap-3 text-sm text-secondary">
+                {member.email && (
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="h-4 w-4 text-muted" />
+                    <span>{member.email}</span>
+                  </div>
+                )}
+                {location && (
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-4 w-4 text-muted" />
+                    <span>{location}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {member.bloodGroup && (
+                  <Badge className="bg-rose-100 text-rose-900 dark:bg-rose-500/30 dark:text-rose-50">
+                    {member.bloodGroup}
+                  </Badge>
+                )}
+                <Badge variant="secondary" className="text-muted">
+                  {friendCount} {friendCount === 1 ? "friend" : "friends"}
                 </Badge>
-              </li>
+                <Badge variant="secondary" className="text-muted">
+                  Joined {formatJoinedDate(member.createdAt)}
+                </Badge>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex-shrink-0">
+              <ProfileActionButtons
+                status={friendStatus}
+                targetUserId={member.id}
+                pendingRequestId={pendingRequestId}
+                friendSince={friendSince}
+              />
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Recent Requests */}
+      <section className="grid gap-4">
+        <h2 className="text-xl font-bold text-primary">Recent blood requests</h2>
+        {feedItems.length === 0 ? (
+          <Card className="border-2 border-dashed border-gray-300 dark:border-rose-500/30 bg-gray-50 dark:bg-rose-500/10">
+            <CardContent className="p-8 text-center text-gray-600 dark:text-rose-100/80">
+              No blood requests from {displayName.split(" ")[0]} yet.
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-5">
+            {feedItems.map((item) => (
+              <BloodRequestCard key={item.id} request={item} showFullReason={false} />
             ))}
-          </ul>
+          </div>
         )}
       </section>
     </div>

@@ -198,8 +198,8 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
           />
         </div>
         
-        <div className="px-6 pb-6 bg-page">
-          <div className="flex flex-col md:flex-row gap-6 md:items-end -mt-16">
+        <div className="px-6 py-6 bg-page">
+          <div className="flex flex-col md:flex-row gap-6 md:items-center">
             {/* Avatar */}
             <div className="flex-shrink-0">
               <div className="rounded-full border-4 border-white dark:border-rose-950/80 bg-gray-100 dark:bg-rose-900/60 p-1 shadow-lg">

@@ -92,8 +92,7 @@ export const metadata: Metadata = {
     apple: "/favicon.png",
   },
   verification: {
-    // Add these when you get them:
-    // google: "your-google-verification-code",
+    google: "3910f7d6f9032e3a",
     // yandex: "your-yandex-verification-code",
     // yahoo: "your-yahoo-verification-code",
   },

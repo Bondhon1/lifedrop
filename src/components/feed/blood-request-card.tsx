@@ -172,7 +172,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
           variant="secondary"
           size="sm"
           disabled
-          className="min-w-[10rem]"
+          className="min-w-40"
         >
           You created this
         </Button>
@@ -185,7 +185,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
           variant="primary"
           size="sm"
           asChild
-          className="min-w-[10rem]"
+          className="min-w-40"
         >
           <Link href="/donors">Become a donor</Link>
         </Button>
@@ -221,7 +221,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
           handleRespond();
         }}
         disabled={disabled}
-        className="min-w-[10rem]"
+        className="min-w-40"
         title={!viewerCanRespond && viewerBlockedReason ? viewerBlockedReason : undefined}
       >
         {label}
@@ -239,7 +239,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
               Requested by{" "}
               <Link
                 href={`/members/${request.owner.username}`}
-                className="font-semibold text-[var(--color-text-accent)] underline-offset-4 hover:text-[var(--color-text-accent-hover)] hover:underline"
+                className="font-semibold text-(--color-text-accent) underline-offset-4 hover:text-(--color-text-accent-hover) hover:underline"
               >
                 {request.owner.name ?? request.owner.username}
               </Link>{" "}
@@ -262,19 +262,19 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm text-secondary">
-          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1">
-            <Droplet className="h-4 w-4 text-[var(--color-text-danger)]" />
+          <span className="inline-flex items-center gap-1 rounded-full border border-(--color-border-primary) bg-surface-primary-soft px-3 py-1">
+            <Droplet className="h-4 w-4 text-(--color-text-danger)" />
             {request.bloodGroup}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-3 py-1">
-            <Heart className="h-4 w-4 text-[var(--color-text-danger)]" />
+          <span className="inline-flex items-center gap-1 rounded-full border border-(--color-border-primary) bg-surface-primary-soft px-3 py-1">
+            <Heart className="h-4 w-4 text-(--color-text-danger)" />
             {donorsAssigned}/{request.amountNeeded} donors pledged
           </span>
           <Link
             href={`/requests/${request.id}#comments`}
-            className="inline-flex items-center gap-1 rounded-full border border-transparent bg-surface-primary-soft px-3 py-1 text-secondary transition hover:border-[var(--color-border-primary)] hover:text-primary"
+            className="inline-flex items-center gap-1 rounded-full border border-transparent bg-surface-primary-soft px-3 py-1 text-secondary transition hover:border-(--color-border-primary) hover:text-primary"
           >
-            <MessageCircle className="h-4 w-4 text-[var(--color-text-accent)]" /> {request.commentCount} comments
+            <MessageCircle className="h-4 w-4 text-(--color-text-accent)" /> {request.commentCount} comments
           </Link>
         </div>
       </CardHeader>
@@ -291,7 +291,7 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
                 href={mapLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 inline-flex items-center gap-1 text-xs text-[var(--color-text-accent)] underline-offset-4 hover:text-[var(--color-text-accent-hover)] hover:underline"
+                className="ml-2 inline-flex items-center gap-1 text-xs text-(--color-text-accent) underline-offset-4 hover:text-(--color-text-accent-hover) hover:underline"
               >
                 <MapPin className="h-3 w-3" /> View map
               </a>
@@ -314,20 +314,20 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
             size="sm"
             onClick={handleToggleUpvote}
             disabled={isPending}
-            className="min-w-[8rem] gap-2"
+            className="min-w-32 gap-2"
           >
             <Heart className="h-4 w-4" /> {upvoteCount} supports
           </Button>
 
           {renderRespondAction()}
 
-          <Button variant="ghost" size="sm" asChild className="text-primary hover:text-[var(--color-text-accent)]">
+          <Button variant="ghost" size="sm" asChild className="text-primary hover:text-(--color-text-accent)">
             <Link href={`/requests/${request.id}#comments`}>
               <MessageCircle className="mr-2 h-4 w-4" /> Discuss
             </Link>
           </Button>
 
-          <Button variant="ghost" size="sm" asChild className="text-primary hover:text-[var(--color-text-accent)]">
+          <Button variant="ghost" size="sm" asChild className="text-primary hover:text-(--color-text-accent)">
             <Link href={`/requests/${request.id}`}>
               <Share2 className="mr-2 h-4 w-4" /> View details
             </Link>

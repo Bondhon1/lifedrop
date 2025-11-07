@@ -82,15 +82,15 @@ export default async function ProfilePage() {
         <div className="relative h-48 w-full">
           <Image src={displayCoverPhotoUrl} alt="Cover photo" fill className="object-cover" priority sizes="100vw" />
         </div>
-        <div className="relative px-6 pb-6">
-          <div className="-mt-14 flex flex-wrap items-end gap-4">
+        <div className="relative px-6 py-6">
+          <div className="flex flex-wrap items-center gap-4">
             <Avatar
               src={displayProfilePictureUrl}
               alt={user.name ?? user.username}
               size="lg"
               className="h-24 w-24 border-4 border-[var(--color-border-primary)] bg-surface-card-muted shadow-soft"
             />
-            <div className="min-w-0 pb-2">
+            <div className="min-w-0">
               <h1 className="truncate text-2xl font-semibold text-primary">{user.name ?? user.username}</h1>
               <p className="truncate text-sm text-secondary">{user.email}</p>
               <p className="mt-1 text-xs text-muted">Last updated {new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(user.updatedAt)}</p>

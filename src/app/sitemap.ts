@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app";
+  const baseUrl = (process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app").replace(/\/$/, "");
 
   return [
     {
@@ -40,6 +40,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.6,
     },
-    // Add more static routes as needed
   ];
 }

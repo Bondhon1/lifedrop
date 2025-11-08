@@ -258,6 +258,56 @@ export const authOptions: AuthOptions = {
       : []),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // Handle OAuth account linking
+      if (account?.provider === "google" && user.email) {
+        try {
+          const email = user.email.toLowerCase();
+          
+          // Check if user exists
+          const existingUser = await prisma.user.findUnique({
+            where: { email },
+          });
+
+          if (existingUser) {
+            // Check if this OAuth account is already linked
+            const existingAccount = await prisma.account.findFirst({
+              where: {
+                userId: existingUser.id,
+                provider: account.provider,
+              },
+            });
+
+            // If account not linked, link it now
+            if (!existingAccount) {
+              await prisma.account.create({
+                data: {
+                  userId: existingUser.id,
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  refresh_token: account.refresh_token,
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  token_type: account.token_type,
+                  scope: account.scope,
+                  id_token: account.id_token,
+                  session_state: account.session_state,
+                },
+              });
+            }
+
+            // Update user ID to match existing user
+            user.id = String(existingUser.id);
+          }
+        } catch (error) {
+          console.error("Error linking OAuth account:", error);
+          // Continue with sign in even if linking fails
+        }
+      }
+
+      return true;
+    },
     async jwt({ token, user, account, profile }) {
       if (user) {
         const enrichedUser = user as AuthenticatedUser;

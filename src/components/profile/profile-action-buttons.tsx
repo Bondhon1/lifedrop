@@ -54,8 +54,6 @@ export function ProfileActionButtons({
     });
   };
 
-  const chatDisabled = status !== "friends";
-
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-3">
@@ -166,15 +164,9 @@ export function ProfileActionButtons({
           </>
         ) : null}
 
-        {chatDisabled ? (
-          <Button variant="secondary" disabled className="cursor-not-allowed opacity-70">
-            Chat available after connecting
-          </Button>
-        ) : (
-          <Button variant="primary" asChild>
-            <Link href={`/chat?user=${targetUserId}`}>Open chat</Link>
-          </Button>
-        )}
+        <Button variant="primary" asChild>
+          <Link href={`/chat?user=${targetUserId}`}>Send message</Link>
+        </Button>
       </div>
       {feedback ? <p className="text-xs text-rose-100/70">{feedback}</p> : null}
     </div>

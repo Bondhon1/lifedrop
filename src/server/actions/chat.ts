@@ -51,23 +51,14 @@ export async function sendChatMessage(formData: FormData): Promise<ActionState<{
     return failure("You can’t message yourself.");
   }
 
-  const friendship = await prisma.userFriend.findFirst({
-    where: {
-      OR: [
-        {
-          userId: authResult.userId,
-          friendId: values.receiverId,
-        },
-        {
-          userId: values.receiverId,
-          friendId: authResult.userId,
-        },
-      ],
-    },
+  // Verify receiver exists
+  const receiver = await prisma.user.findUnique({
+    where: { id: values.receiverId },
+    select: { id: true },
   });
 
-  if (!friendship) {
-    return failure("You can only message confirmed connections.");
+  if (!receiver) {
+    return failure("User not found.");
   }
 
   try {

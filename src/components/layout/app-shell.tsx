@@ -399,16 +399,7 @@ export function AppShell({
               <Button variant="secondary" size="sm" asChild>
                 <Link href="/requests/new">Create Request</Link>
               </Button>
-              <div
-                className="relative"
-                onMouseEnter={() => {
-                  setShowNotificationsPanel(true);
-                  setShowConversationsPanel(false);
-                }}
-                onMouseLeave={() => {
-                  setShowNotificationsPanel(false);
-                }}
-              >
+              <div className="relative">
                 <Button
                   type="button"
                   variant="ghost"
@@ -416,6 +407,10 @@ export function AppShell({
                   className="relative"
                   aria-haspopup="dialog"
                   aria-expanded={showNotificationsPanel}
+                  onMouseEnter={() => {
+                    setShowNotificationsPanel(true);
+                    setShowConversationsPanel(false);
+                  }}
                   onClick={() => {
                     setShowNotificationsPanel((prev) => {
                       const next = !prev;
@@ -434,7 +429,11 @@ export function AppShell({
                   ) : null}
                 </Button>
                 {showNotificationsPanel ? (
-                  <div className="absolute right-0 z-40 mt-2">
+                  <div
+                    className="absolute right-0 z-40 mt-2"
+                    onMouseEnter={() => setShowNotificationsPanel(true)}
+                    onMouseLeave={() => setShowNotificationsPanel(false)}
+                  >
                     <NotificationHoverPanel
                       notifications={notificationItems}
                       unreadCount={notificationCount}
@@ -443,16 +442,7 @@ export function AppShell({
                   </div>
                 ) : null}
               </div>
-              <div
-                className="relative"
-                onMouseEnter={() => {
-                  setShowConversationsPanel(true);
-                  setShowNotificationsPanel(false);
-                }}
-                onMouseLeave={() => {
-                  setShowConversationsPanel(false);
-                }}
-              >
+              <div className="relative">
                 <Button
                   type="button"
                   variant="ghost"
@@ -460,6 +450,10 @@ export function AppShell({
                   className="relative"
                   aria-haspopup="dialog"
                   aria-expanded={showConversationsPanel}
+                  onMouseEnter={() => {
+                    setShowConversationsPanel(true);
+                    setShowNotificationsPanel(false);
+                  }}
                   onClick={() => {
                     setShowConversationsPanel((prev) => {
                       const next = !prev;
@@ -478,7 +472,11 @@ export function AppShell({
                   ) : null}
                 </Button>
                 {showConversationsPanel ? (
-                  <div className="absolute right-0 z-40 mt-2">
+                  <div
+                    className="absolute right-0 z-40 mt-2"
+                    onMouseEnter={() => setShowConversationsPanel(true)}
+                    onMouseLeave={() => setShowConversationsPanel(false)}
+                  >
                     <ConversationHoverPanel
                       conversations={conversationItems}
                       currentUserId={currentUserId}
@@ -505,16 +503,7 @@ export function AppShell({
                 <Plus className="h-4 w-4" />
               </Link>
             </Button>
-            <div
-              className="relative"
-              onMouseEnter={() => {
-                setShowNotificationsPanel(true);
-                setShowConversationsPanel(false);
-              }}
-              onMouseLeave={() => {
-                setShowNotificationsPanel(false);
-              }}
-            >
+            <div className="relative">
               <Button
                 type="button"
                 variant="ghost"
@@ -540,7 +529,10 @@ export function AppShell({
                 ) : null}
               </Button>
               {showNotificationsPanel ? (
-                <div className="absolute left-1/2 top-full z-40 mt-2 w-screen max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:left-auto sm:right-0 sm:w-auto sm:translate-x-0">
+                <div
+                  className="absolute left-1/2 top-full z-40 mt-2 w-screen max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:left-auto sm:right-0 sm:w-auto sm:translate-x-0"
+                  onMouseLeave={() => setShowNotificationsPanel(false)}
+                >
                   <NotificationHoverPanel
                     notifications={notificationItems}
                     unreadCount={notificationCount}
@@ -549,16 +541,7 @@ export function AppShell({
                 </div>
               ) : null}
             </div>
-            <div
-              className="relative"
-              onMouseEnter={() => {
-                setShowConversationsPanel(true);
-                setShowNotificationsPanel(false);
-              }}
-              onMouseLeave={() => {
-                setShowConversationsPanel(false);
-              }}
-            >
+            <div className="relative">
               <Button
                 type="button"
                 variant="ghost"
@@ -584,7 +567,10 @@ export function AppShell({
                 ) : null}
               </Button>
               {showConversationsPanel ? (
-                <div className="absolute left-1/2 top-full z-40 mt-2 w-screen max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:left-auto sm:right-0 sm:w-auto sm:translate-x-0">
+                <div
+                  className="absolute left-1/2 top-full z-40 mt-2 w-screen max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:left-auto sm:right-0 sm:w-auto sm:translate-x-0"
+                  onMouseLeave={() => setShowConversationsPanel(false)}
+                >
                   <ConversationHoverPanel
                     conversations={conversationItems}
                     currentUserId={currentUserId}

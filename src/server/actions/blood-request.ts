@@ -357,6 +357,16 @@ export async function respondToBloodRequest(requestId: number): Promise<ActionSt
     return failure("This request is no longer accepting donors.");
   }
 
+  // Check if the required date has passed
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const requiredDate = new Date(request.requiredDate);
+  requiredDate.setHours(0, 0, 0, 0);
+  
+  if (requiredDate < today) {
+    return failure("This blood request has passed its required date and can no longer accept donors.");
+  }
+
   const acceptedCount = await prisma.donorResponse.count({
     where: { requestId, status: "Accepted" },
   });
@@ -461,6 +471,7 @@ export async function updateDonorResponseStatus(
           patientName: true,
           amountNeeded: true,
           status: true,
+          requiredDate: true,
         },
       },
       donor: {
@@ -485,6 +496,18 @@ export async function updateDonorResponseStatus(
 
   if (response.bloodRequest.userId !== authResult.userId) {
     return failure("Only the request owner can manage donor responses.");
+  }
+
+  // Check if accepting a response for an expired request
+  if (nextStatus === "Accepted") {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const requiredDate = new Date(response.bloodRequest.requiredDate);
+    requiredDate.setHours(0, 0, 0, 0);
+    
+    if (requiredDate < today) {
+      return failure("Cannot accept donors for a blood request that has passed its required date.");
+    }
   }
 
   if (response.status === nextStatus) {

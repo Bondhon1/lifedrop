@@ -378,6 +378,14 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
                       {response.donor.name ?? response.donor.username}
                     </Link>
                     <p className="text-xs text-muted">Responded on {new Date(response.createdAt).toLocaleString()}</p>
+                    {response.donor.phone && (
+                      <p className="text-xs text-muted">
+                        <strong>Phone:</strong>{" "}
+                        <a href={`tel:${response.donor.phone}`} className="text-primary hover:underline">
+                          {response.donor.phone}
+                        </a>
+                      </p>
+                    )}
                     {response.status !== "Pending" && (
                       <p className="text-xs font-semibold mt-1 text-primary">
                         Status: <span className={response.status === "Accepted" ? "text-green-600" : "text-red-600"}>{response.status}</span>

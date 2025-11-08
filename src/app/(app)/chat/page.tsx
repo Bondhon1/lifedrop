@@ -25,64 +25,96 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
     redirect("/login");
   }
 
-  const connections = await prisma.userFriend.findMany({
+  // Get all users the current user has exchanged messages with
+  const messagePartners = await prisma.chatMessage.findMany({
     where: {
-      OR: [{ userId }, { friendId: userId }],
+      OR: [
+        { senderId: userId },
+        { receiverId: userId },
+      ],
     },
-    include: {
-      user: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          bloodGroup: true,
-        },
-      },
-      friend: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          bloodGroup: true,
-        },
-      },
+    select: {
+      senderId: true,
+      receiverId: true,
+      createdAt: true,
     },
     orderBy: { createdAt: "desc" },
   });
 
-  const friendMap = new Map<number, { username: string; name: string | null; bloodGroup: string | null; joinedAt: Date }>();
+  const partnerMap = new Map<number, { firstMessageAt: Date }>();
 
-  for (const connection of connections) {
-    const person = connection.userId === userId ? connection.friend : connection.user;
-    if (!friendMap.has(person.id)) {
-      friendMap.set(person.id, {
-        username: person.username,
-        name: person.name,
-        bloodGroup: person.bloodGroup,
-        joinedAt: connection.createdAt,
-      });
+  for (const message of messagePartners) {
+    const partnerId = message.senderId === userId ? message.receiverId : message.senderId;
+    if (partnerId !== userId && !partnerMap.has(partnerId)) {
+      partnerMap.set(partnerId, { firstMessageAt: message.createdAt });
     }
   }
 
-  const friendEntries = Array.from(friendMap.entries()).sort((a, b) => b[1].joinedAt.getTime() - a[1].joinedAt.getTime());
-  const friendIds = friendEntries.map(([id]) => id);
+  const partnerIds = Array.from(partnerMap.keys());
+
+  // Fetch partner user details
+  const partners = await prisma.user.findMany({
+    where: {
+      id: { in: partnerIds },
+    },
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      bloodGroup: true,
+    },
+  });
+
+  const partnerDetails = new Map<number, { username: string; name: string | null; bloodGroup: string | null }>();
+  for (const partner of partners) {
+    partnerDetails.set(partner.id, {
+      username: partner.username,
+      name: partner.name,
+      bloodGroup: partner.bloodGroup,
+    });
+  }
 
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const searchParamRaw = resolvedSearchParams.user;
   const searchParam = Array.isArray(searchParamRaw) ? searchParamRaw[0] : searchParamRaw;
-  let selectedFriendId = Number(searchParam);
+  let selectedPartnerId = Number(searchParam);
 
-  if (!Number.isInteger(selectedFriendId) || !friendMap.has(selectedFriendId)) {
-    selectedFriendId = friendIds[0];
+  // If the selected partner is not in existing conversations, fetch their details
+  if (Number.isInteger(selectedPartnerId) && selectedPartnerId !== userId && !partnerDetails.has(selectedPartnerId)) {
+    const newPartner = await prisma.user.findUnique({
+      where: { id: selectedPartnerId },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        bloodGroup: true,
+      },
+    });
+
+    if (newPartner) {
+      // Add to partnerDetails and partnerIds
+      partnerDetails.set(newPartner.id, {
+        username: newPartner.username,
+        name: newPartner.name,
+        bloodGroup: newPartner.bloodGroup,
+      });
+      partnerIds.unshift(newPartner.id); // Add to the beginning
+    } else {
+      // Invalid user ID, fallback to first existing partner
+      selectedPartnerId = partnerIds[0];
+    }
+  } else if (!Number.isInteger(selectedPartnerId) || selectedPartnerId === userId) {
+    // Invalid or self-reference, fallback to first existing partner
+    selectedPartnerId = partnerIds[0];
   }
 
   let conversation: ChatMessageView[] = [];
   let partner: ChatPartner | null = null;
 
-  if (selectedFriendId) {
+  if (selectedPartnerId) {
     await prisma.chatMessage.updateMany({
       where: {
-        senderId: selectedFriendId,
+        senderId: selectedPartnerId,
         receiverId: userId,
         isRead: false,
       },
@@ -96,10 +128,10 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
         OR: [
           {
             senderId: userId,
-            receiverId: selectedFriendId,
+            receiverId: selectedPartnerId,
           },
           {
-            senderId: selectedFriendId,
+            senderId: selectedPartnerId,
             receiverId: userId,
           },
         ],
@@ -121,25 +153,25 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
 
     conversation = transformed;
 
-    const selectedFriend = friendMap.get(selectedFriendId);
-    if (selectedFriend) {
+    const selectedPartner = partnerDetails.get(selectedPartnerId);
+    if (selectedPartner) {
       partner = {
-        id: selectedFriendId,
-        username: selectedFriend.username,
-        name: selectedFriend.name,
-        bloodGroup: selectedFriend.bloodGroup,
+        id: selectedPartnerId,
+        username: selectedPartner.username,
+        name: selectedPartner.name,
+        bloodGroup: selectedPartner.bloodGroup,
       };
     }
   }
 
-  const unreadCounts = friendIds.length
+  const unreadCounts = partnerIds.length
     ? await prisma.chatMessage.groupBy({
         by: ["senderId"],
         _count: { _all: true },
         where: {
           receiverId: userId,
           isRead: false,
-          senderId: { in: friendIds },
+          senderId: { in: partnerIds },
         },
       })
     : [];
@@ -150,12 +182,12 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
   }
 
   const latestMessages = await Promise.all(
-    friendIds.map((friendId) =>
+    partnerIds.map((partnerId) =>
       prisma.chatMessage.findFirst({
         where: {
           OR: [
-            { senderId: userId, receiverId: friendId },
-            { senderId: friendId, receiverId: userId },
+            { senderId: userId, receiverId: partnerId },
+            { senderId: partnerId, receiverId: userId },
           ],
         },
         orderBy: { createdAt: "desc" },
@@ -163,19 +195,20 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
     ),
   );
 
-  const sidebarFriends: ChatFriend[] = friendEntries.map(([friendId, friendData], index) => {
+  const sidebarFriends: ChatFriend[] = partnerIds.map((partnerId, index) => {
+    const partnerData = partnerDetails.get(partnerId);
     const latestMessage = latestMessages[index];
     return {
-      id: friendId,
-      username: friendData.username,
-      name: friendData.name,
-      bloodGroup: friendData.bloodGroup,
+      id: partnerId,
+      username: partnerData?.username ?? "Unknown",
+      name: partnerData?.name ?? null,
+      bloodGroup: partnerData?.bloodGroup ?? null,
       lastMessage: latestMessage?.content ?? undefined,
       lastMessageAt: latestMessage
         ? formatDistanceToNow(latestMessage.createdAt, { addSuffix: true })
         : undefined,
-      unreadCount: friendId === selectedFriendId ? 0 : unreadMap.get(friendId) ?? 0,
-      isActive: friendId === selectedFriendId,
+      unreadCount: partnerId === selectedPartnerId ? 0 : unreadMap.get(partnerId) ?? 0,
+      isActive: partnerId === selectedPartnerId,
     };
   });
 

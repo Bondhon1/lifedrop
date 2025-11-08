@@ -1,8 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { markNotificationRead } from "@/server/actions/notification";
 import type { NotificationPreviewItem } from "@/components/layout/app-shell.types";
 
 const MAX_SNIPPET_LENGTH = 120;
@@ -30,6 +33,35 @@ type NotificationHoverPanelProps = {
 };
 
 export function NotificationHoverPanel({ notifications, unreadCount, onClose }: NotificationHoverPanelProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handleNotificationClick = (notificationId: number, link: string | null | undefined) => {
+    startTransition(async () => {
+      try {
+        // Mark as read
+        const result = await markNotificationRead(notificationId);
+        
+        if (!result.ok) {
+          console.error("Failed to mark notification as read:", result.message);
+        }
+        
+        // Close the panel
+        onClose?.();
+        
+        // Navigate to the link
+        if (link && link.length > 0) {
+          router.push(link);
+        } else {
+          router.push("/notifications");
+        }
+      } catch (error) {
+        console.error("Error handling notification click:", error);
+        onClose?.();
+      }
+    });
+  };
+
   return (
     <div className="w-[22rem] max-w-[calc(100vw-2rem)] rounded-3xl border border-soft bg-surface-card text-primary shadow-xl">
       <div className="flex items-center justify-between gap-2 border-b border-soft/60 bg-[var(--color-surface-primary-soft)] px-5 pb-4 pt-5">
@@ -46,13 +78,11 @@ export function NotificationHoverPanel({ notifications, unreadCount, onClose }: 
           </p>
         ) : (
           notifications.map((notification) => {
-            const targetHref = notification.link && notification.link.length > 0 ? notification.link : "/notifications";
             return (
-              <Link
+              <button
                 key={notification.id}
-                href={targetHref}
-                onClick={onClose}
-                className="group block rounded-2xl border border-soft bg-[var(--color-surface-panel)] p-4 text-sm transition-colors hover:border-[var(--color-primary-start)]/40 hover:bg-[var(--color-surface-primary-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-primary)]"
+                onClick={() => handleNotificationClick(notification.id, notification.link)}
+                className="group block w-full rounded-2xl border border-soft bg-[var(--color-surface-panel)] p-4 text-left text-sm transition-colors hover:border-[var(--color-primary-start)]/40 hover:bg-[var(--color-surface-primary-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-primary)]"
               >
                 <p className="text-sm font-semibold text-primary group-hover:text-primary">
                   {buildSnippet(notification.message)}
@@ -61,7 +91,7 @@ export function NotificationHoverPanel({ notifications, unreadCount, onClose }: 
                   <span>{notification.senderName ?? "Community"}</span>
                   <span>{formatRelativeTime(notification.createdAt)}</span>
                 </div>
-              </Link>
+              </button>
             );
           })
         )}

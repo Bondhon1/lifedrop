@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
+// Link removed: notifications are now clickable across the whole item
+// import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -38,6 +40,7 @@ export function NotificationList({ notifications, unreadCount }: NotificationLis
   const [unread, setUnread] = useState(unreadCount);
   const [isPending, startTransition] = useTransition();
   const socket = useSocket();
+  const router = useRouter();
 
   useEffect(() => {
     setItems(notifications);
@@ -139,6 +142,29 @@ export function NotificationList({ notifications, unreadCount }: NotificationLis
     });
   };
 
+  const handleItemClick = (notificationId: number, href?: string) => {
+    startTransition(async () => {
+      const result = await markNotificationRead(notificationId);
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+
+      setItems((prev) => prev.map((item) => (item.id === notificationId ? { ...item, isRead: true } : item)));
+      setUnread(result.data.unreadCount);
+
+      if (href) {
+        // navigate after marking read
+        try {
+          router.push(href);
+        } catch (err) {
+          // fallback to full navigation
+          window.location.href = href;
+        }
+      }
+    });
+  };
+
   const handleMarkAll = () => {
     startTransition(async () => {
       const result = await markAllNotificationsRead();
@@ -181,11 +207,40 @@ export function NotificationList({ notifications, unreadCount }: NotificationLis
         {items.map((item) => {
           const href = item.link ?? undefined;
           const relativeTime = formatRelative(item.createdAt);
+          // If there's a link, render the whole card as an anchor so the entire item is clickable.
+          if (href) {
+            return (
+              <a
+                key={item.id}
+                href={href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleItemClick(item.id, href);
+                }}
+                className={cn(
+                  "w-full text-left flex flex-col gap-2 rounded-2xl border border-soft bg-surface-card p-4 shadow-soft transition",
+                  !item.isRead ? "border-[var(--color-border-primary)] bg-surface-primary-strong" : "",
+                )}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-sm text-primary">
+                    {item.message}
+                    {item.senderName ? <span className="text-secondary"> · {item.senderName}</span> : null}
+                  </div>
+                  <span className="text-xs text-muted">{relativeTime}</span>
+                </div>
+              </a>
+            );
+          }
+
+          // No link: render as a button that only marks as read
           return (
-            <div
+            <button
               key={item.id}
+              type="button"
+              onClick={() => handleItemClick(item.id)}
               className={cn(
-                "flex w-full flex-col gap-2 rounded-2xl border border-soft bg-surface-card p-4 shadow-soft transition",
+                "w-full text-left flex flex-col gap-2 rounded-2xl border border-soft bg-surface-card p-4 shadow-soft transition",
                 !item.isRead ? "border-[var(--color-border-primary)] bg-surface-primary-strong" : "",
               )}
             >
@@ -197,23 +252,9 @@ export function NotificationList({ notifications, unreadCount }: NotificationLis
                 <span className="text-xs text-muted">{relativeTime}</span>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-secondary">
-                {href ? (
-                  <Link
-                    href={href}
-                    className="font-semibold text-[var(--color-text-accent)] transition hover:text-[var(--color-text-accent-hover)]"
-                  >
-                    View details
-                  </Link>
-                ) : (
-                  <span className="text-muted">No link provided</span>
-                )}
-                {!item.isRead ? (
-                  <Button variant="outline" size="sm" onClick={() => handleMarkAsRead(item.id)} disabled={isPending}>
-                    Mark as read
-                  </Button>
-                ) : null}
+                <span className="text-muted">No link provided</span>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

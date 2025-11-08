@@ -48,19 +48,48 @@ export async function sendFriendRequest(targetUserId: number): Promise<ActionSta
     return failure("You are already connected.");
   }
 
+  // Check for any existing request (pending or not)
   const existingRequest = await prisma.friendRequest.findFirst({
     where: {
       OR: [
-        { senderId: context.userId, receiverId: targetUserId, status: "pending" },
-        { senderId: targetUserId, receiverId: context.userId, status: "pending" },
+        { senderId: context.userId, receiverId: targetUserId },
+        { senderId: targetUserId, receiverId: context.userId },
       ],
     },
   });
 
   if (existingRequest) {
-    return failure("A pending request already exists.");
+    // If there's a pending request, inform the user
+    if (existingRequest.status === "pending") {
+      return failure("A pending request already exists.");
+    }
+    
+    // If the existing request is from the target user, update it to pending
+    if (existingRequest.senderId === targetUserId && existingRequest.receiverId === context.userId) {
+      return failure("This user has already sent you a friend request. Check your friend requests.");
+    }
+    
+    // If it's an old declined/accepted request from current user, update it to pending
+    await prisma.friendRequest.update({
+      where: { id: existingRequest.id },
+      data: {
+        status: "pending",
+        updatedAt: new Date(),
+      },
+    });
+
+    await createNotification({
+      recipientId: targetUserId,
+      senderId: context.userId,
+      message: `${context.sessionUser.name ?? context.sessionUser.email ?? "A member"} sent you a friend request.`,
+      link: "/friends",
+    });
+
+    REVALIDATE.forEach((path) => revalidatePath(path));
+    return success({ requestId: existingRequest.id });
   }
 
+  // No existing request, create a new one
   const request = await prisma.friendRequest.create({
     data: {
       senderId: context.userId,

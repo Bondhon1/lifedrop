@@ -21,8 +21,8 @@ export function ChatSidebar({ friends }: ChatSidebarProps) {
   if (friends.length === 0) {
     return (
       <aside className="flex h-full flex-col gap-4 rounded-3xl border border-soft bg-surface-card p-6 text-center text-sm text-secondary">
-        <p>No confirmed connections yet.</p>
-        <p className="text-xs text-muted">Send friend requests from donor profiles to start conversations.</p>
+        <p>No conversations yet.</p>
+        <p className="text-xs text-muted">Start a conversation by visiting any user profile and sending them a message.</p>
       </aside>
     );
   }

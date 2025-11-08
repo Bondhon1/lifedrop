@@ -7,6 +7,7 @@ import { BloodRequestCard, type BloodRequestFeedItem } from "@/components/feed/b
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 export default async function RequestsPage() {
   const session = await auth();
@@ -106,6 +107,8 @@ export default async function RequestsPage() {
           ))
         )}
       </section>
+
+      <ScrollToTop />
     </div>
   );
 }

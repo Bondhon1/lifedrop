@@ -7,6 +7,7 @@ import { PendingRequestsList } from "@/components/friends/pending-requests-list"
 import type { PendingFriendRequest } from "@/components/friends/pending-requests-list";
 import { OutgoingRequestsList } from "@/components/friends/outgoing-requests-list";
 import type { OutgoingFriendRequest } from "@/components/friends/outgoing-requests-list";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 export default async function FriendsPage() {
   const session = await auth();
@@ -149,6 +150,8 @@ export default async function FriendsPage() {
           <OutgoingRequestsList requests={pendingOutgoing} />
         </div>
       </section>
+
+      <ScrollToTop />
     </div>
   );
 }

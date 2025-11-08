@@ -3,6 +3,7 @@ import { auth, type SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserDirectoryTable, type AdminUserSummary } from "@/components/admin/user-directory-table";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 export default async function AdminUserDirectoryPage() {
   const session = await auth();
@@ -105,6 +106,8 @@ export default async function AdminUserDirectoryPage() {
         </div>
         <UserDirectoryTable users={serialisedUsers} />
       </section>
+
+      <ScrollToTop />
     </div>
   );
 }

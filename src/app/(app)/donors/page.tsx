@@ -11,6 +11,7 @@ import { DonorApplicationForm } from "@/components/donors/donor-application-form
 import { DonorProfileManager } from "@/components/donors/donor-profile-manager";
 import type { DonorProfileManagerProps } from "@/components/donors/donor-profile-manager";
 import { Droplet, Handshake, ShieldCheck, Users2 } from "lucide-react";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 function isDatabaseUnavailableError(error: unknown): error is { code?: string } {
   return typeof error === "object" && error !== null && "code" in error && (error as { code?: string }).code === "P1001";
@@ -203,6 +204,8 @@ export default async function DonorsPage() {
           <Link href="/requests">Find a matching request</Link>
         </Button>
       </section>
+
+      <ScrollToTop />
     </div>
   );
 }

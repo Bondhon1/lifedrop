@@ -4,6 +4,7 @@ import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NotificationList, type NotificationViewModel } from "@/components/notifications/notification-list";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 const TAKE = 50;
 
@@ -56,6 +57,8 @@ export default async function NotificationsPage() {
           <NotificationList notifications={viewModel} unreadCount={unreadCount} />
         </CardContent>
       </Card>
+
+      <ScrollToTop />
     </div>
   );
 }

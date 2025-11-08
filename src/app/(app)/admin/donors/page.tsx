@@ -3,6 +3,7 @@ import { auth, type SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PendingDonorApplicationsList, type PendingDonorApplication } from "@/components/admin/pending-donor-applications-list";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 export default async function AdminDonorModerationPage() {
   const session = await auth();
@@ -105,6 +106,8 @@ export default async function AdminDonorModerationPage() {
         </div>
         <PendingDonorApplicationsList applications={serializedApplications} />
       </section>
+
+      <ScrollToTop />
     </div>
   );
 }

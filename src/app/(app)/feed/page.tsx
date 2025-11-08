@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InfiniteFeed } from "@/components/feed/infinite-feed";
 import { getFeedItems, type FeedFilters } from "@/server/actions/feed";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 export const metadata: Metadata = {
   title: "Blood Donation Requests | Find Donors Near You",
@@ -84,14 +85,8 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   return (
     <div className="mx-auto grid w-full max-w-5xl gap-6">
       <section className="grid gap-4 rounded-3xl border border-soft bg-surface-card p-6 shadow-soft">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="grid gap-1.5">
-            <h1 className="text-2xl font-bold tracking-tight text-primary">Blood Donation Requests</h1>
-            <p className="text-sm text-secondary">Connect with patients in need and save lives</p>
-          </div>
-          <Button asChild>
-            <Link href="/requests/new">Raise Request</Link>
-          </Button>
+        <div className="grid gap-1.5">
+          <h1 className="text-2xl font-bold tracking-tight text-primary">Blood Donation Requests</h1>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -145,6 +140,8 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       <section className="grid gap-5">
         <InfiniteFeed initialItems={initialItems} initialCursor={nextCursor} filters={activeFilters} />
       </section>
+
+      <ScrollToTop />
     </div>
   );
 }

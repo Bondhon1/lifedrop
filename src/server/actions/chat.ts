@@ -89,17 +89,6 @@ export async function sendChatMessage(formData: FormData): Promise<ActionState<{
       },
     });
 
-    await prisma.chatMessage.updateMany({
-      where: {
-        senderId: authResult.userId,
-        receiverId: values.receiverId,
-        isRead: false,
-      },
-      data: {
-        isRead: true,
-      },
-    });
-
     const receiverUnreadFromSender = await prisma.chatMessage.count({
       where: {
         senderId: authResult.userId,

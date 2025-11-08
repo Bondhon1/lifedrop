@@ -34,7 +34,7 @@ export function ConversationHoverPanel({ conversations, currentUserId, onClose }
   const unreadTotal = conversations.reduce((total, conversation) => total + (conversation.unreadCount ?? 0), 0);
 
   return (
-    <div className="w-[22rem] max-w-[calc(100vw-2rem)] rounded-3xl border border-soft bg-surface-card text-primary shadow-xl">
+    <div className="w-[min(22rem,calc(100vw-2rem))] rounded-3xl border border-soft bg-surface-card text-primary shadow-xl">
       <div className="flex items-center justify-between gap-2 border-b border-soft/60 bg-[var(--color-surface-primary-soft)] px-5 pb-4 pt-5">
         <div>
           <div className="flex items-center gap-2">

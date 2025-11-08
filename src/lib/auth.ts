@@ -65,6 +65,28 @@ const enhancedAdapter: Adapter = {
       throw new Error("OAuth account is missing an email address");
     }
 
+    // Check if user already exists with this email
+    const existing = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        emailVerified: true,
+        name: true,
+      },
+    });
+
+    if (existing) {
+      // User exists, return it (account will be linked automatically)
+      return {
+        id: String(existing.id),
+        email: existing.email,
+        emailVerified: existing.emailVerified,
+        name: existing.name,
+        image: null,
+      } satisfies AdapterUser;
+    }
+
     const username = await generateUniqueUsername(email, data.name);
     const hashed = await hashPassword(randomUUID().replace(/-/g, ""));
 

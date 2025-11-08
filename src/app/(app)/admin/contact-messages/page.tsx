@@ -22,7 +22,7 @@ export default async function AdminContactMessagesPage() {
   const readCount = messages.filter((m: { status: string }) => m.status === "Read").length;
   const repliedCount = messages.filter((m: { status: string }) => m.status === "Replied").length;
 
-  const serializedMessages = messages.map((message: { createdAt: Date; [key: string]: any }) => ({
+  const serializedMessages = messages.map((message: any) => ({
     ...message,
     createdAt: message.createdAt.toISOString(),
   }));

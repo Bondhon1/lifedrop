@@ -89,51 +89,47 @@ export default function RegisterPage() {
 
   if (verificationSent) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md border border-soft bg-surface-card shadow-soft">
-          <CardHeader className="space-y-2 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-              <svg
-                className="h-8 w-8 text-green-600"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <CardTitle className="text-2xl font-semibold text-primary">Check your email</CardTitle>
-            <CardDescription className="text-secondary">
-              We've sent a verification link to your email address. Please click the link to verify your account and
-              complete registration.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="mb-4 text-sm text-muted">Didn't receive the email? Check your spam folder.</p>
-            <Link href="/login" className="text-sm font-semibold text-[var(--color-text-accent)] hover:underline">
-              Go to login
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+        <div className="space-y-2 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+            <svg
+              className="h-8 w-8 text-green-600"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-primary">Check your email</h2>
+          <p className="text-secondary">
+            We've sent a verification link to your email address. Please click the link to verify your account and
+            complete registration.
+          </p>
+        </div>
+        <div className="mt-6 text-center">
+          <p className="mb-4 text-sm text-muted">Didn't receive the email? Check your spam folder.</p>
+          <Link href="/login" className="text-sm font-semibold text-accent hover:underline">
+            Go to login
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md border border-soft bg-surface-card shadow-soft">
-        <CardHeader className="space-y-2 text-center">
-          <CardTitle className="text-3xl font-semibold text-primary">Create an account</CardTitle>
-          <CardDescription className="text-secondary">
-            Join the Lifedrop community and start making a difference
-          </CardDescription>
-        </CardHeader>
+    <div className="rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+      <div className="space-y-2 text-center mb-6">
+        <h1 className="text-3xl font-bold text-primary">Create an account</h1>
+        <p className="text-secondary">
+          Join the Lifedrop community and start making a difference
+        </p>
+      </div>
 
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username" className="text-primary">
                 Username
@@ -261,12 +257,10 @@ export default function RegisterPage() {
 
           <div className="mt-6 text-center text-sm text-secondary">
             Already have an account?{" "}
-            <Link href="/login" className="font-semibold text-[var(--color-text-accent)] hover:underline">
+            <Link href="/login" className="font-semibold text-accent hover:underline">
               Log in
             </Link>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        </div>
+      );
 }

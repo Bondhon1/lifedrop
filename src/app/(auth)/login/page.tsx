@@ -96,15 +96,14 @@ function LoginContent() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-3xl font-semibold">Welcome back</CardTitle>
-        <CardDescription>
+    <div className="rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-primary">Welcome back</h1>
+        <p className="mt-2 text-secondary">
           Sign in to manage blood requests, chat with donors, and stay ahead of urgent needs.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="gap-5">
-        <Form form={form} className="grid gap-5" onSubmit={form.handleSubmit(onSubmit)}>
+        </p>
+      </div>
+      <Form form={form} className="grid gap-5" onSubmit={form.handleSubmit(onSubmit)}>
           <FormItem>
             <FormLabel htmlFor="emailOrUsername">Email or Username</FormLabel>
             <Input id="emailOrUsername" autoComplete="username" {...form.register("emailOrUsername")} />
@@ -163,8 +162,7 @@ function LoginContent() {
             </span>
           }
         />
-      </CardContent>
-    </Card>
+    </div>
   );
 }
 

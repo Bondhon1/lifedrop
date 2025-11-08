@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { PublicNavbar } from "@/components/layout/public-navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ArrowRight,
@@ -230,17 +230,10 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
 
-      <main className="relative z-10 flex flex-col gap-10">
-      <header className="flex items-center justify-between rounded-3xl border border-soft bg-surface-card px-6 py-4 shadow-soft">
-        <Link href="/" className="text-sm font-semibold text-primary">
-          Lifedrop
-        </Link>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-        </div>
-      </header>
+      <PublicNavbar />
 
-      <section className="grid gap-8 rounded-3xl border border-soft bg-surface-card p-10 shadow-card lg:grid-cols-2 lg:items-center">
+      <main className="relative z-10 flex flex-col gap-10 px-4 py-6 sm:px-6 lg:px-8">
+      <section className="mx-auto grid w-full max-w-7xl gap-8 rounded-3xl border border-soft bg-surface-card p-10 shadow-card lg:grid-cols-2 lg:items-center">
         <div className="flex flex-col gap-6">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--color-border-primary)] bg-surface-primary-soft px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text-danger)]">
             Save Lives Together
@@ -292,7 +285,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid gap-4 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft sm:grid-cols-2 xl:grid-cols-4">
+      <section className="mx-auto grid w-full max-w-7xl gap-4 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.label} className="border border-subtle bg-surface-card-muted">
             <CardHeader className="gap-2">
@@ -328,7 +321,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid gap-8 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+      <section className="mx-auto grid w-full max-w-7xl gap-8 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="grid gap-5">
           <h2 className="text-3xl font-semibold text-primary">How coordination flows</h2>
           <p className="text-base text-secondary">
@@ -373,7 +366,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid gap-6 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+      <section className="mx-auto grid w-full max-w-7xl gap-6 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
         <header className="flex flex-col gap-2 text-center">
           <h2 className="text-3xl font-semibold text-primary">Trusted by coordinators everywhere</h2>
           <p className="text-base text-secondary">Stories from teams who turned chaos into coordinated impact.</p>
@@ -393,7 +386,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid gap-6 rounded-3xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-8 text-center shadow-soft">
+      <section className="mx-auto grid w-full max-w-7xl gap-6 rounded-3xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-8 text-center shadow-soft">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-solid text-white shadow-soft">
           <LifeBuoy className="h-6 w-6" />
         </div>
@@ -418,7 +411,7 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      <footer className="grid gap-8 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+      <section className="mx-auto grid w-full max-w-7xl gap-6 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-lg">
             <Link href="/" className="text-lg font-semibold text-primary">
@@ -440,14 +433,8 @@ export default function Home() {
               <Link href="/features" className="text-secondary transition hover:text-primary">
                 Features
               </Link>
-              <Link href="/pricing" className="text-secondary transition hover:text-primary">
-                Pricing
-              </Link>
-              <Link href="/demo" className="text-secondary transition hover:text-primary">
-                Request a demo
-              </Link>
-              <Link href="/playbooks" className="text-secondary transition hover:text-primary">
-                Playbooks
+              <Link href="/docs/getting-started" className="text-secondary transition hover:text-primary">
+                Getting Started
               </Link>
             </div>
 
@@ -456,61 +443,24 @@ export default function Home() {
               <Link href="/about" className="text-secondary transition hover:text-primary">
                 About
               </Link>
-              <Link href="/careers" className="text-secondary transition hover:text-primary">
-                Careers
-              </Link>
-              <Link href="/press" className="text-secondary transition hover:text-primary">
-                Press
-              </Link>
               <Link href="/contact" className="text-secondary transition hover:text-primary">
                 Contact
               </Link>
             </div>
 
             <div className="grid gap-2 text-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">Resources</p>
-              <Link href="/docs" className="text-secondary transition hover:text-primary">
-                Documentation
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">Legal</p>
+              <Link href="/terms" className="text-secondary transition hover:text-primary">
+                Terms
               </Link>
-              <Link href="/support" className="text-secondary transition hover:text-primary">
-                Support
-              </Link>
-              <Link href="/status" className="text-secondary transition hover:text-primary">
-                Status
-              </Link>
-              <Link href="/security" className="text-secondary transition hover:text-primary">
-                Security
+              <Link href="/privacy" className="text-secondary transition hover:text-primary">
+                Privacy
               </Link>
             </div>
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-subtle pt-6 text-xs text-muted">
-          <div className="flex flex-wrap gap-3">
-            <Link href="/terms" className="transition hover:text-primary">
-              Terms
-            </Link>
-            <Link href="/privacy" className="transition hover:text-primary">
-              Privacy
-            </Link>
-            <Link href="/accessibility" className="transition hover:text-primary">
-              Accessibility
-            </Link>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="transition hover:text-primary">
-              Facebook
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="transition hover:text-primary">
-              Instagram
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="transition hover:text-primary">
-              LinkedIn
-            </a>
-          </div>
-        </div>
-      </footer>
-    </main>
+      </section>
+      </main>
     </>
   );
 }

@@ -1,14 +1,52 @@
+"use client";
+
+import { useState } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 import { Mail, MessageSquare, HelpCircle } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Contact Us - LifeDrop",
-  description: "Get in touch with the LifeDrop team for support, questions, or feedback.",
-};
+import { submitContactForm, type ContactFormData } from "@/server/actions/contact";
+import { toast } from "react-hot-toast";
 
 export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const result = await submitContactForm(formData);
+      
+      if (result.success) {
+        toast.success(result.message);
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <>
       <PublicNavbar />
@@ -75,7 +113,7 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="rounded-2xl border border-soft bg-surface-card p-8 shadow-soft">
             <h2 className="mb-6 text-2xl font-bold text-primary">Send us a Message</h2>
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
                   <label htmlFor="name" className="mb-2 block text-sm font-medium text-primary">
@@ -84,7 +122,11 @@ export default function ContactPage() {
                   <input
                     type="text"
                     id="name"
-                    className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    disabled={isSubmitting}
+                    className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
                     placeholder="Your name"
                   />
                 </div>
@@ -95,7 +137,11 @@ export default function ContactPage() {
                   <input
                     type="email"
                     id="email"
-                    className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled={isSubmitting}
+                    className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
                     placeholder="your.email@example.com"
                   />
                 </div>
@@ -108,7 +154,11 @@ export default function ContactPage() {
                 <input
                   type="text"
                   id="subject"
-                  className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                  disabled={isSubmitting}
+                  className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
                   placeholder="How can we help?"
                 />
               </div>
@@ -120,16 +170,21 @@ export default function ContactPage() {
                 <textarea
                   id="message"
                   rows={6}
-                  className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  disabled={isSubmitting}
+                  className="w-full rounded-lg border border-soft bg-background px-4 py-2 text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
                   placeholder="Tell us more about your question or feedback..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent/90 sm:w-auto"
+                disabled={isSubmitting}
+                className="w-full rounded-lg bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
               >
-                Send Message
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>

@@ -355,3 +355,14 @@ model VerificationToken {
 
   @@id([identifier, token])
 }
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("Unread") // Unread, Read, Replied
+  adminNotes String?
+}

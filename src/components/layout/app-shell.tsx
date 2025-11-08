@@ -49,6 +49,7 @@ const adminLinks = [
   { href: "/admin/overview", label: "Admin Console", icon: ShieldCheck, roles: ["ADMIN"] },
   { href: "/admin/donors", label: "Donor Reviews", icon: ClipboardCheck, roles: ["ADMIN"] },
   { href: "/admin/users", label: "Member Directory", icon: ListChecks, roles: ["ADMIN"] },
+  { href: "/admin/contact-messages", label: "Contact Messages", icon: MessageCircle, roles: ["ADMIN"] },
   { href: "/admin/reports", label: "Reports Queue", icon: FileWarning, roles: ["ADMIN"] },
   { href: "/admin/admins", label: "Admin Accounts", icon: UserCog, roles: ["ADMIN"] },
 ];

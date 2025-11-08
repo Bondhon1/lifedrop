@@ -14,6 +14,7 @@ import {
   Home,
   UserCircle,
 } from "lucide-react";
+import { PublicNavbar } from "@/components/layout/public-navbar";
 
 export const metadata: Metadata = {
   title: "Getting Started - LifeDrop",
@@ -24,59 +25,7 @@ export const metadata: Metadata = {
 export default function GettingStartedPage() {
   return (
     <>
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-soft bg-surface-card/95 backdrop-blur supports-[backdrop-filter]:bg-surface-card/60">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-8">
-              <Link href="/" className="flex items-center gap-2">
-                <Heart className="h-6 w-6 text-accent" fill="currentColor" />
-                <span className="text-xl font-bold text-primary">LifeDrop</span>
-              </Link>
-              <div className="hidden md:flex md:items-center md:gap-6">
-                <Link
-                  href="/docs/getting-started"
-                  className="text-sm font-medium text-accent hover:text-accent/80"
-                >
-                  Getting Started
-                </Link>
-                <Link
-                  href="/feed"
-                  className="text-sm font-medium text-secondary hover:text-primary"
-                >
-                  Feed
-                </Link>
-                <Link
-                  href="/requests"
-                  className="text-sm font-medium text-secondary hover:text-primary"
-                >
-                  Requests
-                </Link>
-                <Link
-                  href="/donors"
-                  className="text-sm font-medium text-secondary hover:text-primary"
-                >
-                  Donors
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link
-                href="/login"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-surface-hover"
-              >
-                Log In
-              </Link>
-              <Link
-                href="/register"
-                className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90"
-              >
-                Sign Up
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* Main Content */}
       <div className="min-h-screen bg-gradient-to-b from-surface-card to-background">

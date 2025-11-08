@@ -23,6 +23,9 @@ const registerSchema = z
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and privacy policy",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -208,6 +211,29 @@ export default function RegisterPage() {
                 </button>
               </div>
               {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>}
+            </div>
+
+            <div className="flex items-start space-x-2">
+              <input
+                id="acceptTerms"
+                type="checkbox"
+                {...register("acceptTerms")}
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-accent focus:ring-accent"
+                disabled={isPending}
+              />
+              <div className="flex-1">
+                <Label htmlFor="acceptTerms" className="text-sm text-primary cursor-pointer">
+                  I accept the{" "}
+                  <Link href="/terms" className="font-semibold text-accent hover:underline" target="_blank">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" className="font-semibold text-accent hover:underline" target="_blank">
+                    Privacy Policy
+                  </Link>
+                </Label>
+                {errors.acceptTerms && <p className="text-sm text-red-500 mt-1">{errors.acceptTerms.message}</p>}
+              </div>
             </div>
 
             <Button type="submit" className="w-full" disabled={isPending}>

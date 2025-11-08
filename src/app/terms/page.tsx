@@ -65,6 +65,9 @@ export default function TermsPage() {
                   <li>Harass or abuse other users</li>
                   <li>Attempt to gain unauthorized access to the platform</li>
                   <li>Use the service for commercial purposes without permission</li>
+                  <li>
+                    <strong>Engage in any monetary transactions or financial exchanges for blood donations.</strong> Blood donation must remain a voluntary, non-commercial activity. Soliciting, offering, or accepting payment or any form of compensation for blood is strictly prohibited and may result in immediate account termination and legal action.
+                  </li>
                 </ul>
               </section>
 

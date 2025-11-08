@@ -5,6 +5,7 @@ import type { ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { toast } from "react-hot-toast";
+import { resolveImageUrl } from "@/lib/utils";
 import { removeUserAccount } from "@/server/actions/admin";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -29,13 +30,6 @@ export type AdminUserSummary = {
 
 type UserDirectoryTableProps = {
   users: AdminUserSummary[];
-};
-
-const resolveAvatar = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 export function UserDirectoryTable({ users }: UserDirectoryTableProps) {
@@ -110,7 +104,7 @@ export function UserDirectoryTable({ users }: UserDirectoryTableProps) {
       ) : (
         <div className="grid gap-3">
           {filteredUsers.map((user) => {
-            const avatar = resolveAvatar(user.profilePicture);
+            const avatar = resolveImageUrl(user.profilePicture);
             const displayName = user.name?.trim() ? user.name : user.username;
             const joined = format(new Date(user.createdAt), "MMM d, yyyy");
 

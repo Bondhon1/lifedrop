@@ -24,8 +24,8 @@ model User {
   divisionId     Int?
   districtId     Int?
   upazilaId      Int?
-  profilePicture String    @default("default.jpg")
-  coverPhoto     String    @default("default_cover.jpg")
+  profilePicture String?
+  coverPhoto     String?
 
   division Divisions? @relation(fields: [divisionId], references: [id])
   district Districts? @relation(fields: [districtId], references: [id])

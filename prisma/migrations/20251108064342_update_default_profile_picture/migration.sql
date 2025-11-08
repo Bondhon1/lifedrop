@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "profilePicture" DROP NOT NULL,
+ALTER COLUMN "profilePicture" DROP DEFAULT,
+ALTER COLUMN "coverPhoto" DROP NOT NULL,
+ALTER COLUMN "coverPhoto" DROP DEFAULT;

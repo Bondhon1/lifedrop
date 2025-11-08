@@ -3,17 +3,11 @@
 import { useEffect, useRef, useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { resolveImageUrl } from "@/lib/utils";
 import { updateProfileImages } from "@/server/actions/profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-const normalizeImagePath = (path: string | undefined): string | null => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
-};
 
 type ProfileImageFormProps = {
   profilePictureUrl: string | null;
@@ -95,8 +89,8 @@ export function ProfileImageForm({ profilePictureUrl, coverPhotoUrl }: ProfileIm
         return;
       }
 
-      const updatedProfile = normalizeImagePath(result.data.profilePicture);
-      const updatedCover = normalizeImagePath(result.data.coverPhoto);
+      const updatedProfile = resolveImageUrl(result.data.profilePicture);
+      const updatedCover = resolveImageUrl(result.data.coverPhoto);
 
       if (updatedProfile) {
         if (profileObjectUrlRef.current) {

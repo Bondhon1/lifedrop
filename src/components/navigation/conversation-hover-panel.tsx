@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, resolveImageUrl } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,13 +28,6 @@ type ConversationHoverPanelProps = {
   conversations: ConversationPreviewItem[];
   currentUserId: number | null;
   onClose?: () => void;
-};
-
-const resolveAvatar = (path: string | null | undefined) => {
-  if (!path) return undefined;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 export function ConversationHoverPanel({ conversations, currentUserId, onClose }: ConversationHoverPanelProps) {
@@ -68,7 +61,7 @@ export function ConversationHoverPanel({ conversations, currentUserId, onClose }
           </p>
         ) : (
           conversations.map((conversation) => {
-            const avatar = resolveAvatar(conversation.partnerAvatar ?? null);
+            const avatar = resolveImageUrl(conversation.partnerAvatar ?? null);
             const isIncoming = currentUserId === null ? true : conversation.lastSenderId !== currentUserId;
             const unreadCount = conversation.unreadCount ?? 0;
             const hasUnread = unreadCount > 0 && isIncoming;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { auth, type SessionUser } from "@/lib/auth";
+import { resolveImageUrl as buildImageUrl } from "@/lib/utils";
 import type { Prisma } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +15,6 @@ import { Droplet, Handshake, ShieldCheck, Users2 } from "lucide-react";
 function isDatabaseUnavailableError(error: unknown): error is { code?: string } {
   return typeof error === "object" && error !== null && "code" in error && (error as { code?: string }).code === "P1001";
 }
-
-const buildImageUrl = (path: string | null | undefined) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
-};
 
 const formatDate = (value: Date | string | null | undefined) => {
   if (!value) return null;

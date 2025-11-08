@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition, useState } from "react";
+import { resolveImageUrl } from "@/lib/utils";
 import { removeFriend } from "@/server/actions/friend";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,13 +21,6 @@ export type FriendListItem = {
 
 type FriendListProps = {
   friends: FriendListItem[];
-};
-
-const resolveAvatar = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 export function FriendList({ friends }: FriendListProps) {
@@ -72,7 +66,7 @@ export function FriendList({ friends }: FriendListProps) {
       )}
       {friends.map((friend) => {
         const displayName = friend.name?.trim() && friend.name.length > 0 ? friend.name : friend.username;
-        const avatar = resolveAvatar(friend.profilePicture);
+        const avatar = resolveImageUrl(friend.profilePicture);
 
         return (
           <article

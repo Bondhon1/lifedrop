@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "react-hot-toast";
+import { resolveImageUrl } from "@/lib/utils";
 import { approveDonorApplication, rejectDonorApplication } from "@/server/actions/donor";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -38,13 +39,6 @@ const formatDateTime = (value: string | null | undefined) => {
     hour: "numeric",
     minute: "numeric",
   }).format(parsed);
-};
-
-const resolveAvatar = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 export type PendingDonorApplication = {
@@ -127,7 +121,7 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
       ) : null}
 
       {applications.map((application) => {
-        const avatar = resolveAvatar(application.user.profilePicture);
+        const avatar = resolveImageUrl(application.user.profilePicture);
         const displayName = application.user.name?.trim() ? application.user.name : application.user.username;
         const location = [application.user.upazila, application.user.district, application.user.division]
           .filter(Boolean)

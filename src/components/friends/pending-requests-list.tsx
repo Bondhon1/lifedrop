@@ -5,7 +5,7 @@ import { useTransition, useState } from "react";
 import { respondToFriendRequest } from "@/server/actions/friend";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, resolveImageUrl } from "@/lib/utils";
 
 export type PendingFriendRequest = {
   id: number;
@@ -36,13 +36,6 @@ const friendlyDate = (value: string) => {
   } catch (error) {
     return "Recently";
   }
-};
-
-const resolveAvatar = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 export function PendingRequestsList({ requests }: PendingRequestsListProps) {
@@ -88,7 +81,7 @@ export function PendingRequestsList({ requests }: PendingRequestsListProps) {
       )}
       {requests.map((request) => {
         const { sender } = request;
-        const avatar = resolveAvatar(sender.profilePicture);
+        const avatar = resolveImageUrl(sender.profilePicture);
         const displayName = sender.name?.trim() && sender.name.length > 0 ? sender.name : sender.username;
 
         return (

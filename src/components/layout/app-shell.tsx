@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn, resolveImageUrl } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,13 +60,6 @@ type AppShellProps = {
   avatarUrl?: string | null;
   initialNotifications?: NotificationPreviewItem[];
   initialConversations?: ConversationPreviewItem[];
-};
-
-const resolveAvatarUrl = (path: string | null | undefined) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 export function AppShell({
@@ -308,7 +301,7 @@ export function AppShell({
   }, [socket, currentUserId]);
 
   const links = user.isAdmin ? [...baseLinks, ...adminLinks] : baseLinks;
-  const resolvedAvatar = resolveAvatarUrl(avatarUrl ?? user.image ?? null);
+  const resolvedAvatar = resolveImageUrl(avatarUrl ?? user.image ?? null);
 
   return (
     <div className="grid w-full min-h-screen min-w-0 gap-6 grid-cols-1 lg:grid-cols-[280px_1fr]">

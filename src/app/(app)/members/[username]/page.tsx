@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth, type SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveImageUrl as buildImageUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfileActionButtons, type FriendStatus } from "@/components/profile/profile-action-buttons";
@@ -13,13 +14,6 @@ type MemberProfilePageProps = {
   params: Promise<{
     username: string;
   }>;
-};
-
-const buildImageUrl = (path: string | null | undefined) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 const formatJoinedDate = (value: Date) => {

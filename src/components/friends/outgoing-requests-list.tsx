@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition, useState } from "react";
+import { resolveImageUrl } from "@/lib/utils";
 import { cancelFriendRequest } from "@/server/actions/friend";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,13 +36,6 @@ const friendlyDate = (value: string) => {
   } catch (error) {
     return "Recently";
   }
-};
-
-const resolveAvatar = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
 };
 
 export function OutgoingRequestsList({ requests }: OutgoingRequestsListProps) {
@@ -84,7 +78,7 @@ export function OutgoingRequestsList({ requests }: OutgoingRequestsListProps) {
       )}
       {requests.map((request) => {
         const { receiver } = request;
-        const avatar = resolveAvatar(receiver.profilePicture);
+        const avatar = resolveImageUrl(receiver.profilePicture);
         const displayName = receiver.name?.trim() && receiver.name.length > 0 ? receiver.name : receiver.username;
 
         return (

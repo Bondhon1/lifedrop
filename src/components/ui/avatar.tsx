@@ -45,8 +45,13 @@ const normalizeSrc = (value?: string | null) => {
 		return null;
 	}
 	const trimmed = value.trim();
-	if (!trimmed || trimmed === "default.jpg" || trimmed === "default_cover.jpg") {
+	// Handle old default values from database
+	if (!trimmed || trimmed === "default.jpg" || trimmed === "default_cover.jpg" || trimmed === "/uploads/default.jpg") {
 		return null;
+	}
+	// If it doesn't start with http or /, prepend /uploads/
+	if (!trimmed.startsWith("http") && !trimmed.startsWith("/")) {
+		return `/uploads/${trimmed}`;
 	}
 	return trimmed;
 };

@@ -2,17 +2,11 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { auth, type SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveImageUrl } from "@/lib/utils";
 import { ProfileInfoForm } from "@/components/profile/profile-info-form";
 import { ProfileImageForm } from "@/components/profile/profile-image-form";
 import { Avatar } from "@/components/ui/avatar";
 import { bloodGroups } from "@/lib/validators/blood-request";
-
-const resolveImageUrl = (path: string | null): string | null => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/")) return path;
-  return `/uploads/${path}`;
-};
 
 export default async function ProfilePage() {
   const session = await auth();

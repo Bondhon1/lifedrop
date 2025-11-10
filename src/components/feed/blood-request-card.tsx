@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { respondToBloodRequest, toggleBloodRequestUpvote } from "@/server/actions/blood-request";
+import { logAnalyticsEvent } from "@/lib/analytics-client";
 import { BloodRequestOptions } from "./blood-request-options";
 import { Droplet, Heart, MapPin, MessageCircle, Share2 } from "lucide-react";
 
@@ -147,6 +148,11 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
 
       setUpvoteCount(result.data.upvotes);
       setHasUpvoted(result.data.upvoted);
+      logAnalyticsEvent("blood_request_upvote_toggled", {
+        requestId: request.id,
+        upvoted: result.data.upvoted,
+        upvoteCount: result.data.upvotes,
+      });
     });
   };
 
@@ -162,6 +168,10 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
       setHasResponded(true);
       setResponseStatus("Pending");
       toast.success("Thank you! We’ve recorded your availability.");
+      logAnalyticsEvent("blood_request_response_submitted", {
+        requestId: request.id,
+        donorsAssigned: result.data.donorsAssigned,
+      });
     });
   };
 
@@ -187,7 +197,16 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
           asChild
           className="min-w-40"
         >
-          <Link href="/donors">Become a donor</Link>
+          <Link
+            href="/donors"
+            onClick={() =>
+              logAnalyticsEvent("blood_request_become_donor_cta_clicked", {
+                requestId: request.id,
+              })
+            }
+          >
+            Become a donor
+          </Link>
         </Button>
       );
     }
@@ -322,13 +341,27 @@ export function BloodRequestCard({ request, showFullReason = false }: BloodReque
           {renderRespondAction()}
 
           <Button variant="ghost" size="sm" asChild className="text-primary hover:text-(--color-text-accent)">
-            <Link href={`/requests/${request.id}#comments`}>
+            <Link
+              href={`/requests/${request.id}#comments`}
+              onClick={() =>
+                logAnalyticsEvent("blood_request_discuss_clicked", {
+                  requestId: request.id,
+                })
+              }
+            >
               <MessageCircle className="mr-2 h-4 w-4" /> Discuss
             </Link>
           </Button>
 
           <Button variant="ghost" size="sm" asChild className="text-primary hover:text-(--color-text-accent)">
-            <Link href={`/requests/${request.id}`}>
+            <Link
+              href={`/requests/${request.id}`}
+              onClick={() =>
+                logAnalyticsEvent("blood_request_view_details_clicked", {
+                  requestId: request.id,
+                })
+              }
+            >
               <Share2 className="mr-2 h-4 w-4" /> View details
             </Link>
           </Button>

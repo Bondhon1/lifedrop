@@ -1,12 +1,15 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
-export default function ResetPasswordPage() {
-  const searchParams = useSearchParams();
-  const token = searchParams?.get("token") ?? "";
+type ResetPasswordPageProps = {
+  searchParams?: {
+    token?: string | string[];
+  };
+};
+
+export default function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
+  const tokenParam = searchParams?.token;
+  const token = Array.isArray(tokenParam) ? tokenParam.at(0) ?? "" : tokenParam ?? "";
 
   return (
     <Card>

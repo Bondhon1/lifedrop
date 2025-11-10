@@ -1,6 +1,8 @@
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 type ResetPasswordPageProps = {
   searchParams?: {
     token?: string | string[];
@@ -9,7 +11,7 @@ type ResetPasswordPageProps = {
 
 export default function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   const tokenParam = searchParams?.token;
-  const token = Array.isArray(tokenParam) ? tokenParam.at(0) ?? "" : tokenParam ?? "";
+  const token = Array.isArray(tokenParam) ? tokenParam.at(0) ?? null : tokenParam ?? null;
 
   return (
     <Card>

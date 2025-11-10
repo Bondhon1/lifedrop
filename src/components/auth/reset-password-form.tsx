@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,13 +27,28 @@ const schema = z
 type FormValues = z.infer<typeof schema>;
 
 type ResetPasswordFormProps = {
-  token: string;
+  token: string | null;
 };
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [resolvedToken, setResolvedToken] = useState<string>(token ?? "");
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (token) {
+      setResolvedToken(token);
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      const urlToken = new URLSearchParams(window.location.search).get("token");
+      if (urlToken) {
+        setResolvedToken(urlToken);
+      }
+    }
+  }, [token]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -46,14 +61,14 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const handleSubmit = (values: FormValues) => {
     setFeedback(null);
 
-    if (!token) {
+    if (!resolvedToken) {
       setFeedback("This reset link is missing a token. Request a new one and try again.");
       return;
     }
 
     startTransition(async () => {
       const result = await updatePasswordWithToken({
-        token,
+        token: resolvedToken,
         password: values.password,
       });
 

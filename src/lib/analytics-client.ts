@@ -2,8 +2,9 @@
 
 import { track } from "@vercel/analytics";
 
-type AnalyticsValue = string | number | boolean | null | undefined;
-export type AnalyticsPayload = Record<string, AnalyticsValue>;
+// Allowed input values for analytics properties (undefined allowed in input)
+type AnalyticsValue = string | number | boolean | null;
+export type AnalyticsPayload = Record<string, AnalyticsValue | undefined>;
 
 const isAnalyticsRuntime =
   typeof window !== "undefined" && typeof track === "function";
@@ -23,7 +24,7 @@ export function logAnalyticsEvent(eventName: string, payload: AnalyticsPayload =
 }
 
 function sanitizePayload(payload: AnalyticsPayload): Record<string, AnalyticsValue> {
-  const entries = Object.entries(payload).filter(([, value]) => value !== undefined);
+  const entries = Object.entries(payload).filter(([, value]) => value !== undefined) as [string, AnalyticsValue][];
   return Object.fromEntries(entries);
 }
 

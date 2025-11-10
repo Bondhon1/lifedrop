@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/hash";
 import { registerUserSchema } from "@/lib/validators/user";
 import { issueEmailVerification } from "@/server/services/email-verification";
+import { sendPasswordResetEmail } from "@/lib/email";
 import { failure, success, type ActionState } from "./types";
 import { z } from "zod";
 import crypto from "node:crypto";
@@ -85,6 +86,13 @@ export async function createPasswordReset(email: string): Promise<ActionState<{ 
       userId: user.id,
     },
   });
+
+  try {
+    await sendPasswordResetEmail(user.email, token);
+  } catch (error) {
+    console.error("createPasswordReset:sendPasswordResetEmail", error);
+    return failure("We generated a reset link but couldn’t send the email. Please try again in a few minutes.");
+  }
 
   return success({ token });
 

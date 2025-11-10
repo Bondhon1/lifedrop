@@ -301,6 +301,10 @@ footer {
   color: var(--color-warning-text);
 }
 
+.text-danger {
+  color: var(--color-text-danger);
+}
+
 .border-warning {
   border-color: var(--color-warning-border);
 }

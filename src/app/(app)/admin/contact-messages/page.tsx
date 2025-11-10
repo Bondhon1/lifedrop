@@ -30,8 +30,8 @@ export default async function AdminContactMessagesPage() {
   return (
     <div className="grid gap-6">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold text-[#2E2E2E]">Contact Messages</h1>
-        <p className="text-sm text-[#5F5F5F]">
+        <h1 className="text-3xl font-semibold text-primary">Contact Messages</h1>
+        <p className="text-sm text-secondary">
           View and manage messages from users who contacted us through the contact form.
         </p>
       </header>
@@ -39,28 +39,28 @@ export default async function AdminContactMessagesPage() {
       <section className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Unread Messages</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Unread Messages</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{unreadCount}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{unreadCount}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Read Messages</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Read Messages</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{readCount}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{readCount}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Replied</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Replied</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{repliedCount}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{repliedCount}</CardContent>
         </Card>
       </section>
 
       <section className="grid gap-4">
         <div className="grid gap-1">
-          <h2 className="text-xl font-semibold text-[#2E2E2E]">All Messages</h2>
-          <p className="text-sm text-[#5F5F5F]">Review and respond to contact form submissions.</p>
+          <h2 className="text-xl font-semibold text-primary">All Messages</h2>
+          <p className="text-sm text-secondary">Review and respond to contact form submissions.</p>
         </div>
         <ContactMessagesTable messages={serializedMessages} />
       </section>

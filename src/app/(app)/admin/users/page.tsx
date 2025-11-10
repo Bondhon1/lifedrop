@@ -66,8 +66,8 @@ export default async function AdminUserDirectoryPage() {
   return (
     <div className="grid gap-6">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold text-[#2E2E2E]">Member directory</h1>
-        <p className="text-sm text-[#5F5F5F]">
+        <h1 className="text-3xl font-semibold text-primary">Member directory</h1>
+        <p className="text-sm text-secondary">
           Review community activity, verify donor eligibility, and keep the platform free from duplicate or suspicious accounts.
         </p>
       </header>
@@ -75,34 +75,34 @@ export default async function AdminUserDirectoryPage() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Total members</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Total members</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{totalUsers}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{totalUsers}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Joined this week</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Joined this week</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{newThisWeek}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{newThisWeek}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Approved donors</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Approved donors</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{approvedDonors}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{approvedDonors}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Pending donor reviews</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Pending donor reviews</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{pendingDonors}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{pendingDonors}</CardContent>
         </Card>
       </section>
 
       <section className="grid gap-4">
         <div className="grid gap-1">
-          <h2 className="text-xl font-semibold text-[#2E2E2E]">Community members</h2>
-          <p className="text-sm text-[#5F5F5F]">Search, review, and manage user accounts.</p>
+          <h2 className="text-xl font-semibold text-primary">Community members</h2>
+          <p className="text-sm text-secondary">Search, review, and manage user accounts.</p>
         </div>
         <UserDirectoryTable users={serialisedUsers} />
       </section>

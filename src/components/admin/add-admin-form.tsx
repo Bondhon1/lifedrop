@@ -43,19 +43,19 @@ export function AddAdminForm({ existingCount }: AddAdminFormProps) {
   };
 
   return (
-    <Card className="border border-rose-500/25 bg-rose-950/70 shadow-xl shadow-rose-950/30">
+    <Card className="bg-surface-card-muted">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-white">Invite a new admin</CardTitle>
-        <p className="text-sm text-rose-100/75">You currently have {existingCount} admin{existingCount === 1 ? "" : "s"}. Share responsibility with another trusted teammate.</p>
+        <CardTitle>Invite a new admin</CardTitle>
+        <p className="text-sm text-secondary">You currently have {existingCount} admin{existingCount === 1 ? "" : "s"}. Share responsibility with another trusted teammate.</p>
       </CardHeader>
       <CardContent>
         <form className="grid gap-4" onSubmit={handleSubmit}>
           {state && !state.ok ? (
-            <p className="rounded-2xl border border-rose-400/50 bg-rose-500/20 p-3 text-sm text-rose-50">{state.message}</p>
+            <p className="rounded-2xl border border-danger bg-danger-soft p-3 text-sm text-danger">{state.message}</p>
           ) : null}
 
           <div className="grid gap-2">
-            <Label htmlFor="admin-username" className="text-sm font-medium text-rose-100/80">Username</Label>
+            <Label htmlFor="admin-username">Username</Label>
             <Input
               id="admin-username"
               name="username"
@@ -64,12 +64,11 @@ export function AddAdminForm({ existingCount }: AddAdminFormProps) {
               maxLength={32}
               required
               autoComplete="username"
-              className="border-rose-500/40 bg-rose-900/40 text-white placeholder:text-rose-100/40"
             />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="admin-email" className="text-sm font-medium text-rose-100/80">Email</Label>
+            <Label htmlFor="admin-email">Email</Label>
             <Input
               id="admin-email"
               name="email"
@@ -77,12 +76,11 @@ export function AddAdminForm({ existingCount }: AddAdminFormProps) {
               placeholder="admin@lifedrop.org"
               required
               autoComplete="email"
-              className="border-rose-500/40 bg-rose-900/40 text-white placeholder:text-rose-100/40"
             />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="admin-password" className="text-sm font-medium text-rose-100/80">Temporary password</Label>
+            <Label htmlFor="admin-password">Temporary password</Label>
             <Input
               id="admin-password"
               name="password"
@@ -91,12 +89,11 @@ export function AddAdminForm({ existingCount }: AddAdminFormProps) {
               minLength={8}
               required
               autoComplete="new-password"
-              className="border-rose-500/40 bg-rose-900/40 text-white placeholder:text-rose-100/40"
             />
-            <p className="text-xs text-rose-100/60">Ask the admin to change this password after their first login.</p>
+            <p className="text-xs text-muted">Ask the admin to change this password after their first login.</p>
           </div>
 
-          <Button type="submit" disabled={isPending} className="bg-[var(--color-primary-start)] text-white hover:bg-[var(--color-primary-end)]">
+          <Button type="submit" disabled={isPending}>
             {isPending ? "Creating account…" : "Add admin"}
           </Button>
         </form>

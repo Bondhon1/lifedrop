@@ -82,91 +82,91 @@ export default async function AdminOverviewPage() {
   return (
     <div className="grid gap-6">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold text-[#2E2E2E]">Admin Console</h1>
-        <p className="text-sm text-[#5F5F5F]">Monitor platform health, review escalated requests, and keep the community safe.</p>
+        <h1 className="text-3xl font-semibold text-primary">Admin Console</h1>
+        <p className="text-sm text-secondary">Monitor platform health, review escalated requests, and keep the community safe.</p>
       </header>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Total members</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Total members</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{totalUsers}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{totalUsers}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Open requests</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Open requests</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{openRequests}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{openRequests}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Fulfilled requests</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Fulfilled requests</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{fulfilledRequests}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{fulfilledRequests}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Donor pledges</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Donor pledges</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{donorResponses}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{donorResponses}</CardContent>
         </Card>
         <Link href="/admin/donors" className="group block">
-          <Card className="cursor-pointer transition group-hover:border-[#D31027]/30 group-hover:bg-[#D31027]/8">
+          <Card className="cursor-pointer transition group-hover:border-primary group-hover:bg-surface-primary-soft">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Pending donor applications</CardTitle>
+              <CardTitle className="text-sm font-semibold text-secondary">Pending donor applications</CardTitle>
             </CardHeader>
-            <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{pendingApplications}</CardContent>
+            <CardContent className="text-3xl font-semibold text-primary">{pendingApplications}</CardContent>
           </Card>
         </Link>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Reports awaiting review</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Reports awaiting review</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{unresolvedReports}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{unresolvedReports}</CardContent>
         </Card>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <Card className="border border-rose-500/20 bg-rose-950/70">
+        <Card className="bg-surface-card-muted">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white">Latest blood requests</CardTitle>
+            <CardTitle className="text-lg font-semibold text-primary">Latest blood requests</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
             {latestRequests.length === 0 ? (
-              <p className="text-sm text-rose-100/80">No requests have been created yet.</p>
+              <p className="text-sm text-secondary">No requests have been created yet.</p>
             ) : (
               latestRequests.map((request: (typeof latestRequests)[number]) => (
-                <div key={request.id} className="rounded-2xl border border-rose-500/20 bg-rose-950/70 px-4 py-3">
+                <div key={request.id} className="rounded-2xl border border-soft bg-surface-card px-4 py-3">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-white">{request.patientName}</p>
+                    <p className="text-sm font-semibold text-primary">{request.patientName}</p>
                     <Badge variant="secondary">{request.status}</Badge>
                   </div>
-                  <p className="text-xs text-rose-100/75">
+                  <p className="text-xs text-secondary">
                     Raised by {request.user.name ?? request.user.username} · {format(request.createdAt, "MMM d, yyyy h:mm a")}
                   </p>
-                  <p className="mt-2 text-xs text-rose-100/60">Urgency: {request.urgencyStatus}</p>
+                  <p className="mt-2 text-xs text-muted">Urgency: {request.urgencyStatus}</p>
                 </div>
               ))
             )}
           </CardContent>
         </Card>
 
-        <Card className="border border-rose-500/20 bg-rose-950/70">
+        <Card className="bg-surface-card-muted">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white">Recent reports</CardTitle>
+            <CardTitle className="text-lg font-semibold text-primary">Recent reports</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
             {latestReports.length === 0 ? (
-              <p className="text-sm text-rose-100/80">No reports submitted.</p>
+              <p className="text-sm text-secondary">No reports submitted.</p>
             ) : (
               latestReports.map((report: (typeof latestReports)[number]) => (
-                <div key={report.id} className="rounded-2xl border border-rose-500/20 bg-rose-950/70 px-4 py-3">
-                  <p className="text-sm font-semibold text-white">{report.reason}</p>
-                  <p className="text-xs text-rose-100/75">
+                <div key={report.id} className="rounded-2xl border border-soft bg-surface-card px-4 py-3">
+                  <p className="text-sm font-semibold text-primary">{report.reason}</p>
+                  <p className="text-xs text-secondary">
                     Related to request #{report.bloodRequest?.id ?? "N/A"} · {report.bloodRequest?.patientName ?? "Unknown"}
                   </p>
-                  <p className="mt-2 text-xs text-rose-100/60">
+                  <p className="mt-2 text-xs text-muted">
                     Reported by {report.reporter?.name ?? report.reporter?.username ?? "Anonymous"} · {format(report.createdAt, "MMM d, yyyy h:mm a")}
                   </p>
                 </div>

@@ -72,37 +72,37 @@ export default async function AdminDonorModerationPage() {
   return (
     <div className="grid gap-6">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold text-[#2E2E2E]">Donor moderation</h1>
-        <p className="text-sm text-[#5F5F5F]">
+        <h1 className="text-3xl font-semibold text-primary">Donor moderation</h1>
+        <p className="text-sm text-secondary">
           Review new donor submissions, verify documentation, and keep the network ready for urgent requests.
         </p>
       </header>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <Card className="border border-rose-500/25 bg-rose-950/70">
+        <Card className="border border-warning bg-warning-soft">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-rose-100/80">Pending reviews</CardTitle>
+            <CardTitle className="text-sm font-semibold text-warning">Pending reviews</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-white">{pendingCount}</CardContent>
+          <CardContent className="text-3xl font-semibold text-warning">{pendingCount}</CardContent>
         </Card>
-        <Card className="border border-emerald-500/25 bg-emerald-500/10">
+        <Card className="border border-success bg-success-soft">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#1C6F4A]">Approved donors</CardTitle>
+            <CardTitle className="text-sm font-semibold text-success">Approved donors</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#0F3F29]">{approvedCount}</CardContent>
+          <CardContent className="text-3xl font-semibold text-success">{approvedCount}</CardContent>
         </Card>
-        <Card className="border border-amber-500/25 bg-amber-500/10">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#7A4C00]">Applications reviewed</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Applications reviewed</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#503100]">{applicationsReviewed}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{applicationsReviewed}</CardContent>
         </Card>
       </section>
 
       <section className="grid gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-[#2E2E2E]">Pending applications</h2>
-          <p className="text-sm text-[#5F5F5F]">Inspect the applicant documentation before approving them for the donor network.</p>
+          <h2 className="text-xl font-semibold text-primary">Pending applications</h2>
+          <p className="text-sm text-secondary">Inspect the applicant documentation before approving them for the donor network.</p>
         </div>
         <PendingDonorApplicationsList applications={serializedApplications} />
       </section>

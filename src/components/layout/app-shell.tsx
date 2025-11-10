@@ -45,6 +45,8 @@ const baseLinks = [
   { href: "/profile", label: "Profile", icon: User, roles: ["USER", "ADMIN"] as const },
 ];
 
+const adminSidebarExcludedLinks = new Set(["/feed", "/requests", "/donors", "/friends", "/chat", "/notifications", "/profile"]);
+
 const adminLinks = [
   { href: "/admin/overview", label: "Admin Console", icon: ShieldCheck, roles: ["ADMIN"] },
   { href: "/admin/donors", label: "Donor Reviews", icon: ClipboardCheck, roles: ["ADMIN"] },
@@ -301,7 +303,9 @@ export function AppShell({
     };
   }, [socket, currentUserId]);
 
-  const links = user.isAdmin ? [...baseLinks, ...adminLinks] : baseLinks;
+  const links = user.isAdmin
+    ? [...baseLinks.filter((link) => !adminSidebarExcludedLinks.has(link.href)), ...adminLinks]
+    : baseLinks;
   const resolvedAvatar = resolveImageUrl(avatarUrl ?? user.image ?? null);
 
   return (

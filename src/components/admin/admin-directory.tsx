@@ -52,11 +52,11 @@ export function AdminDirectory({ admins, currentAdminId }: AdminDirectoryProps) 
 
   if (admins.length === 0) {
     return (
-      <Card className="border border-rose-500/20 bg-rose-950/60">
+      <Card className="bg-surface-card-muted">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-white">No admin accounts</CardTitle>
+          <CardTitle>No admin accounts</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-rose-100/75">
+        <CardContent className="text-sm text-secondary">
           Invite at least one trusted teammate to help moderate requests and manage reports.
         </CardContent>
       </Card>
@@ -66,7 +66,7 @@ export function AdminDirectory({ admins, currentAdminId }: AdminDirectoryProps) 
   return (
     <div className="grid gap-4">
       {error ? (
-        <p className="rounded-2xl border border-rose-400/50 bg-rose-500/15 p-3 text-sm text-rose-50">{error}</p>
+        <p className="rounded-2xl border border-danger bg-danger-soft p-3 text-sm text-danger">{error}</p>
       ) : null}
       {admins.map((admin) => {
         const isCurrent = currentAdminId === admin.id;
@@ -75,22 +75,21 @@ export function AdminDirectory({ admins, currentAdminId }: AdminDirectoryProps) 
         return (
           <Card
             key={admin.id}
-            className="flex flex-col gap-3 border border-rose-500/25 bg-rose-950/70 p-4 transition shadow-xl shadow-rose-950/30 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 p-4 transition sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="grid gap-1">
               <div className="flex flex-wrap items-center gap-2">
-                <CardTitle className="text-lg font-semibold text-white">{admin.username}</CardTitle>
+                <CardTitle>{admin.username}</CardTitle>
                 {isCurrent ? <Badge variant="secondary">You</Badge> : null}
               </div>
-              <p className="text-sm text-rose-100/80">{admin.email}</p>
-              <p className="text-xs uppercase tracking-wide text-rose-200/60">Joined {joinedLabel}</p>
+              <p className="text-sm text-secondary">{admin.email}</p>
+              <p className="text-xs uppercase tracking-wide text-muted">Joined {joinedLabel}</p>
             </div>
             <div className="flex items-center gap-3">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="border-rose-400/40 text-rose-100 hover:bg-rose-500/20"
                 disabled={isCurrent || (isPending && activeId === admin.id)}
                 onClick={() => {
                   if (!isCurrent) {

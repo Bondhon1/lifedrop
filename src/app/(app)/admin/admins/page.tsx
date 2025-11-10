@@ -49,8 +49,8 @@ export default async function AdminManageAdminsPage() {
   return (
     <div className="grid gap-6">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold text-[#2E2E2E]">Admin accounts</h1>
-        <p className="text-sm text-[#5F5F5F]">
+        <h1 className="text-3xl font-semibold text-primary">Admin accounts</h1>
+        <p className="text-sm text-secondary">
           Invite additional administrators, track who has elevated access, and remove stale accounts when teammates roll off.
         </p>
       </header>
@@ -59,12 +59,12 @@ export default async function AdminManageAdminsPage() {
 
       <section className="grid gap-3">
         <div className="grid gap-1">
-          <h2 className="text-xl font-semibold text-[#2E2E2E]">Active admins</h2>
-          <p className="text-sm text-[#5F5F5F]">Keep this list short and ensure each admin uses a strong unique password.</p>
+          <h2 className="text-xl font-semibold text-primary">Active admins</h2>
+          <p className="text-sm text-secondary">Keep this list short and ensure each admin uses a strong unique password.</p>
         </div>
         {serialisedAdmins.length === 0 ? (
-          <Card className="border border-rose-500/25 bg-rose-950/70">
-            <CardContent className="p-6 text-sm text-rose-100/80">
+          <Card className="bg-surface-card-muted">
+            <CardContent className="p-6 text-sm text-secondary">
               You do not have any admin accounts yet. Use the form above to invite your first teammate.
             </CardContent>
           </Card>

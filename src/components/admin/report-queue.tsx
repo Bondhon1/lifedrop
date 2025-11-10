@@ -67,11 +67,11 @@ export function ReportQueue({ reports }: ReportQueueProps) {
 
   if (reports.length === 0) {
     return (
-      <Card className="border border-emerald-500/25 bg-emerald-500/10">
+      <Card className="bg-success-soft border-success">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-emerald-900">No active reports</CardTitle>
+          <CardTitle className="text-lg text-success">No active reports</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-emerald-900/80">
+        <CardContent className="text-sm text-success">
           Great news! The community hasn’t flagged any requests. Keep an eye here for future alerts.
         </CardContent>
       </Card>
@@ -81,7 +81,7 @@ export function ReportQueue({ reports }: ReportQueueProps) {
   return (
     <div className="grid gap-4">
       {error ? (
-        <p className="rounded-2xl border border-rose-400/40 bg-rose-500/15 p-3 text-sm text-rose-50">{error}</p>
+        <p className="rounded-2xl border border-danger bg-danger-soft p-3 text-sm text-danger">{error}</p>
       ) : null}
       {reports.map((report) => {
         const isProcessing = isPending && activeId === report.id;
@@ -89,28 +89,28 @@ export function ReportQueue({ reports }: ReportQueueProps) {
         const reporterName = report.reporter?.name ?? report.reporter?.username ?? "Anonymous";
 
         return (
-          <Card key={report.id} className="border border-rose-500/25 bg-rose-950/70 shadow-xl shadow-rose-950/30">
+          <Card key={report.id}>
             <CardHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="grid gap-2">
-                  <CardTitle className="text-lg font-semibold text-white">Report #{report.id}</CardTitle>
-                  <p className="text-sm text-rose-100/80">Filed by {reporterName} on {reportedAt}</p>
+                  <CardTitle className="text-lg">Report #{report.id}</CardTitle>
+                  <p className="text-sm text-secondary">Filed by {reporterName} on {reportedAt}</p>
                 </div>
                 {report.request ? (
-                  <Badge variant="secondary" className="bg-rose-500/20 text-rose-50">Request #{report.request.id}</Badge>
+                  <Badge variant="secondary">Request #{report.request.id}</Badge>
                 ) : null}
               </div>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-100/85">
+              <div className="rounded-2xl border border-warning bg-warning-soft p-4 text-sm text-warning">
                 {report.reason}
               </div>
 
               {report.request ? (
-                <div className="grid gap-2 rounded-2xl border border-rose-500/20 bg-rose-950/60 p-4 text-sm text-rose-100/80">
+                <div className="grid gap-2 rounded-2xl border border-soft bg-surface-card-muted p-4 text-sm text-secondary">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-white">{report.request.patientName}</p>
-                    <Badge variant="secondary" className="bg-rose-500/20 text-rose-50">{report.request.status}</Badge>
+                    <p className="font-semibold text-primary">{report.request.patientName}</p>
+                    <Badge variant="secondary">{report.request.status}</Badge>
                   </div>
                   <p>Hospital: {report.request.hospitalName}</p>
                   <p>Posted by {report.request.author}</p>
@@ -119,7 +119,6 @@ export function ReportQueue({ reports }: ReportQueueProps) {
                       type="button"
                       variant="secondary"
                       size="sm"
-                      className="bg-rose-500/20 text-rose-50 hover:bg-rose-500/30"
                       asChild
                     >
                       <a href={`/requests/${report.request.id}`} target="_blank" rel="noopener noreferrer">Open request</a>
@@ -128,7 +127,6 @@ export function ReportQueue({ reports }: ReportQueueProps) {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="border-rose-400/40 text-rose-100 hover:bg-rose-500/20"
                       disabled={isProcessing}
                       onClick={() => handleResolve(report.id, true)}
                     >
@@ -143,7 +141,6 @@ export function ReportQueue({ reports }: ReportQueueProps) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="border-rose-400/40 text-rose-100 hover:bg-rose-500/20"
                   disabled={isProcessing}
                   onClick={() => handleResolve(report.id)}
                 >

@@ -12,9 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const statusStyles: Record<string, string> = {
-  Pending: "bg-amber-500/20 text-amber-100",
-  Approved: "bg-emerald-500/20 text-emerald-100",
-  Rejected: "bg-rose-500/20 text-rose-100",
+  Pending: "border-warning bg-warning-soft text-warning",
+  Approved: "border-success bg-success-soft text-success",
+  Rejected: "border-danger bg-danger-soft text-danger",
 };
 
 const formatDate = (value: string | null | undefined) => {
@@ -103,11 +103,11 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
 
   if (applications.length === 0) {
     return (
-      <Card className="border border-rose-500/25 bg-rose-500/10">
+      <Card className="bg-surface-card-muted">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-white">No pending applications</CardTitle>
+          <CardTitle>No pending applications</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-rose-100/80">
+        <CardContent className="text-sm text-secondary">
           All donor applications are up to date. You will be notified when new submissions arrive.
         </CardContent>
       </Card>
@@ -117,7 +117,7 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
   return (
     <div className="grid gap-5">
       {actionError ? (
-        <p className="rounded-2xl border border-rose-500/40 bg-rose-950/50 p-3 text-sm text-rose-100">{actionError}</p>
+        <p className="rounded-2xl border border-danger bg-danger-soft p-3 text-sm text-danger">{actionError}</p>
       ) : null}
 
       {applications.map((application) => {
@@ -129,68 +129,60 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
         const medicalDocuments = application.medicalHistoryImages?.filter(Boolean) ?? [];
 
         return (
-          <Card key={application.id} className="border border-rose-500/25 bg-rose-950/70 shadow-xl shadow-rose-950/30">
+          <Card key={application.id}>
             <CardHeader className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="flex items-start gap-4">
-                <Avatar
-                  src={avatar ?? undefined}
-                  alt={displayName ?? "Applicant"}
-                  size="lg"
-                  className="border border-rose-500/30 bg-rose-900/60"
-                />
+                <Avatar src={avatar ?? undefined} alt={displayName ?? "Applicant"} size="lg" />
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <CardTitle className="text-lg font-semibold text-white">{displayName}</CardTitle>
-                    {application.user.bloodGroup ? (
-                      <Badge className="bg-rose-500/20 text-rose-50">{application.user.bloodGroup}</Badge>
-                    ) : null}
-                    <Badge className={statusStyles[application.status] ?? "bg-rose-500/20 text-rose-100"}>{application.status}</Badge>
+                    <CardTitle className="text-lg">{displayName}</CardTitle>
+                    {application.user.bloodGroup ? <Badge variant="secondary">{application.user.bloodGroup}</Badge> : null}
+                    <Badge
+                      variant="outline"
+                      className={statusStyles[application.status] ?? "border-soft bg-surface-card-muted text-secondary"}
+                    >
+                      {application.status}
+                    </Badge>
                   </div>
-                  <p className="text-xs uppercase tracking-wide text-rose-200/70">@{application.user.username}</p>
-                  <p className="text-xs text-rose-200/70">Submitted {formatDateTime(application.submittedAt)}</p>
-                  {location ? <p className="text-sm text-rose-100/70">{location}</p> : null}
+                  <p className="text-xs uppercase tracking-wide text-muted">@{application.user.username}</p>
+                  <p className="text-xs text-muted">Submitted {formatDateTime(application.submittedAt)}</p>
+                  {location ? <p className="text-sm text-secondary">{location}</p> : null}
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                {application.user.email ? (
-                  <Badge variant="secondary" className="border-rose-500/30 text-rose-100/80">{application.user.email}</Badge>
-                ) : null}
-                {application.user.phone ? (
-                  <Badge variant="secondary" className="border-rose-500/30 text-rose-100/80">{application.user.phone}</Badge>
-                ) : null}
+                {application.user.email ? <Badge variant="secondary">{application.user.email}</Badge> : null}
+                {application.user.phone ? <Badge variant="secondary">{application.user.phone}</Badge> : null}
               </div>
             </CardHeader>
             <CardContent className="grid gap-6">
-              <div className="grid gap-4 rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 text-sm text-rose-100/80 md:grid-cols-3">
+              <div className="grid gap-4 rounded-2xl border border-soft bg-surface-card-muted p-4 text-sm text-secondary md:grid-cols-3">
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-rose-200/70">Date of birth</p>
-                  <p className="text-white">{formatDate(application.dateOfBirth)}</p>
+                  <p className="text-xs uppercase tracking-wide text-muted">Date of birth</p>
+                  <p className="text-primary">{formatDate(application.dateOfBirth)}</p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-rose-200/70">Donation history</p>
-                  <p className="text-white">{application.hasDonatedBefore ? "Donated before" : "New donor"}</p>
+                  <p className="text-xs uppercase tracking-wide text-muted">Donation history</p>
+                  <p className="text-primary">{application.hasDonatedBefore ? "Donated before" : "New donor"}</p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-rose-200/70">Last donation</p>
-                  <p className="text-white">{formatDate(application.lastDonationDate)}</p>
+                  <p className="text-xs uppercase tracking-wide text-muted">Last donation</p>
+                  <p className="text-primary">{formatDate(application.lastDonationDate)}</p>
                 </div>
               </div>
 
-              <div className="grid gap-3 rounded-2xl border border-rose-500/20 bg-rose-950/60 p-4">
-                <h3 className="text-sm font-semibold text-white">Medical notes</h3>
-                <p className="text-sm text-rose-100/80">
-                  {application.medicalConditions ?? "No notes provided."}
-                </p>
+              <div className="grid gap-3 rounded-2xl border border-soft bg-surface-card-muted p-4">
+                <h3 className="text-sm font-semibold text-primary">Medical notes</h3>
+                <p className="text-sm text-secondary">{application.medicalConditions ?? "No notes provided."}</p>
               </div>
 
-              <div className="grid gap-3 rounded-2xl border border-rose-500/20 bg-rose-950/60 p-4">
-                <h3 className="text-sm font-semibold text-white">Documents</h3>
+              <div className="grid gap-3 rounded-2xl border border-soft bg-surface-card-muted p-4">
+                <h3 className="text-sm font-semibold text-primary">Documents</h3>
                 <div className="flex flex-wrap gap-2 text-xs">
                   <Link
                     href={application.nidOrBirthCertificate}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-rose-400/40 px-3 py-1 text-rose-100/80 hover:border-rose-300/70 hover:text-white"
+                    className="inline-flex items-center gap-2 rounded-full border border-soft px-3 py-1 text-primary transition-colors hover:bg-surface-primary-soft"
                   >
                     View ID document
                   </Link>
@@ -201,13 +193,13 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
                         href={item}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-rose-400/30 px-3 py-1 text-rose-100/80 hover:border-rose-300/70 hover:text-white"
+                        className="inline-flex items-center gap-2 rounded-full border border-soft px-3 py-1 text-primary transition-colors hover:bg-surface-primary-soft"
                       >
                         Medical file {index + 1}
                       </Link>
                     ))
                   ) : (
-                    <span className="inline-flex items-center rounded-full border border-rose-500/20 px-3 py-1 text-rose-100/60">
+                    <span className="inline-flex items-center rounded-full border border-soft px-3 py-1 text-muted">
                       No medical attachments
                     </span>
                   )}
@@ -226,7 +218,6 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-rose-400/50 text-rose-100 hover:bg-rose-500/20"
                   disabled={isPending && activeId === application.id}
                   onClick={() => handleDecision(application.id, "reject")}
                 >

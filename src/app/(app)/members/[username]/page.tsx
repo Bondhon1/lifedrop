@@ -39,10 +39,8 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
     redirect("/login");
   }
 
-  const viewerId = Number(sessionUser.id);
-  if (!Number.isInteger(viewerId)) {
-    redirect("/login");
-  }
+  const viewerId = resolveViewerId(sessionUser);
+  const canInteract = typeof viewerId === "number";
 
   const member = await prisma.user.findUnique({
     where: { username },
@@ -68,7 +66,7 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
     notFound();
   }
 
-  const isSelf = member.id === viewerId;
+  const isSelf = canInteract ? member.id === viewerId : false;
 
   type FriendLookupResult = Awaited<ReturnType<typeof prisma.userFriend.findUnique>>;
   type PendingRequestResult = Awaited<ReturnType<typeof prisma.friendRequest.findFirst>>;
@@ -77,7 +75,7 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
   let pendingRequestId: number | null = null;
   let friendSince: string | null = null;
 
-  if (!isSelf) {
+  if (!isSelf && canInteract) {
     const [friendship, pendingRequest] = await Promise.all([
       prisma.userFriend.findUnique({
         where: {
@@ -244,12 +242,16 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
 
             {/* Actions */}
             <div className="flex-shrink-0">
-              <ProfileActionButtons
-                status={friendStatus}
-                targetUserId={member.id}
-                pendingRequestId={pendingRequestId}
-                friendSince={friendSince}
-              />
+              {canInteract ? (
+                <ProfileActionButtons
+                  status={friendStatus}
+                  targetUserId={member.id}
+                  pendingRequestId={pendingRequestId}
+                  friendSince={friendSince}
+                />
+              ) : (
+                <p className="text-sm text-muted">Admins can view member profiles but social actions are disabled.</p>
+              )}
             </div>
           </div>
         </div>
@@ -259,8 +261,8 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
       <section className="grid gap-4">
         <h2 className="text-xl font-bold text-primary">Recent blood requests</h2>
         {feedItems.length === 0 ? (
-          <Card className="border-2 border-dashed border-gray-300 dark:border-rose-500/30 bg-gray-50 dark:bg-rose-500/10">
-            <CardContent className="p-8 text-center text-gray-600 dark:text-rose-100/80">
+          <Card className="border-2 border-dashed border-soft bg-surface-card">
+            <CardContent className="p-8 text-center text-secondary">
               No blood requests from {displayName.split(" ")[0]} yet.
             </CardContent>
           </Card>
@@ -274,4 +276,24 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
       </section>
     </div>
   );
+}
+
+function resolveViewerId(user: SessionUser): number | null {
+  if (user.isAdmin) {
+    return null;
+  }
+
+  const rawId = user.id;
+
+  if (typeof rawId === "number" && Number.isInteger(rawId)) {
+    return rawId;
+  }
+
+  if (typeof rawId === "string") {
+    if (/^\d+$/.test(rawId)) {
+      return Number(rawId);
+    }
+  }
+
+  return null;
 }

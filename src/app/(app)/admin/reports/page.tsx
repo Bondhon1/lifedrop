@@ -73,8 +73,8 @@ export default async function AdminReportsPage() {
   return (
     <div className="grid gap-6">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold text-[#2E2E2E]">Reports queue</h1>
-        <p className="text-sm text-[#5F5F5F]">
+        <h1 className="text-3xl font-semibold text-primary">Reports queue</h1>
+        <p className="text-sm text-secondary">
           Investigate flagged requests, remove harmful content, and clear resolved reports to keep the platform trustworthy.
         </p>
       </header>
@@ -82,22 +82,22 @@ export default async function AdminReportsPage() {
       <section className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Open reports</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Open reports</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{openReports}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{openReports}</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#5F5F5F]">Requests flagged</CardTitle>
+            <CardTitle className="text-sm font-semibold text-secondary">Requests flagged</CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-semibold text-[#2E2E2E]">{flaggedRequests}</CardContent>
+          <CardContent className="text-3xl font-semibold text-primary">{flaggedRequests}</CardContent>
         </Card>
       </section>
 
       <section className="grid gap-4">
         <div className="grid gap-1">
-          <h2 className="text-xl font-semibold text-[#2E2E2E]">Flagged activity</h2>
-          <p className="text-sm text-[#5F5F5F]">Review context, escalate if needed, or resolve when everything checks out.</p>
+          <h2 className="text-xl font-semibold text-primary">Flagged activity</h2>
+          <p className="text-sm text-secondary">Review context, escalate if needed, or resolve when everything checks out.</p>
         </div>
         <ReportQueue reports={serialisedReports} />
       </section>

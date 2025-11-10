@@ -80,26 +80,26 @@ export function UserDirectoryTable({ users }: UserDirectoryTableProps) {
 
   return (
     <div className="grid gap-4">
-      <div className="flex flex-col gap-3 rounded-2xl border border-rose-500/25 bg-rose-950/70 p-4 shadow-xl shadow-rose-950/30 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-soft bg-surface-card p-4 shadow-soft md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-rose-200/70">Search members</p>
-          <p className="text-sm text-rose-100/70">Filter by name, email, blood group, or phone.</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-muted">Search members</p>
+          <p className="text-sm text-secondary">Filter by name, email, blood group, or phone.</p>
         </div>
         <Input
           value={query}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}
           placeholder="Search community members"
-          className="w-full border-rose-500/40 bg-rose-900/40 text-white placeholder:text-rose-100/40 md:w-72"
+          className="w-full md:w-72"
         />
       </div>
 
       {error ? (
-        <p className="rounded-2xl border border-rose-400/40 bg-rose-500/20 p-3 text-sm text-rose-50">{error}</p>
+        <p className="rounded-2xl border border-danger bg-danger-soft p-3 text-sm text-danger">{error}</p>
       ) : null}
 
       {filteredUsers.length === 0 ? (
-        <Card className="border border-rose-500/20 bg-rose-950/60">
-          <CardContent className="p-6 text-sm text-rose-100/80">No members match your search.</CardContent>
+        <Card className="bg-surface-card-muted">
+          <CardContent className="p-6 text-sm text-secondary">No members match your search.</CardContent>
         </Card>
       ) : (
         <div className="grid gap-3">
@@ -111,34 +111,30 @@ export function UserDirectoryTable({ users }: UserDirectoryTableProps) {
             return (
               <Card
                 key={user.id}
-                className="flex flex-col gap-4 border border-rose-500/25 bg-rose-950/70 p-4 shadow-xl shadow-rose-950/30 md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between"
               >
                 <div className="flex flex-1 items-start gap-4">
-                  <Avatar
-                    src={avatar ?? undefined}
-                    alt={displayName}
-                    className="border border-rose-500/30 bg-rose-900/60"
-                  />
+                  <Avatar src={avatar ?? undefined} alt={displayName} />
                   <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-base font-semibold text-white">{displayName}</p>
-                      <Badge className="bg-rose-500/20 text-rose-50">@{user.username}</Badge>
+                      <p className="text-base font-semibold text-primary">{displayName}</p>
+                      <Badge variant="secondary">@{user.username}</Badge>
                       <Badge variant="secondary">{user.role}</Badge>
                     </div>
-                    <div className="flex flex-wrap gap-3 text-sm text-rose-100/75">
+                    <div className="flex flex-wrap gap-3 text-sm text-secondary">
                       <span>{user.email}</span>
                       {user.phone ? <span>{user.phone}</span> : null}
                       <span>Joined {joined}</span>
                     </div>
-                    <div className="flex flex-wrap gap-2 text-xs text-rose-200/70">
-                      {user.bloodGroup ? <Badge variant="secondary" className="bg-rose-500/20 text-rose-50">Blood: {user.bloodGroup}</Badge> : null}
+                    <div className="flex flex-wrap gap-2 text-xs text-muted">
+                      {user.bloodGroup ? <Badge variant="secondary">Blood: {user.bloodGroup}</Badge> : null}
                       {user.donorStatus ? (
-                        <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-100">Donor: {user.donorStatus}</Badge>
+                        <Badge variant="outline" className="border-success bg-success-soft text-success">Donor: {user.donorStatus}</Badge>
                       ) : (
-                        <Badge variant="secondary" className="bg-amber-500/20 text-amber-100">No donor profile</Badge>
+                        <Badge variant="outline" className="border-warning bg-warning-soft text-warning">No donor profile</Badge>
                       )}
-                      <Badge variant="secondary" className="bg-rose-500/20 text-rose-50">Requests: {user.requestCount}</Badge>
-                      <Badge variant="secondary" className="bg-rose-500/20 text-rose-50">Responses: {user.responseCount}</Badge>
+                      <Badge variant="secondary">Requests: {user.requestCount}</Badge>
+                      <Badge variant="secondary">Responses: {user.responseCount}</Badge>
                     </div>
                   </div>
                 </div>
@@ -147,7 +143,6 @@ export function UserDirectoryTable({ users }: UserDirectoryTableProps) {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="border-rose-400/40 text-rose-100 hover:bg-rose-500/20"
                     disabled={isPending && activeId === user.id}
                     onClick={() => handleRemove(user.id, user.username)}
                   >
@@ -157,7 +152,6 @@ export function UserDirectoryTable({ users }: UserDirectoryTableProps) {
                     type="button"
                     variant="secondary"
                     size="sm"
-                    className="bg-rose-500/20 text-rose-50 hover:bg-rose-500/30"
                     asChild
                   >
                     <a href={`/members/${user.username}`} target="_blank" rel="noopener noreferrer">View profile</a>

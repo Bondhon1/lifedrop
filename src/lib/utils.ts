@@ -68,5 +68,6 @@ export function resolveImageUrl(path: string | null | undefined): string | null 
     return `${storageBase}/${relative}`;
   }
 
-  return `/${relative}`;
+  const encoded = encodeURIComponent(relative);
+  return `/api/storage?key=${encoded}`;
 }

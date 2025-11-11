@@ -142,6 +142,10 @@ export default function Home() {
     "@type": "Product",
     name: "Lifedrop Blood Donation Platform",
     description: "Real-time blood donation coordination platform connecting patients with verified donors",
+    image: [
+      `${baseUrl}/images/hero-illustration.png`,
+      `${baseUrl}/images/impact-map.png`,
+    ],
     brand: {
       "@type": "Brand",
       name: "Lifedrop",

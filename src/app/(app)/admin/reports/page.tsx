@@ -46,6 +46,34 @@ export default async function AdminReportsPage() {
     }),
   ]);
 
+  const reportedUserIds = Array.from(
+    new Set(
+      reports
+        .map((report) => report.postId)
+        .filter((value): value is number => typeof value === "number" && Number.isInteger(value)),
+    ),
+  );
+
+  const reportedUsers = reportedUserIds.length
+    ? await prisma.user.findMany({
+        where: { id: { in: reportedUserIds } },
+        select: {
+          id: true,
+          username: true,
+          name: true,
+          email: true,
+          bloodGroup: true,
+          donorApplication: {
+            select: {
+              status: true,
+            },
+          },
+        },
+      })
+    : [];
+
+  const userLookup = new Map(reportedUsers.map((user) => [user.id, user]));
+
   const serialisedReports: AdminReportSummary[] = reports.map((report) => ({
     id: report.id,
     reason: report.reason,
@@ -66,9 +94,27 @@ export default async function AdminReportsPage() {
           author: report.bloodRequest.user?.name ?? report.bloodRequest.user?.username ?? "Unknown",
         }
       : null,
+    member: (() => {
+      if (typeof report.postId !== "number") {
+        return null;
+      }
+      const target = userLookup.get(report.postId);
+      if (!target) {
+        return null;
+      }
+      return {
+        id: target.id,
+        username: target.username,
+        name: target.name,
+        email: target.email,
+        bloodGroup: target.bloodGroup,
+        donorStatus: target.donorApplication?.status ?? null,
+      };
+    })(),
   }));
 
   const flaggedRequests = serialisedReports.filter((report) => report.request).length;
+  const flaggedProfiles = serialisedReports.filter((report) => report.member).length;
 
   return (
     <div className="grid gap-6">
@@ -79,7 +125,7 @@ export default async function AdminReportsPage() {
         </p>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-semibold text-secondary">Open reports</CardTitle>
@@ -91,6 +137,12 @@ export default async function AdminReportsPage() {
             <CardTitle className="text-sm font-semibold text-secondary">Requests flagged</CardTitle>
           </CardHeader>
           <CardContent className="text-3xl font-semibold text-primary">{flaggedRequests}</CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold text-secondary">Profiles flagged</CardTitle>
+          </CardHeader>
+          <CardContent className="text-3xl font-semibold text-primary">{flaggedProfiles}</CardContent>
         </Card>
       </section>
 

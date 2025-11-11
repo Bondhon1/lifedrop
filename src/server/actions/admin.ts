@@ -170,6 +170,35 @@ export async function removeUserAccount(userId: number | string): Promise<Action
   return success({ message: "User account removed." });
 }
 
+export async function removeDonorProfile(userId: number | string): Promise<ActionState<{ message: string }>> {
+  const sessionInfo = await getAdminSession();
+  if (!sessionInfo) {
+    return failure("Only admins can manage donor profiles.");
+  }
+
+  const parsedId = idSchema.safeParse(userId);
+  if (!parsedId.success) {
+    return failure(parsedId.error.issues[0]?.message ?? "Invalid member reference.");
+  }
+
+  const donorProfile = await prisma.donorApplication.findUnique({ where: { userId: parsedId.data } });
+  if (!donorProfile) {
+    return failure("No donor profile is associated with that account.");
+  }
+
+  try {
+    await prisma.donorApplication.delete({ where: { userId: parsedId.data } });
+  } catch (error) {
+    console.error("removeDonorProfile", error);
+    return failure("We couldn't remove that donor profile right now. Please try again.");
+  }
+
+  revalidateAdminPaths(["/admin/overview", "/admin/donors"]);
+  revalidatePath("/donors");
+
+  return success({ message: "Donor profile removed." });
+}
+
 export async function resolveReport(reportId: number | string): Promise<ActionState<{ message: string }>> {
   const sessionInfo = await getAdminSession();
   if (!sessionInfo) {

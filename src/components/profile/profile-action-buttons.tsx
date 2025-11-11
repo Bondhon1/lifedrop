@@ -10,6 +10,7 @@ import {
   respondToFriendRequest,
   sendFriendRequest,
 } from "@/server/actions/friend";
+import { ReportUserButton } from "./report-user-button";
 
 export type FriendStatus = "self" | "friends" | "incoming" | "outgoing" | "none";
 
@@ -18,6 +19,7 @@ type ProfileActionButtonsProps = {
   targetUserId: number;
   pendingRequestId?: number | null;
   friendSince?: string | null;
+  targetDisplayName: string;
 };
 
 export function ProfileActionButtons({
@@ -25,6 +27,7 @@ export function ProfileActionButtons({
   targetUserId,
   pendingRequestId = null,
   friendSince = null,
+  targetDisplayName,
 }: ProfileActionButtonsProps) {
   const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -167,6 +170,7 @@ export function ProfileActionButtons({
         <Button variant="primary" asChild>
           <Link href={`/chat?user=${targetUserId}`}>Send message</Link>
         </Button>
+        <ReportUserButton targetUserId={targetUserId} targetDisplayName={targetDisplayName} />
       </div>
       {feedback ? <p className="text-xs text-rose-100/70">{feedback}</p> : null}
     </div>

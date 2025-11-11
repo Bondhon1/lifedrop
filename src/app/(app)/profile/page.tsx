@@ -1,12 +1,10 @@
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { auth, type SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveImageUrl } from "@/lib/utils";
 import { ProfileInfoForm } from "@/components/profile/profile-info-form";
-import { ProfileImageForm } from "@/components/profile/profile-image-form";
-import { Avatar } from "@/components/ui/avatar";
 import { bloodGroups } from "@/lib/validators/blood-request";
+import { ProfileBannerEditable } from "@/components/profile/profile-banner-editable";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -63,6 +61,7 @@ export default async function ProfilePage() {
   const coverPhotoUrl = resolveImageUrl(user.coverPhoto);
   const displayProfilePictureUrl = profilePictureUrl ?? "/images/default-avatar.svg";
   const displayCoverPhotoUrl = coverPhotoUrl ?? "/images/default-cover.svg";
+  const lastUpdatedLabel = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(user.updatedAt);
 
   const locationOptions = {
     divisions: divisions.map((division) => ({ id: division.id, name: division.name })),
@@ -72,26 +71,14 @@ export default async function ProfilePage() {
 
   return (
     <div className="grid gap-8">
-      <section className="overflow-hidden rounded-3xl border border-soft bg-surface-card shadow-soft">
-        <div className="relative h-48 w-full">
-          <Image src={displayCoverPhotoUrl} alt="Cover photo" fill className="object-cover" priority sizes="100vw" />
-        </div>
-        <div className="relative px-6 py-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <Avatar
-              src={displayProfilePictureUrl}
-              alt={user.name ?? user.username}
-              size="lg"
-              className="h-24 w-24 border-4 border-[var(--color-border-primary)] bg-surface-card-muted shadow-soft"
-            />
-            <div className="min-w-0">
-              <h1 className="truncate text-2xl font-semibold text-primary">{user.name ?? user.username}</h1>
-              <p className="truncate text-sm text-secondary">{user.email}</p>
-              <p className="mt-1 text-xs text-muted">Last updated {new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(user.updatedAt)}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ProfileBannerEditable
+        displayName={user.name ?? user.username}
+        username={user.username}
+        email={user.email}
+        lastUpdatedLabel={lastUpdatedLabel}
+        profilePictureUrl={displayProfilePictureUrl}
+        coverPhotoUrl={displayCoverPhotoUrl}
+      />
 
       <ProfileInfoForm
         profile={{
@@ -110,7 +97,6 @@ export default async function ProfilePage() {
         locationOptions={locationOptions}
       />
 
-      <ProfileImageForm profilePictureUrl={profilePictureUrl} coverPhotoUrl={coverPhotoUrl} />
     </div>
   );
 }

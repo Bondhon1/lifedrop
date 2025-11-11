@@ -38,7 +38,7 @@ const MAX_CONVERSATION_PREVIEWS = 10;
 const baseLinks = [
   { href: "/feed", label: "News Feed", icon: Newspaper, roles: ["USER", "ADMIN"] as const },
   { href: "/requests", label: "Blood Requests", icon: Droplets, roles: ["USER", "ADMIN"] as const },
-  { href: "/donors", label: "Donor Network", icon: Users, roles: ["USER", "ADMIN"] as const },
+  { href: "/donors", label: "Donor Profile", icon: Users, roles: ["USER", "ADMIN"] as const },
   { href: "/friends", label: "Friends", icon: UserPlus, roles: ["USER", "ADMIN"] as const },
   { href: "/chat", label: "Conversations", icon: MessageCircle, roles: ["USER", "ADMIN"] as const },
   { href: "/notifications", label: "Notifications", icon: Bell, roles: ["USER", "ADMIN"] as const },
@@ -309,8 +309,8 @@ export function AppShell({
   const resolvedAvatar = resolveImageUrl(avatarUrl ?? user.image ?? null);
 
   return (
-    <div className="grid w-full min-h-screen min-w-0 gap-6 grid-cols-1 lg:grid-cols-[280px_1fr]">
-  <aside className="hidden h-full flex-col justify-between rounded-3xl border border-soft bg-surface-sidebar p-6 text-primary shadow-soft lg:flex">
+    <div className="grid w-full min-h-screen min-w-0 grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
+      <aside className="hidden h-full flex-col justify-between rounded-3xl border border-soft bg-surface-sidebar p-6 text-primary shadow-soft lg:flex">
         <div className="grid gap-6">
           <Link href="/feed" className="flex items-center gap-3 text-lg font-semibold text-primary">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary bg-surface-card text-[var(--color-text-danger)] shadow-soft">
@@ -372,7 +372,7 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="grid w-full min-w-0 gap-5">
+    <div className="grid w-full min-w-0 gap-5 px-4 pb-6 sm:px-6 lg:px-0">
         <header className="flex w-full flex-wrap items-center justify-between gap-4 rounded-3xl border border-soft bg-surface-card px-5 py-4 shadow-soft">
           <div className="flex w-full flex-1 items-start justify-between gap-3">
             <div className="flex items-start gap-3">

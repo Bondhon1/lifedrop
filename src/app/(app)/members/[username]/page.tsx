@@ -248,6 +248,7 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
                   targetUserId={member.id}
                   pendingRequestId={pendingRequestId}
                   friendSince={friendSince}
+                  targetDisplayName={displayName}
                 />
               ) : (
                 <p className="text-sm text-muted">Admins can view member profiles but social actions are disabled.</p>

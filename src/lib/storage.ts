@@ -3,14 +3,40 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { del as deleteBlob, put as uploadBlob } from "@vercel/blob";
 
-const UPLOAD_ROOT = path.join(process.cwd(), "public", "uploads");
+const UPLOAD_PREFIX = (process.env.BLOB_UPLOAD_PREFIX ?? "uploads").replace(/^\/+|\/+$/g, "") || "uploads";
+const UPLOAD_ROOT = path.join(process.cwd(), "public", UPLOAD_PREFIX);
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_IMAGE_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN ?? null;
-const BLOB_PREFIX = (process.env.BLOB_UPLOAD_PREFIX ?? "uploads").replace(/^\/+|\/+$/g, "");
 const USE_BLOB_STORAGE = Boolean(BLOB_TOKEN);
 const RUNNING_ON_VERCEL = process.env.VERCEL === "1";
 const ALLOW_LOCAL_STORAGE = !RUNNING_ON_VERCEL;
+
+const PATH_PREFIX_CANDIDATES = ["profiles", "covers", "requests", "medical", "nid", "comments", "chat", "chat_attachments", "chat_images"];
+
+function normalizeStoredKey(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+  const withoutLeadingSlash = trimmed.replace(/^\/+/, "");
+
+  if (withoutLeadingSlash.startsWith("public/")) {
+    return normalizeStoredKey(withoutLeadingSlash.replace(/^public\//, ""));
+  }
+
+  if (withoutLeadingSlash.startsWith(`${UPLOAD_PREFIX}/`)) {
+    return withoutLeadingSlash;
+  }
+
+  if (withoutLeadingSlash.startsWith("uploads/")) {
+    return withoutLeadingSlash;
+  }
+
+  if (PATH_PREFIX_CANDIDATES.some((prefix) => withoutLeadingSlash.startsWith(`${prefix}/`))) {
+    return `${UPLOAD_PREFIX}/${withoutLeadingSlash}`;
+  }
+
+  return withoutLeadingSlash;
+}
 
 async function ensureDir(dir: string) {
   await fs.mkdir(dir, { recursive: true });
@@ -51,7 +77,7 @@ export async function saveImageFile(file: File, folder: string): Promise<string>
     .filter(Boolean)
     .join("/");
   const targetFolder = safeFolder || "misc";
-  const blobKey = [BLOB_PREFIX, targetFolder, fileName].filter(Boolean).join("/");
+  const blobKey = [UPLOAD_PREFIX, targetFolder, fileName].filter(Boolean).join("/");
 
   if (USE_BLOB_STORAGE) {
     try {
@@ -60,7 +86,7 @@ export async function saveImageFile(file: File, folder: string): Promise<string>
         token: BLOB_TOKEN ?? undefined,
         contentType: file.type || "application/octet-stream",
       });
-      return blob.url;
+      return blobKey;
     } catch (error) {
       console.error("saveImageFile:blob", error);
       throw new Error("Blob upload failed");
@@ -76,8 +102,7 @@ export async function saveImageFile(file: File, folder: string): Promise<string>
     await ensureDir(dirPath);
     const absolutePath = path.join(dirPath, fileName);
     await fs.writeFile(absolutePath, buffer);
-
-    return `/uploads/${targetFolder}/${fileName}`;
+    return blobKey;
   } catch (error) {
     console.error("saveImageFile:local", error);
     throw new Error("Local storage write failed");
@@ -86,10 +111,15 @@ export async function saveImageFile(file: File, folder: string): Promise<string>
 
 export async function deleteStoredFile(relativePath: string | null | undefined) {
   if (!relativePath) return;
-  if (relativePath.startsWith("http")) {
+  const trimmed = relativePath.trim();
+  if (!trimmed) return;
+
+  if (trimmed.startsWith("http")) {
     if (USE_BLOB_STORAGE) {
       try {
-        await deleteBlob(relativePath, { token: BLOB_TOKEN ?? undefined });
+        const url = new URL(trimmed);
+        const key = normalizeStoredKey(url.pathname);
+        await deleteBlob(key || trimmed, { token: BLOB_TOKEN ?? undefined });
       } catch (error) {
         console.error("deleteStoredFile:blob", error);
       }
@@ -97,8 +127,18 @@ export async function deleteStoredFile(relativePath: string | null | undefined) 
     return;
   }
 
-  if (relativePath.startsWith("/uploads/") && ALLOW_LOCAL_STORAGE) {
-    const absolutePath = path.join(process.cwd(), "public", relativePath);
+  const normalized = normalizeStoredKey(trimmed);
+
+  if (USE_BLOB_STORAGE) {
+    try {
+      await deleteBlob(normalized, { token: BLOB_TOKEN ?? undefined });
+    } catch (error) {
+      console.error("deleteStoredFile:blob", error);
+    }
+  }
+
+  if (ALLOW_LOCAL_STORAGE && normalized.startsWith(`${UPLOAD_PREFIX}/`)) {
+    const absolutePath = path.join(process.cwd(), "public", normalized);
     try {
       await fs.unlink(absolutePath);
     } catch (error) {

@@ -43,6 +43,8 @@ Then visit `http://localhost:3000`.
 | `SMTP_FROM` | Friendly from address shown in emails |
 | `BLOB_READ_WRITE_TOKEN` | (Production) Vercel Blob token for storing uploads (required on Vercel) |
 | `BLOB_UPLOAD_PREFIX` | Optional subfolder prefix for blob uploads (default `uploads`) |
+| `NEXT_PUBLIC_STORAGE_BASE_URL` | Public base URL that maps to stored uploads (e.g. Vercel Blob public host) |
+| `BLOB_PUBLIC_BASE_URL` | Server-side fallback for the same public uploads host (used when building absolute URLs) |
 
 See `.env.example` for current values.
 
@@ -56,6 +58,7 @@ See `.env.example` for current values.
 | `npm run lint` | ESLint (ignores legacy `copy/` directory) |
 | `npm run db:push` | Prisma `db push` (see below) |
 | `npm run db:studio` | Prisma Studio |
+| `npm run normalize:uploads` | Normalize stored upload paths to provider-agnostic keys |
 
 > Add the convenience scripts by pasting the following to `package.json` if not already present:
 
@@ -109,7 +112,7 @@ See [`docs/migration-plan.md`](./docs/migration-plan.md) for the rolling status 
 
 - The entire Flask codebase is preserved under `copy/` for cross-checking business logic.
 - Database tables map 1:1 to Prisma models (see `schema.prisma`). Additional enums were added for `UserRole`.
-- File uploads (profile pics, medical docs, chat attachments) now default to Vercel Blob in production and fall back to the local disk during development.
+- File uploads (profile pics, medical docs, chat attachments) now default to Vercel Blob in production and fall back to the local disk during development; normalized keys (`uploads/...`) are stored so switching providers only requires updating the public base URL.
 - Chat + notifications now rely on Ably channels issued via a Next.js token route; no long-lived Node server required on Vercel.
 
 ## Testing & quality

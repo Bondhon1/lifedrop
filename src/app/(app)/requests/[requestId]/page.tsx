@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveImageUrl } from "@/lib/utils";
 import { BloodRequestCard, type BloodRequestFeedItem } from "@/components/feed/blood-request-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
@@ -273,6 +274,10 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
     },
   }));
 
+  const attachmentImages = bloodRequest.images
+    .map((image) => resolveImageUrl(image))
+    .filter((src): src is string => Boolean(src));
+
   return (
     <div className="grid gap-6">
       <BloodRequestCard request={feedItem} showFullReason />
@@ -330,14 +335,14 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
             </CardContent>
           </Card>
 
-          {bloodRequest.images.length > 0 && (
+          {attachmentImages.length > 0 && (
             <Card className="border border-soft bg-surface-card shadow-soft">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-primary">Attachments</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {bloodRequest.images.map((image) => (
+                  {attachmentImages.map((image) => (
                     <div key={image} className="overflow-hidden rounded-2xl border border-[var(--color-border-primary)] bg-surface-primary-soft">
                       <Image
                         src={image}

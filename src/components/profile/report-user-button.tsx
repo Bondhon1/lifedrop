@@ -66,10 +66,10 @@ export function ReportUserButton({ targetUserId, targetDisplayName }: ReportUser
         variant="outline"
         disabled={isPending}
         onClick={() => setOpen(true)}
-        className="border-[var(--color-danger-border)] text-[var(--color-text-danger)] hover:bg-[var(--color-danger-bg)]"
+        className="flex items-center gap-2 border-[var(--color-danger-border)] text-[var(--color-text-danger)] hover:bg-[var(--color-danger-bg)]"
       >
-        <Flag className="mr-2 h-4 w-4" />
-        Report to admin
+        <Flag className="h-4 w-4" />
+        <span className="hidden sm:inline">Report to admin</span>
       </Button>
 
       <Dialog open={open} onOpenChange={(value) => (!isPending ? setOpen(value) : undefined)}>

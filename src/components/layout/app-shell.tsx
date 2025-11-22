@@ -375,7 +375,7 @@ export function AppShell({
     <div className="grid w-full min-w-0 gap-5 px-4 pb-6 sm:px-6 lg:px-0">
         <header className="flex w-full flex-wrap items-center justify-between gap-4 rounded-3xl border border-soft bg-surface-card px-5 py-4 shadow-soft">
           <div className="flex w-full flex-1 items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-2 sm:gap-3">
               <Button
                 type="button"
                 variant="ghost"
@@ -386,12 +386,25 @@ export function AppShell({
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              <div className="grid gap-1">
-                <p className="text-xs uppercase tracking-[0.35em] text-accent">Welcome back</p>
-                <h2 className="text-2xl font-semibold text-primary leading-tight">
-                  {user.name ? `Ready to save lives, ${user.name}?` : "Let’s make a difference today"}
-                </h2>
-              </div>
+             
+                <>
+                  <div className="sm:hidden flex items-center gap-2">
+                    <Link
+                      href="/"
+                      className="flex items-center h-10 px-2 text-lg font-semibold text-primary shadow-soft"
+                      style={{ marginTop: '5px' }}
+                    >
+                      Lifedrop
+                    </Link>
+                  </div>
+                  <div className="hidden sm:grid gap-1">
+                    <p className="text-xs uppercase tracking-[0.35em] text-accent">Welcome back</p>
+                    <h2 className="text-2xl font-semibold text-primary leading-tight">
+                      {user.name ? `Ready to save lives, ${user.name}?` : "Let’s make a difference today"}
+                    </h2>
+                  </div>
+                </>
+              
             </div>
             <div className="hidden flex-shrink-0 items-center gap-3 lg:flex">
               <Button variant="secondary" size="sm" asChild>

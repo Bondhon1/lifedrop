@@ -17,6 +17,14 @@ const nextConfig: NextConfig = {
         hostname: "bn8lvxb5jjbtvlvi.public.blob.vercel-storage.com",
       },
     ],
+    localPatterns: [
+      {
+        pathname: "/api/storage",
+      },
+      {
+        pathname: "/uploads/**",
+      },
+    ],
   },
 };
 

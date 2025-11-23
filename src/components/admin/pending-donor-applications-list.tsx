@@ -127,6 +127,8 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
           .filter(Boolean)
           .join(", ");
         const medicalDocuments = application.medicalHistoryImages?.filter(Boolean) ?? [];
+        const nidUrl = resolveImageUrl(application.nidOrBirthCertificate) ?? null;
+        const resolvedMedicalDocs = medicalDocuments.map((p) => resolveImageUrl(p)).filter(Boolean) as string[];
 
         return (
           <Card key={application.id}>
@@ -178,19 +180,23 @@ export function PendingDonorApplicationsList({ applications }: PendingDonorAppli
               <div className="grid gap-3 rounded-2xl border border-soft bg-surface-card-muted p-4">
                 <h3 className="text-sm font-semibold text-primary">Documents</h3>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <Link
-                    href={application.nidOrBirthCertificate}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-soft px-3 py-1 text-primary transition-colors hover:bg-surface-primary-soft"
-                  >
-                    View ID document
-                  </Link>
-                  {medicalDocuments.length > 0 ? (
-                    medicalDocuments.map((item, index) => (
+                  {nidUrl ? (
+                    <Link
+                      href={nidUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-soft px-3 py-1 text-primary transition-colors hover:bg-surface-primary-soft"
+                    >
+                      View ID document
+                    </Link>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 rounded-full border border-soft px-3 py-1 text-muted">No ID document</span>
+                  )}
+                  {resolvedMedicalDocs.length > 0 ? (
+                    resolvedMedicalDocs.map((url, index) => (
                       <Link
                         key={`${application.id}-medical-${index}`}
-                        href={item}
+                        href={url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-full border border-soft px-3 py-1 text-primary transition-colors hover:bg-surface-primary-soft"

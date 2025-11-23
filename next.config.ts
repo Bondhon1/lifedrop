@@ -24,6 +24,18 @@ const nextConfig: NextConfig = {
       {
         pathname: "/uploads/**",
       },
+      {
+        // allow images placed at the project `public/` root like `/logo.png`
+        pathname: "/logo.png",
+      },
+      {
+        // common favicon path
+        pathname: "/favicon.ico",
+      },
+      {
+        // allow images stored under `public/images/**`
+        pathname: "/images/**",
+      },
     ],
   },
 };

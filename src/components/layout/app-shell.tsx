@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { cn, resolveImageUrl } from "@/lib/utils";
@@ -313,8 +314,8 @@ export function AppShell({
       <aside className="hidden h-full flex-col justify-between rounded-3xl border border-soft bg-surface-sidebar p-6 text-primary shadow-soft lg:flex">
         <div className="grid gap-6">
           <Link href="/feed" className="flex items-center gap-3 text-lg font-semibold text-primary">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary bg-surface-card text-[var(--color-text-danger)] shadow-soft">
-              <Droplets className="h-5 w-5" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
+              <Image src="/logo.png" alt="Lifedrop" width={44} height={44} className="object-contain" />
             </div>
             Lifedrop
           </Link>
@@ -605,8 +606,8 @@ export function AppShell({
           <div className="absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col gap-6 overflow-y-auto rounded-tr-3xl rounded-br-3xl border border-soft border-l-0 bg-surface-sidebar p-6 text-primary shadow-2xl">
             <div className="flex items-center justify-between gap-3">
               <Link href="/feed" className="flex items-center gap-3 text-lg font-semibold text-primary" onClick={() => setIsMobileNavOpen(false)}>
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-primary bg-surface-card text-[var(--color-text-danger)] shadow-soft">
-                  <Droplets className="h-4 w-4" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
+                  <Image src="/logo.png" alt="Lifedrop" width={40} height={40} className="object-contain" />
                 </div>
                 Lifedrop
               </Link>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Droplets } from "lucide-react";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -16,8 +17,8 @@ export function PublicNavbar() {
           {/* Logo */}
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary bg-surface-card text-[var(--color-text-danger)] shadow-soft">
-                <Droplets className="h-5 w-5" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
+                <Image src="/logo.png" alt="Lifedrop" width={44} height={44} className="object-contain" />
               </div>
               <span className="text-lg font-semibold text-primary">Lifedrop</span>
             </Link>

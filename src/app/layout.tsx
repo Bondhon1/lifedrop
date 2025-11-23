@@ -82,15 +82,17 @@ export const metadata: Metadata = {
     },
   },
   icons: {
+    // Prefer the site logo so browsers show it in the tab instead of the hosting provider icon
     icon: [
+      { url: "/logo.png", type: "image/png", sizes: "192x192" },
       { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon.png", type: "image/png", sizes: "64x64" },
       { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
       { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
-      { url: "/favicon.png", type: "image/png", sizes: "64x64" },
-      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
     ],
-    shortcut: "/favicon.ico",
-    apple: "/favicon.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
   verification: {
     google: "3910f7d6f9032e3a",

@@ -59,6 +59,7 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
       division: { select: { name: true } },
       district: { select: { name: true } },
       upazila: { select: { name: true } },
+      donorApplication: { select: { status: true } },
     },
   });
 
@@ -175,6 +176,8 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
     isOwner: member.id === viewerId,
   }));
 
+  const isVerifiedDonor = member.donorApplication?.status === "Approved";
+
   return (
     <div className="grid gap-6">
       {/* Profile Header Card */}
@@ -190,27 +193,35 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
           />
         </div>
         
-        <div className="px-6 py-6 bg-page">
-          <div className="flex flex-col md:flex-row gap-6 md:items-center">
+        <div className="relative px-4 pb-6 pt-20 sm:px-6 md:pt-6 bg-page">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center">
             {/* Avatar */}
-            <div className="flex-shrink-0">
-              <div className="rounded-full border-4 border-white dark:border-rose-950/80 bg-gray-100 dark:bg-rose-900/60 p-1 shadow-lg">
-                <div className="relative h-24 w-24 overflow-hidden rounded-full bg-gray-50 dark:bg-rose-500/20">
+            <div className="-mt-36 flex-shrink-0 self-center sm:-mt-44 md:mt-0 md:self-start">
+              <div className="rounded-full border-4 border-white bg-gray-100 p-1 shadow-lg dark:border-rose-950/80 dark:bg-rose-900/60">
+                <div className="relative h-28 w-28 overflow-hidden rounded-full bg-gray-50 dark:bg-rose-500/20 sm:h-32 sm:w-32 md:h-24 md:w-24">
                   <Image src={profileImage} alt={`${displayName} avatar`} fill className="object-cover" sizes="96px" priority />
                 </div>
               </div>
             </div>
 
             {/* Info */}
-            <div className="flex-1 grid gap-3">
-              <div>
+            <div className="grid flex-1 gap-3 text-center md:text-left">
+              <div className="space-y-1">
                 {member.name && member.name.trim().length > 0 && (
-                  <p className="text-lg font-semibold text-primary">{member.name}</p>
+                  <p className="text-base font-semibold text-primary sm:text-lg flex items-center justify-center md:justify-start gap-1">
+                    {member.name}
+                    {isVerifiedDonor && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-green-100 text-green-700 text-[10px] font-semibold ml-1 align-middle border border-green-300" title="Verified donor">
+                        <svg className="w-3 h-3 mr-0.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586 6.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z" clipRule="evenodd" /></svg>
+                        Verified
+                      </span>
+                    )}
+                  </p>
                 )}
-                <h1 className="text-2xl font-bold text-primary">@{member.username}</h1>
+                <h1 className="text-base font-bold text-primary sm:text-2xl">@{member.username}</h1>
               </div>
 
-              <div className="flex flex-wrap gap-3 text-sm text-secondary">
+              <div className="flex flex-wrap justify-center gap-3 text-sm text-secondary md:justify-start">
                 {member.email && (
                   <div className="flex items-center gap-1.5">
                     <Mail className="h-4 w-4 text-muted" />
@@ -225,7 +236,7 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
                 {member.bloodGroup && (
                   <Badge className="bg-rose-100 text-rose-900 dark:bg-rose-500/30 dark:text-rose-50">
                     {member.bloodGroup}
@@ -241,7 +252,7 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
             </div>
 
             {/* Actions */}
-            <div className="flex-shrink-0">
+            <div className="flex w-full flex-shrink-0 justify-center md:w-auto md:justify-end">
               {canInteract ? (
                 <ProfileActionButtons
                   status={friendStatus}

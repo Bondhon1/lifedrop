@@ -13,9 +13,6 @@ const RUNNING_ON_VERCEL = process.env.VERCEL === "1";
 const ALLOW_LOCAL_STORAGE = !RUNNING_ON_VERCEL;
 
 const PATH_PREFIX_CANDIDATES = ["profiles", "covers", "requests", "medical", "nid", "comments", "chat", "chat_attachments", "chat_images"];
-const PUBLIC_STORAGE_BASE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace(/\/$/, "")
-  ?? process.env.BLOB_PUBLIC_BASE_URL?.replace(/\/$/, "")
-  ?? null;
 
 export function normalizeStoredKey(value: string): string {
   const trimmed = value.trim();
@@ -157,7 +154,6 @@ export const storageEnvironment = {
   useBlobStorage: USE_BLOB_STORAGE,
   allowLocalStorage: ALLOW_LOCAL_STORAGE,
   blobToken: BLOB_TOKEN ?? undefined,
-  publicBaseUrl: PUBLIC_STORAGE_BASE,
 };
 
 export function buildAbsoluteUrl(pathname: string) {

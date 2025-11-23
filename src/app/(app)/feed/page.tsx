@@ -95,10 +95,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
             <div className="flex flex-wrap gap-2">
               {BLOOD_GROUPS.map((bg) => (
                 <Link key={bg} href={createHref(activeFilters, { bloodGroup: bg })}>
-                  <Badge
-                    variant={activeFilters.bloodGroup === bg ? "default" : "outline"}
-                    className="cursor-pointer px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm"
-                  >
+                  <Badge variant={activeFilters.bloodGroup === bg ? "default" : "outline"} className="cursor-pointer">
                     {bg}
                   </Badge>
                 </Link>

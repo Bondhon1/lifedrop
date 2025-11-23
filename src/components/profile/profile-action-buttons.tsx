@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   cancelFriendRequest,
@@ -27,19 +26,20 @@ export function ProfileActionButtons({
   status,
   targetUserId,
   pendingRequestId = null,
-  friendSince,
+  friendSince = null,
   targetDisplayName,
 }: ProfileActionButtonsProps) {
   const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
   if (status === "self") {
     return (
-      <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
+      <div className="flex flex-wrap items-center gap-3">
         <Button asChild variant="secondary">
           <Link href="/profile">Edit your profile</Link>
         </Button>
-        <p className="text-center text-xs text-rose-100/70 md:text-left">This is how others see your profile.</p>
+        <p className="text-xs text-rose-100/70">This is how others see your profile.</p>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export function ProfileActionButtons({
 
   return (
     <div className="grid gap-3">
-      <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
+      <div className="flex flex-wrap items-center gap-3">
         {status === "none" ? (
           <Button
             disabled={isPending}
@@ -74,7 +74,7 @@ export function ProfileActionButtons({
               })
             }
           >
-              {isPending ? "Sending..." : "Add friend"}
+            {isPending ? "Sending…" : "Add friend"}
           </Button>
         ) : null}
 
@@ -159,18 +159,20 @@ export function ProfileActionButtons({
             >
               Remove friend
             </Button>
+            {friendSince ? (
+              <p className="text-xs text-emerald-200/80">
+                Friends since {new Date(friendSince).toLocaleDateString()}
+              </p>
+            ) : null}
           </>
         ) : null}
 
         <Button variant="primary" asChild>
-          <Link href={`/chat?user=${targetUserId}`} className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            <span className="hidden sm:inline">Send message</span>
-          </Link>
+          <Link href={`/chat?user=${targetUserId}`}>Send message</Link>
         </Button>
         <ReportUserButton targetUserId={targetUserId} targetDisplayName={targetDisplayName} />
       </div>
-      {feedback ? <p className="text-center text-xs text-rose-100/70 md:text-left">{feedback}</p> : null}
+      {feedback ? <p className="text-xs text-rose-100/70">{feedback}</p> : null}
     </div>
   );
 }

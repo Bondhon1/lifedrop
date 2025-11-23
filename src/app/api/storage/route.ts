@@ -56,16 +56,7 @@ export async function GET(request: NextRequest) {
       });
     } catch (error) {
       console.error("storage proxy local", error);
-      if (storageEnvironment.publicBaseUrl) {
-        const remoteUrl = `${storageEnvironment.publicBaseUrl.replace(/\/$/, "")}/${normalized.replace(/^\/+/, "")}`;
-        return NextResponse.redirect(remoteUrl, 302);
-      }
     }
-  }
-
-  if (storageEnvironment.publicBaseUrl) {
-    const remoteUrl = `${storageEnvironment.publicBaseUrl.replace(/\/$/, "")}/${normalized.replace(/^\/+/, "")}`;
-    return NextResponse.redirect(remoteUrl, 302);
   }
 
   return new NextResponse("Not found", { status: 404 });

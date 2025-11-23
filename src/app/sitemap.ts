@@ -12,7 +12,7 @@ function resolveBaseUrl() {
     return envUrl;
   }
 
-  return host ? `${protocol}://${host}` : "https://lifedrop-alpha.vercel.app";
+  return host ? `${protocol}://${host}` : "https://www.lifedrop.live/";
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {

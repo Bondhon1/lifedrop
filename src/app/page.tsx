@@ -134,7 +134,7 @@ const testimonials = [
 ];
 
 export default function Home() {
-  const baseUrl = process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://www.lifedrop.live/";
 
   // Structured Data for Homepage
   const productSchema = {

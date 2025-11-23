@@ -9,7 +9,7 @@ function resolveBaseUrl() {
   return (
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.NEXTAUTH_URL ||
-    (host ? `${protocol}://${host}` : "https://lifedrop-alpha.vercel.app")
+    (host ? `${protocol}://${host}` : "https://www.lifedrop.live/")
   );
 }
 

@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app"),
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "https://www.lifedrop.live/"),
   alternates: {
     canonical: "/",
   },

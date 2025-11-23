@@ -4,8 +4,8 @@ export function generateOrganizationSchema() {
     "@type": "Organization",
     name: "Lifedrop",
     description: "Blood donation coordination platform connecting patients with donors",
-    url: process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app",
-    logo: `${process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app"}/logo.png`,
+    url: process.env.NEXTAUTH_URL || "https://www.lifedrop.live/",
+    logo: `${process.env.NEXTAUTH_URL || "https://www.lifedrop.live/"}/logo.png`,
     sameAs: [
       // Add your social media URLs when available
       // "https://www.facebook.com/lifedrop",
@@ -26,12 +26,12 @@ export function generateWebsiteSchema() {
     "@type": "WebSite",
     name: "Lifedrop",
     description: "Blood donation coordination platform",
-    url: process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app",
+    url: process.env.NEXTAUTH_URL || "https://www.lifedrop.live/",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app"}/feed?search={search_term_string}`,
+        urlTemplate: `${process.env.NEXTAUTH_URL || "https://www.lifedrop.live/"}/feed?search={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -82,7 +82,7 @@ export function generateBloodDonationEventSchema(request: {
     organizer: {
       "@type": "Organization",
       name: "Lifedrop",
-      url: process.env.NEXTAUTH_URL || "https://lifedrop-alpha.vercel.app",
+      url: process.env.NEXTAUTH_URL || "https://www.lifedrop.live/",
     },
   };
 }

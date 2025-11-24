@@ -39,7 +39,7 @@ const MAX_CONVERSATION_PREVIEWS = 10;
 
 const baseLinks = [
   { href: "/feed", label: "News Feed", icon: Newspaper, roles: ["USER", "ADMIN"] as const },
-  { href: "/requests", label: "Blood Requests", icon: Droplets, roles: ["USER", "ADMIN"] as const },
+  { href: "/requests", label: "My Blood Request", icon: Droplets, roles: ["USER", "ADMIN"] as const },
   { href: "/donors", label: "Donor Profile", icon: Users, roles: ["USER", "ADMIN"] as const },
   { href: "/friends", label: "Friends", icon: UserPlus, roles: ["USER", "ADMIN"] as const },
   { href: "/chat", label: "Conversations", icon: MessageCircle, roles: ["USER", "ADMIN"] as const },

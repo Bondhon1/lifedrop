@@ -191,19 +191,23 @@ export default async function DonorsPage() {
                   <Droplet className="h-4 w-4" /> View urgent requests
                 </Link>
               </Button>
+              {/*
               <Button variant="ghost" asChild>
                 <Link href="/friends">Grow your donor network</Link>
               </Button>
+              */}
             </div>
           </CardContent>
         </Card>
       </section>
 
+      {/*
       <section className="flex justify-center">
         <Button variant="secondary" asChild>
           <Link href="/requests">Find a matching request</Link>
         </Button>
       </section>
+      */}
 
       <ScrollToTop />
     </div>

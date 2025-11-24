@@ -131,6 +131,14 @@ export function InfiniteFeed({ initialItems, initialCursor, filters }: InfiniteF
     }
   }, [initialItems]);
 
+  // Reset feed when filters or initial items/cursor change (e.g., user navigates with new query params)
+  useEffect(() => {
+    setItems(initialItems);
+    setCursor(initialCursor);
+    setHasMore(!!initialCursor);
+    highestIdRef.current = initialItems[0]?.id ?? 0;
+  }, [initialItems, initialCursor, filters]);
+
   return (
     <>
       {items.length === 0 && !isLoading ? (

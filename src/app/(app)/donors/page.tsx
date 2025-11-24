@@ -187,7 +187,7 @@ export default async function DonorsPage() {
             </ul>
             <div className="mt-5 flex flex-wrap gap-3">
               <Button variant="secondary" asChild>
-                <Link href="/requests">
+                <Link href="/feed?urgency=Urgent">
                   <Droplet className="h-4 w-4" /> View urgent requests
                 </Link>
               </Button>

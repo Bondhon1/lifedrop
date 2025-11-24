@@ -311,7 +311,7 @@ export function AppShell({
 
   return (
     <div className="grid w-full min-h-screen min-w-0 grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-      <aside className="hidden h-full flex-col justify-between rounded-3xl border border-soft bg-surface-sidebar p-6 text-primary shadow-soft lg:flex">
+      <aside className="hidden lg:sticky lg:top-0 lg:h-screen lg:flex lg:flex-col lg:justify-between lg:overflow-y-auto rounded-3xl border border-soft bg-surface-sidebar p-6 text-primary shadow-soft lg:flex">
         <div className="grid gap-6">
           <Link href="/feed" className="flex items-center gap-3 text-lg font-semibold text-primary">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
@@ -374,14 +374,14 @@ export function AppShell({
       </aside>
 
     <div className="grid w-full min-w-0 gap-5 px-4 pb-6 sm:px-6 lg:px-0">
-        <header className="flex w-full flex-wrap items-center justify-between gap-4 rounded-3xl border border-soft bg-surface-card px-5 py-4 shadow-soft">
-          <div className="flex w-full flex-1 items-start justify-between gap-3">
-            <div className="flex items-start gap-2 sm:gap-3">
+        <header className="flex w-full items-center justify-between gap-4 rounded-3xl border border-soft bg-surface-card px-5 py-4 shadow-soft">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="mt-1 lg:hidden"
+                className="lg:hidden"
                 aria-label="Open navigation"
                 onClick={() => setIsMobileNavOpen(true)}
               >
@@ -393,9 +393,10 @@ export function AppShell({
                     <Link
                       href="/"
                       className="flex items-center h-10 px-2 text-lg font-semibold text-primary shadow-soft"
-                      style={{ marginTop: '5px' }}
                     >
-                      Lifedrop
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
+                        <Image src="/logo.png" alt="Lifedrop" width={36} height={36} className="object-contain" />
+                      </div>
                     </Link>
                   </div>
                   <div className="hidden sm:grid gap-1">
@@ -407,109 +408,8 @@ export function AppShell({
                 </>
               
             </div>
-            <div className="hidden flex-shrink-0 items-center gap-3 lg:flex">
-              <Button variant="secondary" size="sm" asChild>
-                <Link href="/requests/new">Create Request</Link>
-              </Button>
-              <div className="relative">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="relative"
-                  aria-haspopup="dialog"
-                  aria-expanded={showNotificationsPanel}
-                  onMouseEnter={() => {
-                    setShowNotificationsPanel(true);
-                    setShowConversationsPanel(false);
-                  }}
-                  onClick={() => {
-                    setShowNotificationsPanel((prev) => {
-                      const next = !prev;
-                      if (next) {
-                        setShowConversationsPanel(false);
-                      }
-                      return next;
-                    });
-                  }}
-                >
-                  <Bell className="h-4 w-4" />
-                  {notificationCount > 0 ? (
-                    <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
-                      {Math.min(notificationCount, 99)}
-                    </span>
-                  ) : null}
-                </Button>
-                {showNotificationsPanel ? (
-                  <div
-                    className="absolute right-0 z-40 mt-2"
-                    onMouseEnter={() => setShowNotificationsPanel(true)}
-                    onMouseLeave={() => setShowNotificationsPanel(false)}
-                  >
-                    <NotificationHoverPanel
-                      notifications={notificationItems}
-                      unreadCount={notificationCount}
-                      onClose={() => setShowNotificationsPanel(false)}
-                    />
-                  </div>
-                ) : null}
-              </div>
-              <div className="relative">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="relative"
-                  aria-haspopup="dialog"
-                  aria-expanded={showConversationsPanel}
-                  onMouseEnter={() => {
-                    setShowConversationsPanel(true);
-                    setShowNotificationsPanel(false);
-                  }}
-                  onClick={() => {
-                    setShowConversationsPanel((prev) => {
-                      const next = !prev;
-                      if (next) {
-                        setShowNotificationsPanel(false);
-                      }
-                      return next;
-                    });
-                  }}
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  {conversationUnreadTotal > 0 ? (
-                    <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white shadow">
-                      {Math.min(conversationUnreadTotal, 99)}
-                    </span>
-                  ) : null}
-                </Button>
-                {showConversationsPanel ? (
-                  <div
-                    className="absolute right-0 z-40 mt-2"
-                    onMouseEnter={() => setShowConversationsPanel(true)}
-                    onMouseLeave={() => setShowConversationsPanel(false)}
-                  >
-                    <ConversationHoverPanel
-                      conversations={conversationItems}
-                      currentUserId={currentUserId}
-                      onClose={() => setShowConversationsPanel(false)}
-                    />
-                  </div>
-                ) : null}
-              </div>
-              <ThemeToggle />
-              <Button variant="outline" size="sm" asChild>
-                <Link href={logoutHref}>Sign out</Link>
-              </Button>
-              <Link
-                href="/profile"
-                className="rounded-full border border-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-[var(--ring-primary)]"
-              >
-                <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? "Profile"} size="sm" className="cursor-pointer" />
-              </Link>
             </div>
-          </div>
-          <div className="flex w-full flex-wrap items-center gap-3 lg:hidden">
+            <div className="flex items-center gap-3 lg:hidden">
             <Button variant="secondary" size="icon" asChild>
               <Link href="/requests/new" aria-label="Create request">
                 <Plus className="h-4 w-4" />
@@ -592,9 +492,104 @@ export function AppShell({
               ) : null}
             </div>
             <ThemeToggle />
-            <Button variant="outline" size="sm" asChild>
-              <Link href={logoutHref}>Sign out</Link>
+            <Link
+              href="/profile"
+              className="rounded-full border border-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-[var(--ring-primary)]"
+            >
+              <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? "Profile"} size="sm" className="cursor-pointer" />
+            </Link>
+          </div>
+          <div className="hidden flex-shrink-0 items-center gap-3 lg:flex lg:ml-6">
+            <Button variant="secondary" size="sm" asChild>
+              <Link href="/requests/new">Create Request</Link>
             </Button>
+            <div className="relative">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="relative"
+                aria-haspopup="dialog"
+                aria-expanded={showNotificationsPanel}
+                onMouseEnter={() => {
+                  setShowNotificationsPanel(true);
+                  setShowConversationsPanel(false);
+                }}
+                onClick={() => {
+                  setShowNotificationsPanel((prev) => {
+                    const next = !prev;
+                    if (next) {
+                      setShowConversationsPanel(false);
+                    }
+                    return next;
+                  });
+                }}
+              >
+                <Bell className="h-4 w-4" />
+                {notificationCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
+                    {Math.min(notificationCount, 99)}
+                  </span>
+                ) : null}
+              </Button>
+              {showNotificationsPanel ? (
+                <div
+                  className="absolute right-0 z-40 mt-2"
+                  onMouseEnter={() => setShowNotificationsPanel(true)}
+                  onMouseLeave={() => setShowNotificationsPanel(false)}
+                >
+                  <NotificationHoverPanel
+                    notifications={notificationItems}
+                    unreadCount={notificationCount}
+                    onClose={() => setShowNotificationsPanel(false)}
+                  />
+                </div>
+              ) : null}
+            </div>
+            <div className="relative">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="relative"
+                aria-haspopup="dialog"
+                aria-expanded={showConversationsPanel}
+                onMouseEnter={() => {
+                  setShowConversationsPanel(true);
+                  setShowNotificationsPanel(false);
+                }}
+                onClick={() => {
+                  setShowConversationsPanel((prev) => {
+                    const next = !prev;
+                    if (next) {
+                      setShowNotificationsPanel(false);
+                    }
+                    return next;
+                  });
+                }}
+              >
+                <MessageCircle className="h-4 w-4" />
+                {conversationUnreadTotal > 0 ? (
+                  <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white shadow">
+                    {Math.min(conversationUnreadTotal, 99)}
+                  </span>
+                ) : null}
+              </Button>
+              {showConversationsPanel ? (
+                <div
+                  className="absolute right-0 z-40 mt-2"
+                  onMouseEnter={() => setShowConversationsPanel(true)}
+                  onMouseLeave={() => setShowConversationsPanel(false)}
+                >
+                  <ConversationHoverPanel
+                    conversations={conversationItems}
+                    currentUserId={currentUserId}
+                    onClose={() => setShowConversationsPanel(false)}
+                  />
+                </div>
+              ) : null}
+            </div>
+            <ThemeToggle />
             <Link
               href="/profile"
               className="rounded-full border border-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-[var(--ring-primary)]"
@@ -676,13 +671,6 @@ export function AppShell({
                   {user.role ? <Badge variant={user.isAdmin ? "secondary" : "default"} className="w-fit">{user.role}</Badge> : null}
                 </div>
               </div>
-              <Button
-                asChild
-                variant="outline"
-                className="w-full border-transparent bg-[var(--color-primary-start)] text-white hover:bg-[var(--color-primary-end)] hover:text-white focus-visible:text-white"
-              >
-                <Link href={logoutHref}>Sign out</Link>
-              </Button>
             </div>
           </div>
         </div>

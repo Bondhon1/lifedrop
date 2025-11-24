@@ -91,16 +91,21 @@ export function FriendList({ friends }: FriendListProps) {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <Button variant="secondary" size="sm" asChild className="w-full sm:w-auto">
+            <div className="flex flex-row gap-2 items-center">
+              <Button variant="secondary" size="sm" asChild className="flex-1 sm:w-auto">
                 <Link href={`/members/${friend.username}`}>View profile</Link>
+              </Button>
+              <Button variant="secondary" size="sm" asChild className="flex-1 sm:w-auto">
+                <Link href={`/chat?user=${friend.id}`} aria-label={`Chat with ${displayName}`}>
+                  Chat
+                </Link>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 disabled={isPending && pendingId === friend.id}
                 onClick={() => handleRemove(friend.id)}
-                className="w-full sm:w-auto"
+                className="flex-1 sm:w-auto"
               >
                 Remove
               </Button>

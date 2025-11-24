@@ -1,16 +1,15 @@
 import { MetadataRoute } from "next";
-import { headers } from "next/headers";
 
+// Keep robots generation deterministic and safe in production by
+// avoiding runtime header access that can fail in certain server
+// environments. Prefer an explicit env var, otherwise fall back to
+// the canonical site URL.
 function resolveBaseUrl() {
-  const headerList = headers() as unknown as Headers;
-  const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
-  const protocol = headerList.get("x-forwarded-proto") ?? "https";
-
   return (
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.NEXTAUTH_URL ||
-    (host ? `${protocol}://${host}` : "https://www.lifedrop.live/")
-  );
+    "https://www.lifedrop.live"
+  ).replace(/\/$/, "");
 }
 
 export default function robots(): MetadataRoute.Robots {

@@ -442,7 +442,7 @@ export function AppShell({
               </Button>
               {showNotificationsPanel ? (
                 <div
-                  className="absolute left-0 right-0 top-full z-40 mx-auto mt-2 w-[min(22rem,calc(100vw-2rem))] sm:left-auto sm:right-0 sm:w-auto"
+                  className="absolute -left-40 right-auto top-full z-40 mt-2 w-[min(22rem,calc(100vw-2rem))] sm:left-auto sm:right-0 sm:w-auto"
                   onMouseLeave={() => setShowNotificationsPanel(false)}
                 >
                   <NotificationHoverPanel
@@ -480,7 +480,7 @@ export function AppShell({
               </Button>
               {showConversationsPanel ? (
                 <div
-                  className="absolute left-0 right-0 top-full z-40 mx-auto mt-2 w-[min(22rem,calc(100vw-2rem))] -translate-x-10"
+                  className="absolute -left-47 right-auto top-full z-40 mt-2 w-[min(22rem,calc(100vw-2rem))] sm:left-auto sm:right-0 sm:w-auto"
                   onMouseLeave={() => setShowConversationsPanel(false)}
                 >
                   <ConversationHoverPanel

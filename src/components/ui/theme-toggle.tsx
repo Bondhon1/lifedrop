@@ -6,12 +6,14 @@ import { useTheme } from "@/components/providers/theme-provider";
 
 export function ThemeToggle() {
   const { theme, toggleTheme, isReady } = useTheme();
-  const icon = !isReady ? <Moon className="h-4 w-4" /> : theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />;
+  const icon = !isReady ? <Moon className="h-5 w-5" /> : theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />;
 
   return (
     <Button
       type="button"
+      variant="ghost"
       size="icon"
+      className="h-12 w-12"
       aria-label="Toggle dark mode"
       onClick={toggleTheme}
       disabled={!isReady}

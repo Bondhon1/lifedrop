@@ -31,6 +31,7 @@ import {
 import type { SessionUser } from "@/lib/auth";
 import { NotificationHoverPanel } from "@/components/navigation/notification-hover-panel";
 import { ConversationHoverPanel } from "@/components/navigation/conversation-hover-panel";
+import SearchBar from "@/components/navigation/search-bar";
 import type { ConversationPreviewItem, NotificationPreviewItem } from "./app-shell.types";
 
 const MAX_NOTIFICATION_PREVIEWS = 10;
@@ -374,14 +375,14 @@ export function AppShell({
       </aside>
 
     <div className="grid w-full min-w-0 gap-5 px-4 pb-6 sm:px-6 lg:px-0">
-        <header className="flex w-full items-center justify-between gap-4 rounded-3xl border border-soft bg-surface-card px-5 py-4 shadow-soft">
+        <header className="flex w-full items-center justify-between gap-3 rounded-3xl border border-soft bg-surface-card px-4 py-4 shadow-soft">
           <div className="flex items-center gap-3 flex-1">
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
+                className="-ml-2 lg:hidden"
                 aria-label="Open navigation"
                 onClick={() => setIsMobileNavOpen(true)}
               >
@@ -392,13 +393,14 @@ export function AppShell({
                   <div className="sm:hidden flex items-center gap-2">
                     <Link
                       href="/"
-                      className="flex items-center h-10 px-2 text-lg font-semibold text-primary shadow-soft"
+                      className="flex items-center h-11 px-1 text-lg font-semibold text-primary shadow-soft"
                     >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
-                        <Image src="/logo.png" alt="Lifedrop" width={36} height={36} className="object-contain" />
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
+                        <Image src="/logo.png" alt="Lifedrop" width={44} height={44} className="object-contain" />
                       </div>
                     </Link>
                   </div>
+                  
                   <div className="hidden sm:grid gap-1">
                     <p className="text-xs uppercase tracking-[0.35em] text-accent">Welcome back</p>
                     <h2 className="text-2xl font-semibold text-primary leading-tight">
@@ -409,12 +411,19 @@ export function AppShell({
               
             </div>
             </div>
-            <div className="flex items-center gap-3 lg:hidden">
+          
+          {/* Centered search on desktop (moved to desktop controls) */}
+
+          <div className="flex items-center gap-1 lg:hidden">
             <Button variant="secondary" size="icon" asChild>
               <Link href="/requests/new" aria-label="Create request">
                 <Plus className="h-4 w-4" />
               </Link>
             </Button>
+            {/* Mobile search icon (add horizontal spacing) */}
+            <div className="lg:hidden mx-2">
+              <SearchBar compact />
+            </div>
             <div className="relative">
               <Button
                 type="button"
@@ -433,7 +442,7 @@ export function AppShell({
                   });
                 }}
               >
-                <Bell className="h-4 w-4" />
+                <Bell className="h-5 w-5" />
                 {notificationCount > 0 ? (
                   <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
                     {Math.min(notificationCount, 99)}
@@ -494,15 +503,19 @@ export function AppShell({
             <ThemeToggle />
             <Link
               href="/profile"
-              className="rounded-full border border-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-[var(--ring-primary)]"
+              className="rounded-full border border-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-[var(--ring-primary)] mr-2"
             >
-              <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? "Profile"} size="sm" className="cursor-pointer" />
+              <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? "Profile"} className="cursor-pointer h-7 w-7" />
             </Link>
           </div>
-          <div className="hidden flex-shrink-0 items-center gap-3 lg:flex lg:ml-6">
+          <div className="hidden flex-shrink-0 items-center gap-2 lg:flex lg:ml-3">
             <Button variant="secondary" size="sm" asChild>
               <Link href="/requests/new">Create Request</Link>
             </Button>
+            {/* Search icon (compact) with extra horizontal spacing) */}
+            <div className="hidden lg:block mx-2">
+              <SearchBar compact />
+            </div>
             <div className="relative">
               <Button
                 type="button"
@@ -525,7 +538,7 @@ export function AppShell({
                   });
                 }}
               >
-                <Bell className="h-4 w-4" />
+                <Bell className="h-5 w-5" />
                 {notificationCount > 0 ? (
                   <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--color-primary-start)] px-1 text-[10px] font-bold text-white shadow">
                     {Math.min(notificationCount, 99)}
@@ -594,7 +607,7 @@ export function AppShell({
               href="/profile"
               className="rounded-full border border-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-[var(--ring-primary)]"
             >
-              <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? "Profile"} size="sm" className="cursor-pointer" />
+              <Avatar src={resolvedAvatar ?? undefined} alt={user.name ?? "Profile"} className="cursor-pointer h-7 w-7" />
             </Link>
           </div>
         </header>
@@ -614,8 +627,8 @@ export function AppShell({
           <div className="absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col gap-6 overflow-y-auto rounded-tr-3xl rounded-br-3xl border border-soft border-l-0 bg-surface-sidebar p-6 text-primary shadow-2xl">
             <div className="flex items-center justify-between gap-3">
               <Link href="/feed" className="flex items-center gap-3 text-lg font-semibold text-primary" onClick={() => setIsMobileNavOpen(false)}>
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
-                  <Image src="/logo.png" alt="Lifedrop" width={40} height={40} className="object-contain" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-card shadow-soft overflow-hidden">
+                  <Image src="/logo.png" alt="Lifedrop" width={44} height={44} className="object-contain" />
                 </div>
                 Lifedrop
               </Link>

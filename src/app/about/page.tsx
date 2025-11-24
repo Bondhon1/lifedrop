@@ -70,6 +70,7 @@ export default function AboutPage() {
               </ul>
             </section>
 
+            {/* Our Impact section commented out per request
             <section className="rounded-2xl border border-soft bg-surface-card p-8">
               <h2 className="mb-4 text-2xl font-bold text-primary">Our Impact</h2>
               <div className="grid gap-6 sm:grid-cols-3">
@@ -87,6 +88,7 @@ export default function AboutPage() {
                 </div>
               </div>
             </section>
+            */}
 
             <section className="rounded-2xl border border-soft bg-surface-card p-8">
               <h2 className="mb-4 text-2xl font-bold text-primary">Our Values</h2>

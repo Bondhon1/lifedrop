@@ -69,7 +69,7 @@ export default function GettingStartedPage() {
 
         {/* Main Content */}
         <div className="space-y-16">
-          {/* Core Features */}
+          {/* Core Features section commented out per request
           <Section
             title="Core Features"
             description="Discover what you can do with LifeDrop"
@@ -113,6 +113,7 @@ export default function GettingStartedPage() {
               />
             </FeatureGrid>
           </Section>
+          */}
 
           {/* Getting Started Steps */}
           <Section
@@ -148,7 +149,7 @@ export default function GettingStartedPage() {
             </div>
           </Section>
 
-          {/* Key Areas */}
+          {/* Key Areas (commented out per request)
           <Section title="Platform Areas" description="Navigate the platform">
             <div className="grid gap-6 sm:grid-cols-2">
               <Area
@@ -201,6 +202,7 @@ export default function GettingStartedPage() {
               />
             </div>
           </Section>
+          */}
 
           {/* Tips & Best Practices */}
           <Section

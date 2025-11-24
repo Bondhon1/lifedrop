@@ -324,7 +324,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-4 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft sm:grid-cols-2 xl:grid-cols-4">
+      {/* <section className="mx-auto grid w-full max-w-7xl gap-4 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.label} className="border border-subtle bg-surface-card-muted">
             <CardHeader className="gap-2">
@@ -334,7 +334,7 @@ export default function Home() {
             <CardContent className="text-sm text-muted">{stat.detail}</CardContent>
           </Card>
         ))}
-      </section>
+      </section> */}
 
       <section className="grid gap-6 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
         <header className="flex flex-col gap-2 text-center">
@@ -405,7 +405,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-6 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+      {/* <section className="mx-auto grid w-full max-w-7xl gap-6 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
         <header className="flex flex-col gap-2 text-center">
           <h2 className="text-3xl font-semibold text-primary">Trusted by coordinators everywhere</h2>
           <p className="text-base text-secondary">Stories from teams who turned chaos into coordinated impact.</p>
@@ -423,12 +423,10 @@ export default function Home() {
             </Card>
           ))}
         </div>
-      </section>
+      </section> */}
 
       <section className="mx-auto grid w-full max-w-7xl gap-6 rounded-3xl border border-[var(--color-border-primary)] bg-surface-primary-soft p-8 text-center shadow-soft">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-solid text-white shadow-soft">
-          <LifeBuoy className="h-6 w-6" />
-        </div>
+        
         <div className="grid gap-2">
           <h2 className="text-3xl font-semibold text-primary">Ready to mobilize your blood donor community?</h2>
           <p className="text-base text-secondary">

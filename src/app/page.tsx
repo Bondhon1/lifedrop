@@ -6,10 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import {
   ArrowRight,
   Droplet,
+  Facebook,
   HeartHandshake,
-  LifeBuoy,
+  Instagram,
   LineChart,
+  Mail,
   MessageSquareHeart,
+  Phone,
   ShieldCheck,
   Users,
 } from "lucide-react";
@@ -130,6 +133,49 @@ const testimonials = [
       "The friend network features are game-changing. Families rally donors in hours instead of days, and the records stay organized.",
     name: "Sabbir Ahmed",
     role: "Founder, Blood Bridge NGO",
+  },
+];
+
+const footerNav = [
+  {
+    title: "Company",
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Services", href: "/services" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Blog", href: "/blog" },
+      { label: "FAQ", href: "/faq" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms & Conditions", href: "/terms" },
+    ],
+  },
+];
+
+const socialLinks = [
+  { icon: Facebook, label: "Facebook", href: "https://facebook.com" },
+  { icon: Instagram, label: "Instagram", href: "https://instagram.com" },
+];
+
+const contactDetails = [
+  {
+    icon: Mail,
+    label: "support@lifedrop.com",
+    href: "mailto:support@lifedrop.com",
+  },
+  {
+    icon: Phone,
+    label: "+880-0000-000000",
+    href: "tel:+880000000000",
   },
 ];
 
@@ -448,55 +494,57 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      <section className="mx-auto grid w-full max-w-7xl gap-6 rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-lg">
-            <Link href="/" className="text-lg font-semibold text-primary">
-              Lifedrop
-            </Link>
-            <p className="mt-3 text-sm text-secondary">
-              A trusted platform for coordinators, hospitals, and donor communities to keep blood requests moving quickly and safely.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted">
-              <span>© {new Date().getFullYear()} Lifedrop</span>
-              <span>•</span>
-              <span>All rights reserved</span>
+      <footer className="mx-auto w-full max-w-7xl rounded-3xl border border-soft bg-surface-card p-8 shadow-soft">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
+          <div className="space-y-4">
+            <div>
+              <p className="text-xl font-semibold text-primary">Lifedrop</p>
+              <p className="mt-3 text-sm text-secondary">
+                A trusted platform for coordinators, hospitals, and donor communities to keep blood requests moving quickly and safely.
+              </p>
             </div>
+            <ul className="space-y-2 text-sm text-secondary">
+              {contactDetails.map((detail) => (
+                <li key={detail.label} className="flex items-center gap-3">
+                  <detail.icon className="h-4 w-4 text-[var(--color-text-danger)]" />
+                  <Link href={detail.href} className="transition hover:text-primary">
+                    {detail.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-            <div className="grid gap-2 text-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">Product</p>
-              <Link href="/features" className="text-secondary transition hover:text-primary">
-                Features
-              </Link>
-              <Link href="/docs/getting-started" className="text-secondary transition hover:text-primary">
-                Getting Started
-              </Link>
+          {footerNav.map((section) => (
+            <div key={section.title} className="space-y-4">
+              <p className="text-base font-semibold text-primary">{section.title}</p>
+              <ul className="space-y-2 text-sm text-secondary">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="transition hover:text-primary">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-
-            <div className="grid gap-2 text-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">Company</p>
-              <Link href="/about" className="text-secondary transition hover:text-primary">
-                About
+          ))}
+        </div>
+        <div className="mt-10 flex flex-col gap-6 border-t border-subtle pt-6 text-sm text-muted md:flex-row md:items-center md:justify-between">
+          <p>© {new Date().getFullYear()} NexTGen Web Studio. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            {socialLinks.map((social) => (
+              <Link
+                key={social.label}
+                href={social.href}
+                aria-label={social.label}
+                className="rounded-full border border-subtle p-2 text-secondary transition hover:border-[var(--color-text-danger)] hover:text-[var(--color-text-danger)]"
+              >
+                <social.icon className="h-4 w-4" />
               </Link>
-              <Link href="/contact" className="text-secondary transition hover:text-primary">
-                Contact
-              </Link>
-            </div>
-
-            <div className="grid gap-2 text-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">Legal</p>
-              <Link href="/terms" className="text-secondary transition hover:text-primary">
-                Terms
-              </Link>
-              <Link href="/privacy" className="text-secondary transition hover:text-primary">
-                Privacy
-              </Link>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
+      </footer>
       </main>
     </>
   );

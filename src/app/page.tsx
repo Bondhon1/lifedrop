@@ -530,7 +530,18 @@ export default function Home() {
           ))}
         </div>
         <div className="mt-10 flex flex-col gap-6 border-t border-subtle pt-6 text-sm text-muted md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} NexTGen Web Studio. All rights reserved.</p>
+          <p>
+            © 2025{" "}
+            <a 
+              href="https://web.facebook.com/nextgenwebstudioofficial" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-bold text-blue-600 hover:text-blue-700 transition"
+            >
+              NexTGen Web Studio
+            </a>
+            . All rights reserved.
+          </p>
           <div className="flex items-center gap-4">
             {socialLinks.map((social) => (
               <Link

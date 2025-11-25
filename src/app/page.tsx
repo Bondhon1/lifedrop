@@ -162,7 +162,7 @@ const footerNav = [
 ];
 
 const socialLinks = [
-  { icon: Facebook, label: "Facebook", href: "https://facebook.com" },
+  { icon: Facebook, label: "Facebook", href: "https://www.facebook.com/nextgenwebstudioofficial" },
   { icon: Instagram, label: "Instagram", href: "https://instagram.com" },
 ];
 

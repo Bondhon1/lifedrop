@@ -34,6 +34,14 @@ export const metadata: Metadata = {
     "save lives",
     "blood group matching",
     "urgent blood needed",
+    "blood donation coordination",
+    "real-time blood requests",
+    "blood donation management",
+    "Blood donor needed",
+    "Blood donation app",
+    "Find blood donors near me",
+    "blood donation coordination platform",
+    "Blood donors needed"
   ],
   authors: [{ name: "Lifedrop Team" }],
   creator: "Lifedrop",
@@ -43,7 +51,8 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXTAUTH_URL || "https://www.lifedrop.live/"),
+  metadataBase: new URL("https://www.lifedrop.live"),
+
   alternates: {
     canonical: "/",
   },

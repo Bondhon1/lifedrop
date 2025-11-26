@@ -1,18 +1,13 @@
 import { MetadataRoute } from "next";
-import { headers } from "next/headers";
 
 function resolveBaseUrl() {
-  const headerList = headers() as unknown as Headers;
-  const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
-  const protocol = headerList.get("x-forwarded-proto") ?? "https";
-
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL;
 
   if (envUrl) {
     return envUrl;
   }
 
-  return host ? `${protocol}://${host}` : "https://www.lifedrop.live/";
+  return "https://www.lifedrop.live/";
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {

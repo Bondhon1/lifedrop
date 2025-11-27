@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useTransition, type FormEvent } from "react";
+import { useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { updateDonorApplication } from "@/server/actions/donor";
@@ -42,6 +42,8 @@ export type DonorProfileManagerProps = {
     medicalHistoryImages: string[];
     nidOrBirthCertificate: string;
     updatedAt: string;
+    readyForUrgentDonation: boolean;
+    consentToSharePhone: boolean;
   };
 };
 
@@ -49,6 +51,8 @@ export function DonorProfileManager({ application }: DonorProfileManagerProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
+  const [readyForUrgentDonation, setReadyForUrgentDonation] = useState(application.readyForUrgentDonation);
+  const [consentToSharePhone, setConsentToSharePhone] = useState(application.consentToSharePhone);
 
   const statusBadgeClass = useMemo(
     () => statusStyles[application.status] ?? "bg-surface-primary-soft text-primary border border-[var(--color-border-primary)]",
@@ -171,6 +175,72 @@ export function DonorProfileManager({ application }: DonorProfileManagerProps) {
               defaultValue={application.medicalConditions ?? ""}
               rows={4}
             />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="readyForUrgentDonation" className="text-sm font-medium text-secondary">
+                  Ready for urgent blood donation
+                </Label>
+                <p className="text-xs text-muted">Will get emails for urgent requests, username will be shown in the news feed</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReadyForUrgentDonation(!readyForUrgentDonation)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--ring-primary)] focus:ring-offset-2 ${
+                  readyForUrgentDonation 
+                    ? 'bg-[var(--color-primary-start)] border-[var(--color-primary-start)]' 
+                    : 'bg-[var(--color-surface-card-muted)] border-[var(--color-border-soft)] dark:bg-[var(--color-surface-card-muted)] dark:border-[var(--color-border-soft)]'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
+                    readyForUrgentDonation 
+                      ? 'bg-white translate-x-6' 
+                      : 'bg-[var(--color-text-muted)] dark:bg-[var(--color-text-muted)] translate-x-1'
+                  }`}
+                />
+              </button>
+              <input
+                id="readyForUrgentDonation"
+                name="readyForUrgentDonation"
+                type="hidden"
+                value={readyForUrgentDonation ? "true" : "false"}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="consentToSharePhone" className="text-sm font-medium text-secondary">
+                  Consent to share phone number with patients party
+                </Label>
+                <p className="text-xs text-muted">Applicable for urgent needs only</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConsentToSharePhone(!consentToSharePhone)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--ring-primary)] focus:ring-offset-2 ${
+                  consentToSharePhone 
+                    ? 'bg-[var(--color-primary-start)] border-[var(--color-primary-start)]' 
+                    : 'bg-[var(--color-surface-card-muted)] border-[var(--color-border-soft)] dark:bg-[var(--color-surface-card-muted)] dark:border-[var(--color-border-soft)]'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
+                    consentToSharePhone 
+                      ? 'bg-white translate-x-6' 
+                      : 'bg-[var(--color-text-muted)] dark:bg-[var(--color-text-muted)] translate-x-1'
+                  }`}
+                />
+              </button>
+              <input
+                id="consentToSharePhone"
+                name="consentToSharePhone"
+                type="hidden"
+                value={consentToSharePhone ? "true" : "false"}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end">

@@ -70,6 +70,8 @@ export default async function DonorsPage() {
           medicalHistoryImages: record.medicalHistoryImages,
           nidOrBirthCertificate: record.nidOrBirthCertificate,
           updatedAt: record.updatedAt.toISOString(),
+          readyForUrgentDonation: record.readyForUrgentDonation,
+          consentToSharePhone: record.consentToSharePhone,
         };
       }
     } catch (error) {

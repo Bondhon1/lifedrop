@@ -210,6 +210,8 @@ model DonorApplication {
   medicalConditions     String?
   medicalHistoryImages  String[]
   status                String    @default("Pending")
+  readyForUrgentDonation Boolean  @default(false)
+  consentToSharePhone   Boolean  @default(false)
 
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)

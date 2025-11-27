@@ -75,6 +75,8 @@ const donorApplicationSchema = z
         return trimmed.length > 0 ? trimmed : null;
       })
       .refine((value) => !value || value.length <= 2000, "Medical conditions note is too long"),
+    readyForUrgentDonation: z.boolean().default(false),
+    consentToSharePhone: z.boolean().default(false),
   })
   .refine(
     (data) => {
@@ -119,6 +121,8 @@ export async function submitDonorApplication(formData: FormData): Promise<Action
     hasDonatedBefore: formData.get("hasDonatedBefore"),
     lastDonationDate: formData.get("lastDonationDate"),
     medicalConditions: formData.get("medicalConditions"),
+    readyForUrgentDonation: formData.get("readyForUrgentDonation"),
+    consentToSharePhone: formData.get("consentToSharePhone"),
   } satisfies Record<string, FormDataEntryValue | null>;
 
   const parsed = donorApplicationSchema.safeParse({
@@ -129,6 +133,14 @@ export async function submitDonorApplication(formData: FormData): Promise<Action
       || rawValues.hasDonatedBefore === "1",
     lastDonationDate: rawValues.lastDonationDate,
     medicalConditions: rawValues.medicalConditions,
+    readyForUrgentDonation:
+      rawValues.readyForUrgentDonation === "true"
+      || rawValues.readyForUrgentDonation === "on"
+      || rawValues.readyForUrgentDonation === "1",
+    consentToSharePhone:
+      rawValues.consentToSharePhone === "true"
+      || rawValues.consentToSharePhone === "on"
+      || rawValues.consentToSharePhone === "1",
   });
 
   if (!parsed.success) {
@@ -194,6 +206,8 @@ export async function submitDonorApplication(formData: FormData): Promise<Action
         medicalConditions: parsed.data.medicalConditions,
         nidOrBirthCertificate: nidPath,
         medicalHistoryImages: medicalImagePaths,
+        readyForUrgentDonation: parsed.data.readyForUrgentDonation,
+        consentToSharePhone: parsed.data.consentToSharePhone,
       },
     });
   } catch (error) {
@@ -225,6 +239,8 @@ const donorUpdateSchema = z.object({
       return trimmed.length > 0 ? trimmed : null;
     })
     .refine((value) => !value || value.length <= 2000, "Medical conditions note is too long"),
+  readyForUrgentDonation: z.boolean().default(false),
+  consentToSharePhone: z.boolean().default(false),
 });
 
 export async function updateDonorApplication(formData: FormData): Promise<ActionState<{ message: string }>> {
@@ -237,6 +253,14 @@ export async function updateDonorApplication(formData: FormData): Promise<Action
     applicationId: formData.get("applicationId"),
     lastDonationDate: formData.get("lastDonationDate"),
     medicalConditions: formData.get("medicalConditions"),
+    readyForUrgentDonation:
+      formData.get("readyForUrgentDonation") === "true"
+      || formData.get("readyForUrgentDonation") === "on"
+      || formData.get("readyForUrgentDonation") === "1",
+    consentToSharePhone:
+      formData.get("consentToSharePhone") === "true"
+      || formData.get("consentToSharePhone") === "on"
+      || formData.get("consentToSharePhone") === "1",
   });
 
   if (!parsed.success) {
@@ -282,6 +306,8 @@ export async function updateDonorApplication(formData: FormData): Promise<Action
       data: {
         lastDonationDate: parsed.data.lastDonationDate,
         medicalConditions: parsed.data.medicalConditions,
+        readyForUrgentDonation: parsed.data.readyForUrgentDonation,
+        consentToSharePhone: parsed.data.consentToSharePhone,
         ...(newMedicalImages.length > 0
           ? { medicalHistoryImages: [...application.medicalHistoryImages, ...newMedicalImages] }
           : {}),

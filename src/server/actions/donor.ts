@@ -439,3 +439,67 @@ export async function rejectDonorApplication(applicationId: number | string): Pr
 
   return success({ message: "Application rejected." });
 }
+
+export type ActiveDonor = {
+  id: number;
+  username: string;
+  name: string | null;
+  bloodGroup: string | null;
+  phone: string | null;
+  readyForUrgentDonation: boolean;
+  consentToSharePhone: boolean;
+  lastDonationDate: Date | null;
+  profilePicture: string | null;
+};
+
+export async function getActiveDonors(bloodGroup?: string): Promise<ActiveDonor[]> {
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+  const donors = await prisma.donorApplication.findMany({
+    where: {
+      status: "Approved",
+      OR: [
+        { lastDonationDate: null },
+        { lastDonationDate: { lt: ninetyDaysAgo } }
+      ],
+      ...(bloodGroup && {
+        user: {
+          bloodGroup: bloodGroup
+        }
+      })
+    },
+    select: {
+      id: true,
+      readyForUrgentDonation: true,
+      consentToSharePhone: true,
+      lastDonationDate: true,
+      user: {
+        select: {
+          id: true,
+          username: true,
+          name: true,
+          bloodGroup: true,
+          phone: true,
+          profilePicture: true,
+        },
+      },
+    },
+    orderBy: [
+      { readyForUrgentDonation: 'desc' }, // Urgent donors first
+      { updatedAt: 'desc' } // Then by most recently updated
+    ]
+  });
+
+  return donors.map(donor => ({
+    id: donor.user.id,
+    username: donor.user.username,
+    name: donor.user.name,
+    bloodGroup: donor.user.bloodGroup,
+    phone: donor.consentToSharePhone ? donor.user.phone : null,
+    readyForUrgentDonation: donor.readyForUrgentDonation,
+    consentToSharePhone: donor.consentToSharePhone,
+    lastDonationDate: donor.lastDonationDate,
+    profilePicture: donor.user.profilePicture,
+  }));
+}

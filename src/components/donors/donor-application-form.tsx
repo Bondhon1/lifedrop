@@ -9,7 +9,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-export function DonorApplicationForm() {
+type UserProfile = {
+  bloodGroup?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  divisionId?: number | null;
+  districtId?: number | null;
+  upazilaId?: number | null;
+};
+
+type DonorApplicationFormProps = {
+  userProfile?: UserProfile | null;
+};
+
+export function DonorApplicationForm({ userProfile }: DonorApplicationFormProps = {}) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -22,6 +35,34 @@ export function DonorApplicationForm() {
 
     if (!formRef.current) {
       return;
+    }
+
+    // Check if user has complete profile information required for donor applications
+    if (userProfile) {
+      const missingFields: string[] = [];
+      if (!userProfile.bloodGroup || userProfile.bloodGroup.trim().length === 0) {
+        missingFields.push("blood group");
+      }
+      if (!userProfile.phone || userProfile.phone.trim().length === 0) {
+        missingFields.push("phone number");
+      }
+      if (!userProfile.address || userProfile.address.trim().length === 0) {
+        missingFields.push("address");
+      }
+      if (!userProfile.divisionId) {
+        missingFields.push("division");
+      }
+      if (!userProfile.districtId) {
+        missingFields.push("district");
+      }
+      if (!userProfile.upazilaId) {
+        missingFields.push("upazila");
+      }
+
+      if (missingFields.length > 0) {
+        toast.error(`Complete your profile first. Missing: ${missingFields.join(", ")}. Go to your profile page to update.`);
+        return;
+      }
     }
 
     const formData = new FormData(formRef.current);

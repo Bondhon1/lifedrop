@@ -52,31 +52,47 @@ export default async function DonorsPage() {
   let totalPledges = 0;
   let donorApplications: DonorWithUser[] = [];
   let viewerApplication: DonorProfileManagerProps["application"] | null = null;
+  let viewerProfile: { bloodGroup?: string | null; address?: string | null; phone?: string | null; divisionId?: number | null; districtId?: number | null; upazilaId?: number | null } | null = null;
 
   if (viewerIsAuthenticated) {
     try {
-      const record = await prisma.donorApplication.findUnique({
-        where: { userId: viewerId },
-      });
+      const [applicationRecord, profileRecord] = await Promise.all([
+        prisma.donorApplication.findUnique({
+          where: { userId: viewerId },
+        }),
+        prisma.user.findUnique({
+          where: { id: viewerId },
+          select: {
+            bloodGroup: true,
+            address: true,
+            phone: true,
+            divisionId: true,
+            districtId: true,
+            upazilaId: true,
+          },
+        }),
+      ]);
 
-      if (record) {
+      if (applicationRecord) {
         viewerApplication = {
-          id: record.id,
-          status: record.status,
-          dateOfBirth: record.dateOfBirth.toISOString(),
-          hasDonatedBefore: record.hasDonatedBefore,
-          lastDonationDate: record.lastDonationDate ? record.lastDonationDate.toISOString() : null,
-          medicalConditions: record.medicalConditions ?? null,
-          medicalHistoryImages: record.medicalHistoryImages,
-          nidOrBirthCertificate: record.nidOrBirthCertificate,
-          updatedAt: record.updatedAt.toISOString(),
-          readyForUrgentDonation: record.readyForUrgentDonation,
-          consentToSharePhone: record.consentToSharePhone,
+          id: applicationRecord.id,
+          status: applicationRecord.status,
+          dateOfBirth: applicationRecord.dateOfBirth.toISOString(),
+          hasDonatedBefore: applicationRecord.hasDonatedBefore,
+          lastDonationDate: applicationRecord.lastDonationDate ? applicationRecord.lastDonationDate.toISOString() : null,
+          medicalConditions: applicationRecord.medicalConditions ?? null,
+          medicalHistoryImages: applicationRecord.medicalHistoryImages,
+          nidOrBirthCertificate: applicationRecord.nidOrBirthCertificate,
+          updatedAt: applicationRecord.updatedAt.toISOString(),
+          readyForUrgentDonation: applicationRecord.readyForUrgentDonation,
+          consentToSharePhone: applicationRecord.consentToSharePhone,
         };
       }
+
+      viewerProfile = profileRecord;
     } catch (error) {
       if (isDatabaseUnavailableError(error)) {
-        console.error("Database unavailable while loading viewer donor application", error);
+        console.error("Database unavailable while loading viewer data", error);
       } else {
         throw error;
       }
@@ -163,7 +179,7 @@ export default async function DonorsPage() {
             </p>
           </CardHeader>
           <CardContent className="pt-0">
-            {viewerApplication ? <DonorProfileManager application={viewerApplication} /> : <DonorApplicationForm />}
+            {viewerApplication ? <DonorProfileManager application={viewerApplication} /> : <DonorApplicationForm userProfile={viewerProfile} />}
           </CardContent>
         </Card>
 

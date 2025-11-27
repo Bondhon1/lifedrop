@@ -116,6 +116,48 @@ export async function submitDonorApplication(formData: FormData): Promise<Action
     return failure("Sign in to submit a donor application.");
   }
 
+  // Check if user has complete profile information required for donor applications
+  const userProfile = await prisma.user.findUnique({
+    where: { id: sessionInfo.userId },
+    select: {
+      bloodGroup: true,
+      address: true,
+      phone: true,
+      divisionId: true,
+      districtId: true,
+      upazilaId: true,
+    },
+  });
+
+  if (!userProfile) {
+    return failure("We couldn't find your profile. Please try again.");
+  }
+
+  // Validate required profile fields for donor applications
+  const missingFields: string[] = [];
+  if (!userProfile.bloodGroup || userProfile.bloodGroup.trim().length === 0) {
+    missingFields.push("blood group");
+  }
+  if (!userProfile.phone || userProfile.phone.trim().length === 0) {
+    missingFields.push("phone number");
+  }
+  if (!userProfile.address || userProfile.address.trim().length === 0) {
+    missingFields.push("address");
+  }
+  if (!userProfile.divisionId) {
+    missingFields.push("division");
+  }
+  if (!userProfile.districtId) {
+    missingFields.push("district");
+  }
+  if (!userProfile.upazilaId) {
+    missingFields.push("upazila");
+  }
+
+  if (missingFields.length > 0) {
+    return failure(`Complete your profile first. Missing: ${missingFields.join(", ")}.`);
+  }
+
   const rawValues = {
     dateOfBirth: formData.get("dateOfBirth"),
     hasDonatedBefore: formData.get("hasDonatedBefore"),

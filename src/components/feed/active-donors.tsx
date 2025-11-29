@@ -55,8 +55,8 @@ export function ActiveDonors({ className }: ActiveDonorsProps) {
   const urgentDonors = donors.filter(d => d.readyForUrgentDonation);
   const regularDonors = donors.filter(d => !d.readyForUrgentDonation);
 
-  const handleChat = (username: string) => {
-    router.push(`/chat?user=${username}`);
+  const handleChat = (donorId: number) => {
+    router.push(`/chat?user=${donorId}`);
   };
 
   const handleCopyPhone = async (phone: string) => {
@@ -101,7 +101,7 @@ export function ActiveDonors({ className }: ActiveDonorsProps) {
               size="sm"
               variant="outline"
               className="flex-1 h-8 text-xs"
-              onClick={() => handleChat(donor.username)}
+              onClick={() => handleChat(donor.id)}
             >
               <MessageCircle className="h-3 w-3 mr-1" />
               Chat

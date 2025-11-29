@@ -24,7 +24,7 @@ export type ChatMessageView = {
   optimistic?: boolean;
 };
 
-type ChatConversationProps = {
+export type ChatConversationProps = {
   currentUserId: number;
   partner: ChatPartner | null;
   messages: ChatMessageView[];
@@ -230,10 +230,10 @@ export function ChatConversation({ currentUserId, partner, messages }: ChatConve
 
   return (
     <section className="flex h-full flex-col rounded-3xl border border-soft bg-surface-card">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-soft px-6 py-4">
-        <div className="min-w-0">
-          <h2 className="truncate text-lg font-semibold text-primary">{partner.name ?? partner.username}</h2>
-          {partner.bloodGroup ? <p className="text-sm text-secondary">Blood group: {partner.bloodGroup}</p> : null}
+      <header className="flex items-center justify-between gap-3 border-b border-soft px-4 py-2 lg:flex-nowrap lg:h-auto h-10 lg:px-6 lg:py-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-base font-semibold text-primary lg:text-lg">{partner.name ?? partner.username}</h2>
+          {partner.bloodGroup ? <p className="text-xs text-secondary lg:text-sm lg:block hidden">Blood group: {partner.bloodGroup}</p> : null}
         </div>
       </header>
 

@@ -3,9 +3,9 @@ import { formatDistanceToNow } from "date-fns";
 import { auth } from "@/lib/auth";
 import type { SessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ChatSidebar, type ChatFriend } from "@/components/chat/chat-sidebar";
-import { ChatConversation, type ChatMessageView, type ChatPartner } from "@/components/chat/chat-conversation";
-import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import { ChatPageClient } from "@/components/chat/chat-page-client";
+import type { ChatMessageView, ChatPartner } from "@/components/chat/chat-conversation";
+import type { ChatFriend } from "@/components/chat/chat-sidebar";
 
 const MESSAGE_LIMIT = 200;
 
@@ -214,10 +214,11 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
   });
 
   return (
-    <div className="grid w-full gap-6 grid-cols-1 lg:grid-cols-[320px_1fr]">
-      <ChatSidebar friends={sidebarFriends} />
-      <ChatConversation currentUserId={userId} partner={partner} messages={conversation} />
-      <ScrollToTop />
-    </div>
+    <ChatPageClient
+      sidebarFriends={sidebarFriends}
+      currentUserId={userId}
+      partner={partner}
+      messages={conversation}
+    />
   );
 }
